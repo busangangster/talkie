@@ -2,6 +2,7 @@ package com.flicker.gpt_api_test.realtime.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flicker.gpt_api_test.realtime.data.EVENT_TYPE;
 import com.flicker.gpt_api_test.realtime.dto.OpenAiSessionRequest;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -55,31 +56,31 @@ public class RealtimeApiSocketClient extends WebSocketClient {
             // OpenAI 응답에서 필요한 데이터 추출 (예: 텍스트, 오디오 등)
             String eventType = jsonResponse.path("type").asText();
 
-            // audio.delta 메시지 처리
-            if (eventType.equals("response.audio.delta")) {
-                // delta에서 오디오 데이터를 가져오기
-                String audioDelta = jsonResponse.path("delta").asText();
-                audioDeltas.add(audioDelta); // 오디오 델타를 리스트에 추가
-            }
-
-            if (eventType.equals("response.output_item.done")) {
-                // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = mergeAudioDeltas(audioDeltas);
-                String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
-                // 클라이언트에게 오디오 응답 전송
-                if (clientSession != null && clientSession.isOpen()) {
-                    clientSession.sendMessage(new TextMessage("Audio data: " + finalAudioBase64));
+            switch (EVENT_TYPE.of(eventType)) {
+                case RESPONSE__AUDIO__DELTA -> {
+                    // delta에서 오디오 데이터를 가져오기
+                    String audioDelta = jsonResponse.path("delta").asText();
+                    audioDeltas.add(audioDelta); // 오디오 델타를 리스트에 추가
                 }
-                // 초기화
-                audioDeltas.clear(); // 오디오 델타 리스트 초기화
+                case RESPONSE__OUTPUT_ITEM__DONE -> {
+                    // 오디오 델타를 병합하고 Base64로 인코딩
+                    byte[] combinedAudio = mergeAudioDeltas(audioDeltas);
+                    String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
+                    // 클라이언트에게 오디오 응답 전송
+                    if (clientSession != null && clientSession.isOpen()) {
+                        clientSession.sendMessage(new TextMessage("Audio data: " + finalAudioBase64));
+                    }
+                    // 초기화
+                    audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
-                // JSON 응답에서 transcript를 추출
-                JsonNode contentArray = jsonResponse.path("item").path("content");
-                if (contentArray.isArray() && !contentArray.isEmpty()) {
-                    // 첫 번째 content에서 type이 audio인 경우에만 transcript 추출
-                    if (contentArray.get(0).path("type").asText().equals("audio")) {
-                        String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
-                        System.out.println("Transcript: " + transcript);
+                    // JSON 응답에서 transcript를 추출
+                    JsonNode contentArray = jsonResponse.path("item").path("content");
+                    if (contentArray.isArray() && !contentArray.isEmpty()) {
+                        // 첫 번째 content에서 type이 audio인 경우에만 transcript 추출
+                        if (contentArray.get(0).path("type").asText().equals("audio")) {
+                            String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
+                            System.out.println("Transcript: " + transcript);
+                        }
                     }
                 }
             }
