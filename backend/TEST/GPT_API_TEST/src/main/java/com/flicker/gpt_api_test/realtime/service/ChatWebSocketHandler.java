@@ -47,9 +47,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
                     // 세션 설정: updateSession과 같은 방식으로 OpenAI Realtime API에 설정을 보냄
                     sendSessionUpdate();
-
-                    // 사용자에게 인사 메시지를 보내는 로직 추가 ( 시작메시지 )
-                    sendInitialGreeting();
                 }
 
                 @Override
@@ -80,14 +77,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                             audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
                             // JSON 응답에서 transcript를 추출
-                            JsonNode outputArray = jsonResponse.path("response").path("item").path("content");
-                            if (outputArray.isArray() && !outputArray.isEmpty()) {
-                                if (outputArray.isArray() && !outputArray.isEmpty()) {
-                                    // 첫 번째 content에서 type이 audio인 경우에만 transcript 추출
-                                    if (outputArray.get(0).path("type").asText().equals("audio")) {
-                                        String transcript = outputArray.get(0).path("transcript").asText(); // 텍스트 응답
-                                        System.out.println("Transcript: " + transcript);
-                                    }
+                            JsonNode contentArray = jsonResponse.path("item").path("content");
+                            if (contentArray.isArray() && !contentArray.isEmpty()) {
+                                // 첫 번째 content에서 type이 audio인 경우에만 transcript 추출
+                                if (contentArray.get(0).path("type").asText().equals("audio")) {
+                                    String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
+                                    System.out.println("Transcript: " + transcript);
                                 }
                             }
                         }
@@ -146,24 +141,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         try {
             // 세션 업데이트를 위한 JSON 작성
             String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionRequest(
-                    "너는 대화가 끊기지 않도록 아이가 질문을 하면 대답을 하고 질문을 해야하고, 대답을 하면 그에 맞는 반응을 하고 연관된 질문을 해야해. 한국어로 대화해야 해. 그리고 귀여운 목소리를 내야해." // 세션 설정용 지침
+                    "너는 대화가 끊기지 않도록 아이가 질문을 하면 대답을 하고 질문을 해야하고, 대답을 하면 그에 맞는 반응을 하고 연관된 질문을 해야해. 한국어로 대화해야 해. 그리고 친근하게 느낄 수 있도록 반말을 사용해" // 세션 설정용 지침
             ));
 
             // 세션 업데이트 전송
             openAiWebSocketClient.send(sessionUpdateJson);
             System.out.println("Session update sent.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendInitialGreeting() {
-        try {
-            // 사용자에게 인사하는 메시지를 OpenAI에 전송
-            String greetingMessage = objectMapper.writeValueAsString(new OpenAiRequest(
-                    "아이한테 자연스럽게 인사를 해봐"
-            ));
-            openAiWebSocketClient.send(greetingMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -23,7 +23,7 @@ public class OpenAiRequest {
         private final String output_audio_format = "pcm16"; // 고정된 output_audio_format 값
         private final List<OpenAiTool> tools = Collections.singletonList(OpenAiTool.INSTANCE); // 고정된 도구 정보
         private final String tool_choice = "auto"; // 고정된 tool_choice 값
-        private final double temperature = 0.7; // 고정된 temperature 값
+        private final double temperature = 0.7; // 고정된 temperature 값`
         private final int max_output_tokens = 150; // 고정된 max_output_tokens 값
 
         public OpenAiResponse(String instructions) {
