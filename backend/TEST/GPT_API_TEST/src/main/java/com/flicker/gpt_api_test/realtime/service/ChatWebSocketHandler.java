@@ -2,8 +2,9 @@ package com.flicker.gpt_api_test.realtime.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flicker.gpt_api_test.realtime.dto.OpenAiConversationItemCreateRequest;
 import com.flicker.gpt_api_test.realtime.dto.OpenAiRequest;
-import com.flicker.gpt_api_test.realtime.dto.OpenAiSessionRequest;
+import com.flicker.gpt_api_test.realtime.dto.OpenAiSessionUpdateRequest;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,6 +84,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                                 if (contentArray.get(0).path("type").asText().equals("audio")) {
                                     String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
                                     System.out.println("Transcript: " + transcript);
+
+                                    // 대화 항목 생성 요청 전송
+                                    String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));
+                                    openAiWebSocketClient.send(jsonMessage);
                                 }
                             }
                         }
@@ -114,7 +119,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                     reconnect();
                 }
             };
-
             // API 키를 제대로 설정해서 사용
             openAiWebSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
             openAiWebSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
@@ -140,8 +144,36 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private void sendSessionUpdate() {
         try {
             // 세션 업데이트를 위한 JSON 작성
-            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionRequest(
-                    "너는 대화가 끊기지 않도록 아이가 질문을 하면 대답을 하고 질문을 해야하고, 대답을 하면 그에 맞는 반응을 하고 연관된 질문을 해야해. 한국어로 대화해야 해. 그리고 친근하게 느낄 수 있도록 반말을 사용해" // 세션 설정용 지침
+            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(
+                    """ 
+                    너의 이름은 '토키'야.
+                    
+                    1. 너는 5세에서 7세의 아이와 대화해야 해. 
+                       - 아이가 이해할 수 있도록 쉽게 말해야 하고, 어려운 단어는 사용하면 안 돼.
+        
+                    2. 대화할 때는 항상 반말을 사용하고, 친근하게 대해야 해.
+                       - 예를 들어, "안녕! 오늘은 어떤 일이 있었어?"처럼.
+        
+                    3. 처음에는 아이의 이름, 좋아하는 것, 좋아하는 동물, 색깔 등을 물어보며 친해지는 시간을 가져야 해.
+                       - 예를 들어, "너의 이름은 뭐니?" "가장 좋아하는 동물은 뭐야?" "무슨 색깔을 좋아해?"라고 물어봐.
+        
+                    4. 아이와의 대화에서 자연스럽게 질문과 대답을 주고받으면서 재미있게 놀아주는 역할을 해.
+                       - 아이가 대답하면 적절한 반응과 함께 다음 질문을 해줘.
+                       - 예를 들어, 아이가 "나는 강아지를 좋아해"라고 하면, "정말? 강아지는 귀엽지! 너는 어떤 강아지를 좋아해?"라고 질문해.
+        
+                    5. 같은 질문을 반복하지 않고, 새로운 질문으로 대화를 이어가야 해.
+                       - 예를 들어, 아이가 좋아하는 것, 싫어하는 것, 오늘 있었던 일, 즐거웠던 일, 가족 등에 대한 질문을 바꿔서 계속 대화해.
+        
+                    6. 모든 대화는 한국어로 진행해야 해.
+        
+                    7. 아이가 말한 정보(대화 내용)는 모두 기억하고, 다음 대화에서 그 정보를 활용해야 해. 이미 했던 질문을 다시 하면 안 돼.
+                       - 예를 들어, "너는 고양이를 좋아한다고 했지? 고양이에 대해 더 이야기해볼래?"처럼.
+        
+                    8. 아이가 질문했을 때는 항상 대답한 후 추가 질문을 해줘.
+                       - 예: "재미있는 게임을 찾자! 너는 어떤 게임이 좋아?"라고 물어봐.
+        
+                    9. 대화가 자연스럽고 즐겁게 이어지도록 노력해야 해. 아이가 웃거나 즐거워하는 반응을 보일 수 있도록 해줘.
+                    """ // 세션 설정용 지침
             ));
 
             // 세션 업데이트 전송
@@ -168,7 +200,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             try {
                 // 'response.create'와 'userMessage'를 함께 전달하여 OpenAiRequest 생성
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiRequest(userMessage));
-                System.out.println(jsonMessage);  // JSON 문자열 출력
+                openAiWebSocketClient.send(jsonMessage);
+                // 대화 항목 생성 요청 전송
+                jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 openAiWebSocketClient.send(jsonMessage);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -6,15 +6,15 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class OpenAiSessionRequest {
-    // 고정된 타입 값: 세션 업데이트를 의미하는 'session.update'로 고정
-    private final String type = "session.update";
+public class OpenAiSessionUpdateRequest {
+
+    private final String type = "session.update"; // 고정된 type 값
 
     // 세션 관련 정보를 담고 있는 객체
     private OpenAiSession session;
 
     // 생성자: 지침(instructions) 값을 받아서 세션 객체를 생성
-    public OpenAiSessionRequest(String instructions) {
+    public OpenAiSessionUpdateRequest(String instructions) {
         this.session = new OpenAiSession(instructions);
     }
 
@@ -53,7 +53,7 @@ public class OpenAiSessionRequest {
         private final double temperature = 0.7;
 
         // 생성할 응답의 최대 토큰 수 (고정값: inf)
-        private final String max_response_output_tokens = "inf";
+        private final int max_response_output_tokens = 150;
 
         // 생성자: 사용자로부터 instructions를 받아서 세션을 설정, 입력 오디오 전사 모델과 턴 감지도 설정
         public OpenAiSession(String instructions) {
