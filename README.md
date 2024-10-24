@@ -27,3 +27,16 @@
 - ⚔ **용기**: 실패를 두려워하지 않고 끝까지 맞서 싸우는 자세.
 
 > **우리는 부서질 수는 있어도, 결코 찌그러지지 않습니다.**
+
+## ⭐ 팀 노션
+
+### ***Meet our highly skilled team members!*** | <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" alt="Notion Logo" width="20"/> [팀 노션](https://noble-route-3af.notion.site/11f40b016f6981ea9169d426c83a43c3?pvs=4)
+
+## ⭐ 프로젝트 산출물
+
+1. [프로젝트 기획서](https://noble-route-3af.notion.site/11f40b016f698147962cde131bc95b21?pvs=4)
+2. [API 명세서](https://noble-route-3af.notion.site/API-11f40b016f6981d5a6bdc66d7a22cfb1?pvs=4)
+3. [GANTT](https://docs.google.com/spreadsheets/d/1NwoyH_N4Zfxe4dTwcfZ2DxZkN2DKvkRxT258Yx1AS3w/edit?gid=367888913#gid=367888913)
+4. [시퀀스 다이어그램](https://noble-route-3af.notion.site/11f40b016f6981d8917cc75ca586fedc?pvs=4)
+5. [ERD](https://noble-route-3af.notion.site/ERD-11f40b016f6981ed8317f0c867005a21?pvs=4)
+6. [시스템 아키텍처](https://drive.google.com/file/d/1viSvlroAJRvPp06EdPEnJCajKUYTdkac/view)
