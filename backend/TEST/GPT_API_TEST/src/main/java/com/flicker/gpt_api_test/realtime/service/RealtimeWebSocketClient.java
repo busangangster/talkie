@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flicker.gpt_api_test.realtime.dto.OpenAiConversationItemCreateRequest;
 import com.flicker.gpt_api_test.realtime.dto.OpenAiSessionUpdateRequest;
+import com.flicker.gpt_api_test.realtime.util.AudioDeltaManager;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.springframework.stereotype.Component;
@@ -15,19 +16,21 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
 public class RealtimeWebSocketClient extends WebSocketClient {
 
     private final ObjectMapper objectMapper;
-    private List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
     private final WebSocketSession clientSession;
+    private final AudioDeltaManager audioDeltaManager;
 
-    public RealtimeWebSocketClient(URI serverUri, WebSocketSession clientSession) {
+    public RealtimeWebSocketClient(URI serverUri, WebSocketSession clientSession, AudioDeltaManager audioDeltaManager) {
         super(serverUri);
         this.objectMapper = new ObjectMapper();
         this.clientSession = clientSession;
+        this.audioDeltaManager = audioDeltaManager;
     }
 
     @Override
@@ -95,19 +98,16 @@ public class RealtimeWebSocketClient extends WebSocketClient {
             if (eventType.equals("response.audio.delta")) {
                 // delta에서 오디오 데이터를 가져오기
                 String audioDelta = jsonResponse.path("delta").asText();
-                audioDeltas.add(audioDelta); // 오디오 델타를 리스트에 추가
+                audioDeltaManager.add(audioDelta);
             }
 
             if (eventType.equals("response.output_item.done")) {
                 // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = mergeAudioDeltas(audioDeltas);
-                String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
+                String finalAudioBase64 = audioDeltaManager.flushWithEncoding();
                 // 클라이언트에게 오디오 응답 전송
                 if (clientSession != null && clientSession.isOpen()) {
                     clientSession.sendMessage(new TextMessage("Audio data: " + finalAudioBase64));
                 }
-                // 초기화
-                audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
                 // JSON 응답에서 transcript를 추출
                 JsonNode contentArray = jsonResponse.path("item").path("content");
@@ -127,19 +127,6 @@ public class RealtimeWebSocketClient extends WebSocketClient {
             e.printStackTrace();
         }
     }
-
-    // 오디오 델타를 디코딩하고 합치는 메서드
-    private byte[] mergeAudioDeltas(List<String> audioDeltas) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        for (String delta : audioDeltas) {
-            byte[] audioBytes = Base64.getDecoder().decode(delta);
-            outputStream.write(audioBytes);
-        }
-
-        return outputStream.toByteArray(); // 합쳐진 오디오 데이터를 반환
-    }
-
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
@@ -161,4 +148,5 @@ public class RealtimeWebSocketClient extends WebSocketClient {
         ex.printStackTrace();
         reconnect();
     }
+
 }
