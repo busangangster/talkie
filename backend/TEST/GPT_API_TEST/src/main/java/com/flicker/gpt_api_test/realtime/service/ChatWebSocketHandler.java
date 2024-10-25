@@ -1,5 +1,6 @@
 package com.flicker.gpt_api_test.realtime.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flicker.gpt_api_test.realtime.dto.OpenAiConversationItemCreateRequest;
@@ -173,6 +174,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                        - 예: "재미있는 게임을 찾자! 너는 어떤 게임이 좋아?"라고 물어봐.
         
                     9. 대화가 자연스럽고 즐겁게 이어지도록 노력해야 해. 아이가 웃거나 즐거워하는 반응을 보일 수 있도록 해줘.
+                    
+                    10. 아이에게 무섭지 않게, 귀엽고 다정하고 감정이 들어있고 억양이 느껴지도록 말해줘.
                     """ // 세션 설정용 지침
             ));
 
@@ -228,5 +231,23 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println("Connection closed: " + session.getId());
         this.clientSession = null;
+    }
+
+    public void send(String s) throws JsonProcessingException {
+        // 애한테 인스트럭션 먹이기 // 안된다!
+        // conver screat 이거 없이 바로 호출하니까 오류 띄움 왠지늠 ㅗ름
+        // 음성이 서버에는 ㅇ는 거가틍ㄴ데 ㅗ애인지 클라에서 못바고 ㅣㅇ ㅣㅏㄲㄴ호가 긱노
+        // 자세히ㅡㄴ ㅁ로 ㅡㄴ또 ㅡ도바야도미
+        // 클라가 잘묏더가? 그러면 처ㅏ리 다힝ㅇ내데 ㅍ녀하고 ㅈ호지]ㅊ
+        String responseCreateJsonMessage = """
+                        {
+                            "type":"response.create",
+                            "response": {
+                                "instructions": "%s"
+                            }
+                        }
+                """.formatted(s);
+        System.out.println("responseCreateJsonMessage = " + responseCreateJsonMessage);
+        openAiWebSocketClient.send(responseCreateJsonMessage);
     }
 }
