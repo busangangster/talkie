@@ -39,7 +39,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @PostConstruct
     public void init() {
         try {
-            openAiWebSocketClient = new RealtimeWebSocketClient(new URI("wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01"), clientSession);
+            openAiWebSocketClient = new RealtimeWebSocketClient(clientSession);
             // API 키를 제대로 설정해서 사용
             openAiWebSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
             openAiWebSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
