@@ -148,7 +148,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                     """ 
                     너의 이름은 '토키'야.
                     
-                    1. 너는 5세에서 7세의 아이와 대화해야 해. 
+                    1. 너는 5세에서 7세의 아이와 대화해야 해.
                        - 아이가 이해할 수 있도록 쉽게 말해야 하고, 어려운 단어는 사용하면 안 돼.
         
                     2. 대화할 때는 항상 반말을 사용하고, 친근하게 대해야 해.
@@ -198,12 +198,13 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
         executorService.submit(() -> {
             try {
-                // 'response.create'와 'userMessage'를 함께 전달하여 OpenAiRequest 생성
-                String jsonMessage = objectMapper.writeValueAsString(new OpenAiRequest(userMessage));
+                // 대화 항목 생성 요청 전송 / conversation.item.create
+                String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 openAiWebSocketClient.send(jsonMessage);
-                // 대화 항목 생성 요청 전송
-                jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
-                openAiWebSocketClient.send(jsonMessage);
+                // 'response.create'와 'userMessage'를 함께 전달하여 OpenAiRequest 생성 / response.create
+//                String responseCreateJsonMessage = objectMapper.writeValueAsString(new OpenAiRequest(userMessage));
+                String responseCreateJsonMessage = "{\"type\":\"response.create\"}";
+                openAiWebSocketClient.send(responseCreateJsonMessage);
             } catch (Exception e) {
                 e.printStackTrace();
                 if (session.isOpen()) {
