@@ -4,11 +4,13 @@ import com.e104.mqtt_test.dto.OpenAiConversationItemCreateRequest;
 import com.e104.mqtt_test.dto.OpenAiSessionUpdateRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -18,14 +20,15 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@RequiredArgsConstructor
 public class ChatMqttToWebSocketHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<Integer, WebSocketClient> userWebSocketClients = new ConcurrentHashMap<>(); // userSeq 타입을 Integer로 변경
 
-//    private final MessageChannel mqttOutboundChannel;
+    private final MessageChannel mqttOutboundChannel;
 
-    private List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
+    private final List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
 
     @Value("${openai.api.key}")
     private String openAiApiKey;
@@ -41,7 +44,6 @@ public class ChatMqttToWebSocketHandler {
     private static final String TOPIC_VOICE_RECOGNITION = "topic/voice/recognition";
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
-    @ServiceActivator(inputChannel = "mqttInputChannel")
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
         String topic = message.getHeaders().get("mqtt_receivedTopic", String.class); // 수신된 토픽을 가져옴
@@ -184,7 +186,7 @@ public class ChatMqttToWebSocketHandler {
                 // 클라이언트에게 오디오 응답 전송
                 // userSeq별 고유한 토픽으로 메시지 전송
                 String userSpecificTopic = "response/audio/" + userSeq;
-//                mqttOutboundChannel.send(new org.springframework.messaging.support.GenericMessage<>(finalAudioBase64, Map.of("mqtt_topic", userSpecificTopic)));
+                mqttOutboundChannel.send(new GenericMessage<>(finalAudioBase64, Map.of("mqtt_topic", userSpecificTopic)));
                 // 초기화
                 audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
