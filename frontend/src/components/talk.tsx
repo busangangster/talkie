@@ -1,6 +1,6 @@
 import React from 'react'
 
-const talk = () => {
+const talk:React.FC = () => {
   return (
     <div>talk</div>
   )
