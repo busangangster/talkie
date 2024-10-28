@@ -11,8 +11,8 @@ RUN npm install
 # 애플리케이션 코드 복사
 COPY . .
 
-# 컨테이너의 포트 3000 노출
-EXPOSE 3000
+# 컨테이너의 포트 5173 노출
+EXPOSE 5173
 
 # 애플리케이션 실행 명령
 CMD ["npm", "run", "dev"]
