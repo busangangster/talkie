@@ -1,5 +1,5 @@
-# Node.js 13 알파인 이미지 사용
-FROM node:13.12.0-alpine
+# Node.js 16 알파인 이미지 사용
+FROM node:16-alpine
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -14,5 +14,5 @@ COPY . .
 # 컨테이너의 포트 3000 노출
 EXPOSE 3000
 
-# 애플리케이션 실행 명령 수정
+# 애플리케이션 실행 명령
 CMD ["npm", "run", "dev"]
