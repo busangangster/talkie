@@ -1,4 +1,3 @@
-# Node.js 16 알파인 이미지 사용
 FROM node:16-alpine
 
 # 작업 디렉토리 설정
