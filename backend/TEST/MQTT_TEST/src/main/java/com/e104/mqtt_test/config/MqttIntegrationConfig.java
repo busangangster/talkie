@@ -1,11 +1,14 @@
 package com.e104.mqtt_test.config;
 
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
+import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
+import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
@@ -60,10 +63,9 @@ public class MqttIntegrationConfig {
     // MQTT 클라이언트 팩토리
     // MQTT 클라이언트의 연결 옵션을 설정하고 관리하는 팩토리
     @Bean
-    public org.springframework.integration.mqtt.core.MqttPahoClientFactory mqttClientFactory() {
-        org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory factory =
-                new org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory();
-        org.eclipse.paho.client.mqttv3.MqttConnectOptions options = new org.eclipse.paho.client.mqttv3.MqttConnectOptions();
+    public MqttPahoClientFactory mqttClientFactory() {
+        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+        MqttConnectOptions options = new MqttConnectOptions();
         options.setServerURIs(new String[]{brokerUrl});  // 연결할 MQTT 브로커 URL 설정
         factory.setConnectionOptions(options);  // 팩토리에 연결 옵션 설정
         return factory;

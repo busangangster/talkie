@@ -4,7 +4,6 @@ import com.e104.mqtt_test.dto.OpenAiConversationItemCreateRequest;
 import com.e104.mqtt_test.dto.OpenAiSessionUpdateRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
