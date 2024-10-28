@@ -1,21 +1,29 @@
 package com.e104.mqtt_test.config;
 
+import com.e104.mqtt_test.service.ChatMqttToWebSocketHandler;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
-import org.springframework.integration.core.MessageProducer;
+import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.endpoint.MessageProducerSupport;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
-import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
+@RequiredArgsConstructor
+@EnableIntegration
 @Configuration
+@PropertySource("classpath:application.properties")
 public class MqttIntegrationConfig {
 
     @Value("${mqtt.broker.url}")
@@ -30,6 +38,8 @@ public class MqttIntegrationConfig {
     @Value("${mqtt.topic.publish}")
     private String publishTopic;  // MQTT 발행 토픽
 
+    private final ChatMqttToWebSocketHandler handler;
+
     // MQTT 메시지 수신 채널
     // MQTT 구독 어댑터에서 수신한 메시지가 전달되는 채널
     @Bean
@@ -37,21 +47,22 @@ public class MqttIntegrationConfig {
         return new DirectChannel();
     }
 
-    // MQTT 메시지 발행 핸들러
-    // 지정된 MQTT 브로커와 발행 토픽으로 메시지를 송신하는 핸들러
-    @Bean
-    @ServiceActivator(inputChannel = "mqttOutboundChannel")
-    public MessageHandler mqttOutbound() {
-        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory());
-        messageHandler.setAsync(true);  // 비동기 전송 설정
-        messageHandler.setDefaultTopic(publishTopic);  // 기본 발행 토픽 설정
-        return messageHandler;
-    }
+//    // MQTT 메시지 발행 핸들러
+//    // 지정된 MQTT 브로커와 발행 토픽으로 메시지를 송신하는 핸들러
+//    @Bean
+//    @ServiceActivator(inputChannel = "mqttOutboundChannel")
+//    public MessageHandler mqttOutbound() {
+//        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory());
+//        messageHandler.setAsync(true);  // 비동기 전송 설정
+//        messageHandler.setDefaultTopic(publishTopic);  // 기본 발행 토픽 설정
+//        return messageHandler;
+//    }
 
     // MQTT 메시지 구독 어댑터
     // 지정된 토픽으로부터 MQTT 메시지를 수신하여 mqttInputChannel에 전달
     @Bean
-    public MessageProducer inbound() {
+    @Qualifier("inboundAdapter")
+    public MessageProducerSupport inboundAdapter() {
         MqttPahoMessageDrivenChannelAdapter adapter =
                 new MqttPahoMessageDrivenChannelAdapter(brokerUrl, clientId, subscribeTopic);
         adapter.setCompletionTimeout(5000);  // 메시지 수신 시간 초과 설정 (5초)
@@ -77,4 +88,15 @@ public class MqttIntegrationConfig {
     public MessageChannel mqttOutboundChannel() {
         return new DirectChannel();
     }
+
+    @Bean
+    @ServiceActivator(inputChannel = "mqttInputChannel")
+    public MessageHandler handler() {
+        return message -> {
+            handler.handleMessageFromMqtt((Message<String>) message);
+        };
+    }
+
+
+
 }

@@ -33,6 +33,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.integration:spring-integration-mqtt:6.3.5'
     implementation 'org.springframework.boot:spring-boot-starter-integration'  // Spring Integration의 기본 기능 사용
+    testImplementation('org.springframework.integration:spring-integration-test:')
 }
 
 tasks.named('test') {
