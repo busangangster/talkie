@@ -1,10 +1,7 @@
 package com.e104.realtime.application;
 
 import com.e104.realtime.domain.entity.User;
-import com.e104.realtime.domain.vo.Answer;
-import com.e104.realtime.domain.vo.ConversationAnalytics;
-import com.e104.realtime.domain.vo.DayAnalytics;
-import com.e104.realtime.domain.vo.Question;
+import com.e104.realtime.domain.vo.*;
 import com.e104.realtime.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -87,19 +84,16 @@ public class UserService {
     }
 
     // 주별 대화 통계 조회
+    // TODO: 수정
     public WeeklyConversationResponse getWeeklyConversation(WeeklyConversationRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
-        List<DayAnalytics> dayAnalytics = user.getDayAnalytics();
+        List<WeekAnalytics> weekAnalytics = user.getWeekAnalytics();
 
-        // startDate와 endDate 사이의 대화 통계만 필터링
-        List<DayAnalytics> filteredAnalytics = dayAnalytics.stream()
-                .filter(analytics -> analytics.getCreatedAt().isAfter(request.getStartTime()) && analytics.getCreatedAt().isBefore(request.getEndTime()))
-                .toList();
+        // startDate와 endDate (start, end 포함)사이의 대화 통계만 필터링 ( 타입 WeekAnalytics )
 
-        String emotionSummary = chatService.summarizeEmotions(filteredAnalytics);
-        String vocabularySummary = chatService.summarizeVocabulary(filteredAnalytics);
-        String wordCloudSummary = chatService.summarizeWordCloud(filteredAnalytics);
-        return new WeeklyConversationResponse(filteredAnalytics, emotionSummary, vocabularySummary, wordCloudSummary);
+
+
+//        return new WeeklyConversationResponse(filteredAnalytics);
     }
 
     // 응답 등록
@@ -111,5 +105,5 @@ public class UserService {
         question.addAnswer(answer);
     }
 
-    // TODO: Kafka 구독, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
+    // TODO: Redis 조회, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
 }

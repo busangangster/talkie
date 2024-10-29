@@ -2,6 +2,7 @@ package com.e104.realtime.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -9,7 +10,7 @@ public class WeeklyConversationRequest {
 
     private int userSeq;
 
-    private LocalDateTime startTime;
+    private LocalDate startTime;
 
-    private LocalDateTime endTime;
+    private LocalDate endTime;
 }

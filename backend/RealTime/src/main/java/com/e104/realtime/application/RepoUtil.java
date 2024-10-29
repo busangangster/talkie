@@ -7,6 +7,8 @@ import com.e104.realtime.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
 @RequiredArgsConstructor
@@ -25,5 +27,9 @@ public class RepoUtil {
     public User findUser(int userSeq) {
         return userRepository.findById(userSeq)
                 .orElseThrow(() -> new RestApiException(StatusCode.NO_CONTENT, "User not found"));
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
     }
 }

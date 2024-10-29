@@ -5,6 +5,7 @@ import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.vo.ConversationAnalytics;
 import com.e104.realtime.domain.vo.DayAnalytics;
 import com.e104.realtime.domain.vo.Question;
+import com.e104.realtime.domain.vo.WeekAnalytics;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
     private List<ConversationAnalytics> conversationAnalytics  = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column
+    private List<WeekAnalytics> weekAnalytics = new ArrayList<>();
 
 
     // 사용자 정보 변경 메서드
@@ -130,6 +135,17 @@ public class User {
             this.conversationAnalytics.add(conversationAnalytics);
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화별 통계 추가 중 오류가 발생했습니다.");
+        }
+    }
+
+    // 주별 통계 추가
+    @Transactional
+    public void addWeekAnalytics(WeekAnalytics weekAnalytics) {
+        try {
+            weekAnalytics.setUser(this);
+            this.weekAnalytics.add(weekAnalytics);
+        } catch (Exception e) {
+            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주별 통계 추가 중 오류가 발생했습니다.");
         }
     }
 }

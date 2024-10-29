@@ -35,7 +35,7 @@ public class ConversationDetailResponse {
 
     private List<ConversationContentResponse> conversationContents = new ArrayList<>();
 
-    private int vocabularyScore; // 어휘 점수
+    private double vocabularyScore; // 어휘 점수
 
     @Data
     public static class WordCloudResponse {

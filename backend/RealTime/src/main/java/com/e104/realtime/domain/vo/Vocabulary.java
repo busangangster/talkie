@@ -21,7 +21,7 @@ public class Vocabulary {
     private ConversationAnalytics conversationAnalytics; // 다대일 관계로 연결된 ConversationAnalytics 엔티티
 
     @Column
-    private int vocabularyScore; // 어휘 점수
+    private double vocabularyScore; // 어휘 점수
 
     // 양방향 관계 설정
     public void setConversationAnalytics(ConversationAnalytics conversationAnalytics) {

@@ -4,6 +4,7 @@ import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.entity.User;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -70,7 +71,8 @@ public class ConversationAnalytics {
     }
 
     // 감성 점수 추가
-    private void addSentiment(Sentiment sentiment) {
+    @Transactional
+    public void addSentiment(Sentiment sentiment) {
         try {
             sentiment.setConversationAnalytics(this);  // 양방향 관계 설정 (Sentiment 객체가 이 대화에 속해 있음을 명시)
             this.sentiment = sentiment;  // 감정 정보 추가
@@ -80,7 +82,8 @@ public class ConversationAnalytics {
     }
 
     // 어휘력 점수 추가
-    private void addVocabulary(Vocabulary vocabulary) {
+    @Transactional
+    public void addVocabulary(Vocabulary vocabulary) {
         try {
             vocabulary.setConversationAnalytics(this);  // 양방향 관계 설정 (Vocabulary 객체가 이 대화에 속해 있음을 명시)
             this.vocabulary = vocabulary;  // 어휘 정보 추가
@@ -90,27 +93,34 @@ public class ConversationAnalytics {
     }
 
     // 워드클라우드 추가
-    private void addWordCloud(WordCloud wordCloud) {
+    @Transactional
+    public void addWordCloud(List<WordCloud> wordCloud) {
         try {
-            wordCloud.setConversationAnalytics(this);  // 양방향 관계 설정 (WordCloud 객체가 이 대화에 속해 있음을 명시)
-            this.wordClouds.add(wordCloud);  // 워드클라우드 리스트에 새로운 워드클라우드 추가
+            for(WordCloud wc : wordCloud) {
+                wc.setConversationAnalytics(this);  // 양방향 관계 설정 (WordCloud 객체가 이 대화에 속해 있음을 명시)
+                this.wordClouds.add(wc);  // 워드클라우드 리스트에 새로운 워드클라우드 추가
+            }
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "워드클라우드 추가 중 오류가 발생했습니다.");
         }
     }
 
     // 대화 내용 추가
-    private void addConversationContent(ConversationContent conversationContent) {
+    @Transactional
+    public void addConversationContent(List<ConversationContent> conversationContents) {
         try {
-            conversationContent.setConversationAnalytics(this);  // 양방향 관계 설정 (ConversationContent 객체가 이 대화에 속해 있음을 명시)
-            this.conversationContents.add(conversationContent);  // 대화 내용 리스트에 새로운 대화 내용 추가
+            for(ConversationContent cc : conversationContents) {
+                cc.setConversationAnalytics(this);  // 양방향 관계 설정 (ConversationContent 객체가 이 대화에 속해 있음을 명시)
+                this.conversationContents.add(cc);  // 대화 내용 리스트에 새로운 대화 내용 추가
+            }
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 추가 중 오류가 발생했습니다.");
         }
     }
 
     // 대화 내용 요약 추가
-    private void addConversationSummary(ConversationSummary conversationSummary) {
+    @Transactional
+    public void addConversationSummary(ConversationSummary conversationSummary) {
         try {
             conversationSummary.setConversationAnalytics(this);  // 양방향 관계 설정 (ConversationSummary 객체가 이 대화에 속해 있음을 명시)
             this.conversationSummary = conversationSummary;  // 대화 요약 추가

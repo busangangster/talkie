@@ -3,10 +3,12 @@ package com.e104.realtime.dto;
 import com.e104.realtime.domain.vo.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//TODO: 수정
 @Data
 public class WeeklyConversationResponse {
 
@@ -39,7 +41,7 @@ public class WeeklyConversationResponse {
 
         private int conversationCount;  // 대화 횟수
 
-        private LocalDateTime createdAt; // 생성일
+        private LocalDate createdAt; // 생성일
 
     }
 
@@ -49,34 +51,22 @@ public class WeeklyConversationResponse {
         private int count;
     }
 
-    public WeeklyConversationResponse(List<DayAnalytics> list, String emotionSummary, String vocabularySummary, String wordCloudSummary) {
-        for (DayAnalytics conversation : list) {
-            WeeklyConversation weeklyConversation = getWeeklyConversation(conversation);
+    public WeeklyConversationResponse(WeekAnalytics weekAnalytics) {
+
+        for(WeekAnalytics weekAnalytics : list) {
+            WeeklyConversation weeklyConversation = new WeeklyConversation();
+            weeklyConversation.setVocabularyScore(weekAnalytics.getVocabularyScore());
+            weeklyConversation.setHappyScore(weekAnalytics.getHappyScore());
+            weeklyConversation.setLoveScore(weekAnalytics.getLoveScore());
+            weeklyConversation.setSadScore(weekAnalytics.getSadScore());
+            weeklyConversation.setScaryScore(weekAnalytics.getScaryScore());
+            weeklyConversation.setAngryScore(weekAnalytics.getAngryScore());
+            weeklyConversation.setAmazingScore(weekAnalytics.getAmazingScore());
+            weeklyConversation.setConversationCount(weekAnalytics.getConversationCount());
+            weeklyConversation.setCreatedAt(weekAnalytics.getCreatedAt());
             weeklyConversations.add(weeklyConversation);
-
-            WordCloudResponse wordCloudResponse = new WordCloudResponse();
-            for(DayWordCloud dayWordCloud : conversation.getDayWordClouds()){
-                wordCloudResponse.setWord(dayWordCloud.getWord());
-                wordCloudResponse.setCount(dayWordCloud.getCount());
-                wordCloudResponses.add(wordCloudResponse);
-            }
         }
-        this.emotionSummary = emotionSummary;
-        this.vocabularySummary = vocabularySummary;
-        this.wordCloudSummary = wordCloudSummary;
+
     }
 
-    private static WeeklyConversation getWeeklyConversation(DayAnalytics conversation) {
-        WeeklyConversation weeklyConversation = new WeeklyConversation();
-        weeklyConversation.setVocabularyScore(conversation.getVocabularyScore());
-        weeklyConversation.setHappyScore(conversation.getHappyScore());
-        weeklyConversation.setLoveScore(conversation.getLoveScore());
-        weeklyConversation.setSadScore(conversation.getSadScore());
-        weeklyConversation.setScaryScore(conversation.getScaryScore());
-        weeklyConversation.setAngryScore(conversation.getAngryScore());
-        weeklyConversation.setAmazingScore(conversation.getAmazingScore());
-        weeklyConversation.setConversationCount(conversation.getConversationCount());
-        weeklyConversation.setCreatedAt(conversation.getCreatedAt());
-        return weeklyConversation;
-    }
 }
