@@ -1,9 +1,6 @@
 package com.e104.realtime.application;
 
-import com.e104.realtime.domain.vo.Answer;
-import com.e104.realtime.domain.vo.DayAnalytics;
-import com.e104.realtime.domain.vo.DayWordCloud;
-import com.e104.realtime.domain.vo.Question;
+import com.e104.realtime.domain.vo.*;
 import com.e104.realtime.dto.AnswerCreateRequest;
 import com.e104.realtime.dto.QuestionCreateRequest;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +38,24 @@ public class BuilderUtil {
         return DayWordCloud.builder()
                 .word(word)
                 .count(count)
+                .build();
+    }
+
+    public WeekWordCloud buildWeekWordCloud(String word, int count) {
+        return WeekWordCloud.builder()
+                .word(word)
+                .count(count)
+                .build();
+    }
+
+    public WeekAnalytics buildWeekAnalytics(String emotionSummary, String vocabularySummary, String wordCloudSummary, int year, int month, int week) {
+        return WeekAnalytics.builder()
+                .emotionSummary(emotionSummary)
+                .vocabularySummary(vocabularySummary)
+                .wordCloudSummary(wordCloudSummary)
+                .year(year)
+                .month(month)
+                .week(week)
                 .build();
     }
 }

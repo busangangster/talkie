@@ -1,5 +1,7 @@
 package com.e104.realtime.application;
 
+import com.e104.realtime.common.exception.RestApiException;
+import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.entity.User;
 import com.e104.realtime.domain.vo.*;
 import com.e104.realtime.dto.*;
@@ -7,7 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +21,6 @@ public class UserService {
 
     private final RepoUtil repoUtil;
     private final BuilderUtil builderUtil;
-    private final ChatService chatService;
 
     // 로그인
     public LoginResponse login(String userId) {
@@ -84,16 +89,30 @@ public class UserService {
     }
 
     // 주별 대화 통계 조회
-    // TODO: 수정
     public WeeklyConversationResponse getWeeklyConversation(WeeklyConversationRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
-        List<WeekAnalytics> weekAnalytics = user.getWeekAnalytics();
+        List<WeekAnalytics> weekAnalyticses = user.getWeekAnalytics();
 
-        // startDate와 endDate (start, end 포함)사이의 대화 통계만 필터링 ( 타입 WeekAnalytics )
+        // 오늘이 몇년, 몇월, 몇주차 인지 찾기
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        WeekFields weekFields = WeekFields.of(Locale.KOREA);
+        int week = today.get(weekFields.weekOfMonth());
 
+        // 현재 연도, 월, 주차에 맞는 주간 대화 통계 조회
+        WeekAnalytics weekAnalytics = weekAnalyticses.stream()
+                .filter(w -> w.getYear() == year && w.getMonth() == month && w.getWeek() == week)
+                .findFirst()
+                .orElse(null);
+        List<DayAnalytics> filteredDayAnalytics = user.getDayAnalytics().stream()
+                .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
+                .toList();
 
-
-//        return new WeeklyConversationResponse(filteredAnalytics);
+        if(weekAnalytics == null) {
+            throw new RestApiException(StatusCode.NO_CONTENT, "주간 대화 통계가 존재하지 않습니다.");
+        }
+        return new WeeklyConversationResponse(weekAnalytics, filteredDayAnalytics);
     }
 
     // 응답 등록

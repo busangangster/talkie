@@ -5,6 +5,8 @@ import com.e104.realtime.common.status.StatusCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,6 +27,9 @@ public class DayWordCloud {
 
     @Column(nullable = false)
     private int count;
+
+    @Column
+    private LocalDate createdAt; // YYYY-MM-DD 형식의 생성 시간
 
     // 양방향 관계 설정
     public void setDayAnalytics(DayAnalytics dayAnalytics) {

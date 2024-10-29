@@ -6,6 +6,7 @@ import com.e104.realtime.common.status.StatusCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

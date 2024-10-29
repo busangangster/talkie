@@ -3,10 +3,7 @@ package com.e104.realtime.application;
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.entity.User;
-import com.e104.realtime.domain.vo.ConversationAnalytics;
-import com.e104.realtime.domain.vo.DayAnalytics;
-import com.e104.realtime.domain.vo.DayWordCloud;
-import com.e104.realtime.domain.vo.WordCloud;
+import com.e104.realtime.domain.vo.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,9 +11,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 @EnableScheduling  // 스케줄링 활성화
 @Component
@@ -76,13 +75,69 @@ public class ScheduledTask {
                 }
                 dayAnalytics.addDayWordClouds(dayWordClouds);
                 user.addDayAnalytics(dayAnalytics);
-                // TODO: 주별통계 저장 메서드 호출
+                updateWeekAnalytics(user, dayAnalytics);
             }
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "스케줄링 작업 중 오류가 발생했습니다.");
         }
     }
 
-    // TODO: 주별 통계 업데이트 추가
+    private void updateWeekAnalytics(User user, DayAnalytics dayAnalytics) {
 
+        // 오늘이 몇년, 몇월, 몇주차 인지 찾기 (타겟주)
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        WeekFields weekFields = WeekFields.of(Locale.KOREA);
+        int week = today.get(weekFields.weekOfMonth());
+
+        WeekAnalytics weekAnalytics = user.getWeekAnalytics().stream()
+                .filter(w -> w.getYear() == year && w.getMonth() == month && w.getWeek() == week)
+                .findFirst()
+                .orElse(null);
+
+        List<DayAnalytics> filteredDayAnalytics = user.getDayAnalytics().stream()
+                .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
+                .toList();
+
+
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        if(weekAnalytics != null) {
+            List<WeekWordCloud> weekWordClouds = weekAnalytics.getWeekWordClouds();
+            for (WeekWordCloud weekWordCloud : weekWordClouds) {
+                hashMap.put(weekWordCloud.getWord(), weekWordCloud.getCount());
+            }
+        }
+        List<DayWordCloud> dayWordClouds = dayAnalytics.getDayWordClouds();
+        for (DayWordCloud dayWordCloud : dayWordClouds) {
+            String word = dayWordCloud.getWord();
+            int count = dayWordCloud.getCount();
+            if (hashMap.containsKey(word)) {
+                hashMap.put(word, hashMap.get(word) + count);
+            } else {
+                hashMap.put(word, count);
+            }
+        }
+        List<WeekWordCloud> newWeekWordClouds = new ArrayList<>();
+        for(String word : hashMap.keySet()) {
+            WeekWordCloud weekWordCloud = builderUtil.buildWeekWordCloud(word, hashMap.get(word));
+            newWeekWordClouds.add(weekWordCloud);
+        }
+
+        // 감정 요약
+        String emotionSummary = chatService.summarizeEmotions(filteredDayAnalytics);
+        // 어휘 요약
+        String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics);
+        // 워드 클라우드 요약
+        String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
+        // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
+        if (weekAnalytics == null) {
+            weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, year, month, week);
+            user.addWeekAnalytics(weekAnalytics);
+        } else {
+            weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary);
+            weekAnalytics.clearWordClouds();
+        }
+        weekAnalytics.addWordClouds(newWeekWordClouds);
+    }
 }

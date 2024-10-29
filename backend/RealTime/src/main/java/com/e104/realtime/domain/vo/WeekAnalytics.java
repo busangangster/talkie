@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,13 +36,14 @@ public class WeekAnalytics {
     @Column
     private List<WeekWordCloud> weekWordClouds = new ArrayList<>();
 
-    @OneToMany(mappedBy = "weekAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
-    private List<WeekSentimentAndVocabulary> weekSentimentAndVocabularies = new ArrayList<>();
+    @Column(nullable = false)
+    private int year;
 
-    @Column
-    private LocalDate createdAt;
+    @Column(nullable = false)
+    private int month;
 
+    @Column(nullable = false)
+    private int week;
 
     // 양방향 관계 설정
     public void setUser(User user) {
@@ -72,16 +72,16 @@ public class WeekAnalytics {
         }
     }
 
-    // 주간 감정 및 어휘 추가
+    // 주간 워드 클라우드 초기화
     @Transactional
-    public void addSentimentAndVocabularies(List<WeekSentimentAndVocabulary> weekSentimentAndVocabularies) {
+    public void clearWordClouds() {
         try {
-            for(WeekSentimentAndVocabulary weekSentimentAndVocabulary : weekSentimentAndVocabularies) {
-                weekSentimentAndVocabulary.setWeekAnalytics(this);
-                this.weekSentimentAndVocabularies.add(weekSentimentAndVocabulary);
+            for(WeekWordCloud weekWordCloud : weekWordClouds) {
+                weekWordCloud.setWeekAnalytics(null);
             }
+            weekWordClouds.clear();
         } catch (Exception e) {
-            throw new RuntimeException("주간 감정 및 어휘 추가에 실패했습니다.");
+            throw new RuntimeException("주간 워드 클라우드 초기화에 실패했습니다.");
         }
     }
 }

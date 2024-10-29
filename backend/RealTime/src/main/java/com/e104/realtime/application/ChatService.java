@@ -1,6 +1,7 @@
 package com.e104.realtime.application;
 
 import com.e104.realtime.domain.vo.DayAnalytics;
+import com.e104.realtime.domain.vo.WeekWordCloud;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class ChatService {
         return null;
     }
 
-    public String summarizeWordCloud(List<DayAnalytics> filteredAnalytics) {
+    public String summarizeWeekWordCloud(List<WeekWordCloud> weekWordClouds) {
         // TODO: 구현
         return null;
     }
