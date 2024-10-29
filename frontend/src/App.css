@@ -76,3 +76,15 @@
   background: #0000ff;
   border-radius: 14px;
 } */
+
+
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/assets/fonts/SuncheonR.ttf') format('truetype'); /* 확장자와 format 확인 */
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'MyCustomFont', SuncheonR;
+}
