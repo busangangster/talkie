@@ -37,6 +37,7 @@ public class ChatMqttToWebSocketHandler {
     private String openAiWebSocketUrl;
 
     // 토픽 이름을 상수로 정의하여 관리
+    // TODO: 실제 사용할 토픽 정의 및 각 메서드 구현 필요
     private static final String TOPIC_WEBSOCKET_CONNECT = "topic/websocket/connect";
     private static final String TOPIC_MESSAGE_SEND = "topic/message/send";
     private static final String TOPIC_CONVERSATION_END = "topic/conversation/end";

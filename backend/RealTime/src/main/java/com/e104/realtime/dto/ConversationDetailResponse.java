@@ -19,7 +19,17 @@ public class ConversationDetailResponse {
 
     private String wordCloudSummary; // 대화 워드 클라우드 요약
 
-    private List<SentimentResponse> sentimentResponses = new ArrayList<>();
+    private int happyScore; // 행복 지수
+
+    private int loveScore; // 사랑 지수
+
+    private int sadScore; // 슬픔 지수
+
+    private int scaryScore; // 공포 지수
+
+    private int angryScore; // 화남 지수
+
+    private int amazingScore; // 놀람 지수
 
     private List<WordCloudResponse> wordClouds = new ArrayList<>();
 
@@ -33,11 +43,6 @@ public class ConversationDetailResponse {
         private int count;
     }
 
-    @Data
-    public static class SentimentResponse {
-        private String emotion;
-        private int score;
-    }
 
     @Data
     public static class ConversationContentResponse {
@@ -52,13 +57,12 @@ public class ConversationDetailResponse {
         this.vocabularySummary = conversationAnalytics.getVocabularySummary();
         this.wordCloudSummary = conversationAnalytics.getWordCloudSummary();
         this.vocabularyScore = conversationAnalytics.getVocabulary().getVocabularyScore();
-
-        conversationAnalytics.getSentiments().forEach(sentiment -> {
-            SentimentResponse sentimentResponse = new SentimentResponse();
-            sentimentResponse.setEmotion(sentiment.getEmotion());
-            sentimentResponse.setScore(sentiment.getScore());
-            sentimentResponses.add(sentimentResponse);
-        });
+        this.happyScore = conversationAnalytics.getSentiment().getHappyScore();
+        this.loveScore = conversationAnalytics.getSentiment().getLoveScore();
+        this.sadScore = conversationAnalytics.getSentiment().getSadScore();
+        this.scaryScore = conversationAnalytics.getSentiment().getScaryScore();
+        this.angryScore = conversationAnalytics.getSentiment().getAngryScore();
+        this.amazingScore = conversationAnalytics.getSentiment().getAmazingScore();
 
         conversationAnalytics.getWordClouds().forEach(wordCloud -> {
             WordCloudResponse wordCloudResponse = new WordCloudResponse();

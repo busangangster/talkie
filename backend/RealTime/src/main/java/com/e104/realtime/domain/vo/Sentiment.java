@@ -16,15 +16,27 @@ public class Sentiment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int sentimentSeq;  // 감정의 고유 식별자
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conversation_seq", nullable = false) // 외래키 설정
     private ConversationAnalytics conversationAnalytics;
 
     @Column(nullable = false)
-    private String emotion;
+    private int happyScore;  // 행복 지수
 
     @Column(nullable = false)
-    private int score; // 감정 점수
+    private int loveScore;  // 사랑 지수
+
+    @Column(nullable = false)
+    private int sadScore;  // 슬픔 지수
+
+    @Column(nullable = false)
+    private int scaryScore;  // 공포 지수
+
+    @Column(nullable = false)
+    private int angryScore;  // 화남 지수
+
+    @Column(nullable = false)
+    private int amazingScore;  // 놀람 지수
 
     // 양방향 관계 설정
     public void setConversationAnalytics(ConversationAnalytics conversationAnalytics) {

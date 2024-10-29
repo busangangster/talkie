@@ -40,9 +40,9 @@ public class ConversationAnalytics {
     @Column(nullable = false)
     private LocalDateTime createdAt; // 대화 생성 시간
 
-    @OneToMany(mappedBy = "conversationAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
-    private List<Sentiment> sentiments = new ArrayList<>();  // 대화에 대한 감정 리스트, 대화와 양방향 관계를 설정하며, 대화가 삭제되면 감정도 함께 삭제됨 (CascadeType.ALL)
+    @OneToOne(mappedBy = "conversationAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn
+    private Sentiment sentiment; // 대화에 대한 감정 리스트, 대화와 양방향 관계를 설정하며, 대화가 삭제되면 감정도 함께 삭제됨 (CascadeType.ALL)
 
     @OneToOne(mappedBy = "conversationAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn
@@ -73,7 +73,7 @@ public class ConversationAnalytics {
     private void addSentiment(Sentiment sentiment) {
         try {
             sentiment.setConversationAnalytics(this);  // 양방향 관계 설정 (Sentiment 객체가 이 대화에 속해 있음을 명시)
-            this.sentiments.add(sentiment);  // 감정 리스트에 새로운 감정 추가
+            this.sentiment = sentiment;  // 감정 정보 추가
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "감정 추가 중 오류가 발생했습니다.");
         }
