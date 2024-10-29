@@ -2,10 +2,7 @@ package com.e104.realtime.domain.entity;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.vo.ConversationAnalytics;
-import com.e104.realtime.domain.vo.DayAnalytics;
-import com.e104.realtime.domain.vo.Question;
-import com.e104.realtime.domain.vo.WeekAnalytics;
+import com.e104.realtime.domain.vo.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +56,9 @@ public class User {
     @Column
     private List<WeekAnalytics> weekAnalytics = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column
+    private List<ConversationContent> conversationContents = new ArrayList<>();
 
     // 사용자 정보 변경 메서드
     @Transactional
@@ -147,5 +147,10 @@ public class User {
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주별 통계 추가 중 오류가 발생했습니다.");
         }
+    }
+
+    @Transactional
+    public void addConversationContents(List<ConversationContent> conversationContents) {
+        this.conversationContents.addAll(conversationContents);
     }
 }

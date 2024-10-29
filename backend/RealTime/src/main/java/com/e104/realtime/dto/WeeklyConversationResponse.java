@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
+//TODO: 수정
 @Data
 public class WeeklyConversationResponse {
 
@@ -43,7 +44,8 @@ public class WeeklyConversationResponse {
 
         private int conversationCount;  // 대화 횟수
 
-        private LocalDate createdAt;  // 생성일
+        private LocalDate createdAt; // 생성일
+
     }
 
     @Data

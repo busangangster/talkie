@@ -56,6 +56,10 @@ dependencies {
     testImplementation "org.springframework.integration:spring-integration-test:6.3.2" // spring integration 테스트 도구
 
     implementation "org.springframework.boot:spring-boot-starter-aop:3.3.0"
+
+    implementation "org.mapstruct:mapstruct:1.5.5.Final"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
 }
 
 clean {

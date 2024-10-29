@@ -1,6 +1,5 @@
 package com.e104.realtime.domain.vo;
 
-import com.e104.realtime.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
