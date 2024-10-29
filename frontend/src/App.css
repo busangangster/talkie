@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/assets/fonts/SuncheonR.ttf') format('truetype'); /* 확장자와 format 확인 */
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'MyCustomFont', SuncheonR;
+}
+
+
+/* 스크롤바 너비 및 높이 설정 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* 스크롤바 배경 제거 */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* 스크롤바 색상 및 둥글기 설정 */
+::-webkit-scrollbar-thumb {
+  background-color: #f0f0f0; /* 회색 */
+  border-radius: 10px;
+}
+
+/* 스크롤바에 마우스를 올렸을 때 색상 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ffffff; /* 어두운 회색 */
+}
