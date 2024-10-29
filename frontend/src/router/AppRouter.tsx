@@ -1,11 +1,11 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Calendar from '../components/Calendar'
+import Calendar from '../components/Calendar.tsx'
 
 const AppRouter:React.FC = () => {
   return (
-      <Routes>
-          <Route path="/calendar" element={<Calendar />} />
+    <Routes>
+      <Route path="/calendar" element={<Calendar />} />
     </Routes>
   )
 }
