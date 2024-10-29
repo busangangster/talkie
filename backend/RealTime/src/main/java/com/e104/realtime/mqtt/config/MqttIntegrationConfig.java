@@ -37,7 +37,7 @@ public class MqttIntegrationConfig {
     private String publishTopic;  // MQTT 발행 토픽
 
     /**
-     * MQTT 메시지 수신 채널
+     * MQTT 메시지 수신 채널<br>
      * MQTT 구독 어댑터에서 수신한 메시지가 전달되는 채널
      */
     @Bean
@@ -46,7 +46,7 @@ public class MqttIntegrationConfig {
     }
 
     /**
-     * MQTT 메시지 구독 어댑터
+     * MQTT 메시지 구독 어댑터<br>
      * 지정된 토픽으로부터 MQTT 메시지를 수신하여 mqttInputChannel에 전달
      */
     @Bean
@@ -61,7 +61,7 @@ public class MqttIntegrationConfig {
     }
 
     /**
-     * MQTT 메시지 발행 핸들러
+     * MQTT 메시지 발행 핸들러<br>
      * 지정된 MQTT 브로커와 발행 토픽으로 메시지를 송신하는 핸들러
      */
     @Bean
@@ -75,7 +75,7 @@ public class MqttIntegrationConfig {
     }
 
     /**
-     * MQTT 발행 채널
+     * MQTT 발행 채널<br>
      * mqttOutbound 메서드에서 사용할 메시지 발행 채널
      */
     @Bean
@@ -85,7 +85,7 @@ public class MqttIntegrationConfig {
     }
 
     /**
-     * MQTT 클라이언트 팩토리
+     * MQTT 클라이언트 팩토리<br>
      * MQTT 클라이언트의 연결 옵션을 설정하고 관리하는 팩토리
      */
     @Bean
