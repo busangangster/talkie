@@ -52,6 +52,7 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     // Jakarta Persistence API 의존성 추가 (JPA를 사용하기 위한 Jakarta API 설정)
 
+    testImplementation "org.springframework.integration:spring-integration-test:6.3.2" // spring integration 테스트 도구
 }
 
 clean {
