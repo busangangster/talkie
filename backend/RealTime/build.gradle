@@ -54,6 +54,8 @@ dependencies {
     implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.5'
 
     testImplementation "org.springframework.integration:spring-integration-test:6.3.2" // spring integration 테스트 도구
+
+    implementation "org.springframework.boot:spring-boot-starter-aop:3.3.0"
 }
 
 clean {
