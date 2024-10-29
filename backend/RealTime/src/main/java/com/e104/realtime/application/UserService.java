@@ -96,7 +96,6 @@ public class UserService {
     }
 
     // 주별 대화 통계 조회
-    // TODO: 수정
     public WeeklyConversationResponse getWeeklyConversation(WeeklyConversationRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
         List<WeekAnalytics> weekAnalyticses = user.getWeekAnalytics();
@@ -123,14 +122,7 @@ public class UserService {
         return new WeeklyConversationResponse(weekAnalytics, filteredDayAnalytics);
     }
 
-    // 응답 등록
-    @Transactional
-    public void createAnswer(AnswerCreateRequest request) {
-        User user = repoUtil.findUser(request.getUserSeq());
-        Question question = user.getQuestion(request.getQuestionSeq());
-        Answer answer = builderUtil.buildAnswer(request.getContent());
-        question.addAnswer(answer);
-    }
+
 
     // TODO: Redis 조회, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
 
@@ -146,5 +138,14 @@ public class UserService {
         user.addConversationContents(conversationContents);
 
         conversationRedisRepository.deleteAllByUserSeq(userSeq);
+    }
+
+    // 응답 등록
+    @Transactional
+    public void createAnswer(AnswerCreateRequest request) {
+        User user = repoUtil.findUser(request.getUserSeq());
+        Question question = user.getQuestion(request.getQuestionSeq());
+        Answer answer = builderUtil.buildAnswer(request.getContent());
+        question.addAnswer(answer);
     }
 }
