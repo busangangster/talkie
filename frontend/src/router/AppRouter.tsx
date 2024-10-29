@@ -1,6 +1,6 @@
 import React from 'react'
-import Calendar from 'react-calendar'
 import { Route, Routes } from 'react-router-dom'
+<<<<<<< frontend/src/router/AppRouter.tsx
 import LoginPage from '../pages/LoginPage';
 import HomePage from '../pages/HomePage';
 import DayPage from '../pages/DayPage';
@@ -8,6 +8,7 @@ import InfoPage from '../pages/InfoPage';
 import QuestionPage from '../pages/QuestionPage';
 import TalkPage from '../pages/TalkPage';
 import WeekPage from '../pages/WeekPage';
+import Calendar from '../components/Calendar.tsx'
 
 const AppRouter:React.FC = () => {
   return (
