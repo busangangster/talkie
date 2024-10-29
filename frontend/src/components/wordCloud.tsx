@@ -1,7 +1,7 @@
 import React from 'react'
 
-const wordCloud: React.FC = () => {
+const WordCloud: React.FC = () => {
   return <div>wordCloud</div>;
 };
 
-export default wordCloud
+export default WordCloud

@@ -1,9 +1,9 @@
 import React from 'react'
 
-const question: React.FC = () => {
+const Question: React.FC = () => {
   return (
     <div>question</div>
   )
 }
 
-export default question
+export default Question

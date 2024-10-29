@@ -1,42 +1,78 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* 전체 달력에 폰트 적용 */
+.calendarHeader {
+  font-family: "Jua", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.react-calendar {
+  font-family: "Jua", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  border: none; /* 테두리 제거 */
+}
+
+.react-calendar__navigation {
+  border-bottom: 4px solid #0075ff;
+  height: 90px;
+  border-radius: 20px 20px 0 0;
+}
+
+.react-calendar__navigation span {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0075ff;
+}
+
+.react-calendar__navigation button:disabled {
+  border-radius: 20px 20px 0 0;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  border-radius: 20px 20px 0 0;
+}
+
+.react-calendar__month-view {
+  padding: 12px 32px;
+}
+
+.react-calendar__month-view abbr {
+  color: #3f6262;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  font-size: 18px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.react-calendar__tile {
   text-align: center;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+/* 
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus,
+.react-calendar__tile--active {
+  background: #0000ff;
+  border-radius: 14px;
+} */
+
+.react-calendar__tile--now {
+  /* background: #47aff9; */
+  border-radius: 100px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+/* .react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: #0000ff;
+  border-radius: 14px;
+} */

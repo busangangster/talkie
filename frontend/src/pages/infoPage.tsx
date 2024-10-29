@@ -1,7 +1,7 @@
 import React from 'react'
 
-const infoPage: React.FC = () => {
+const InfoPage: React.FC = () => {
   return <div>infoPage</div>;
 };
 
-export default infoPage
+export default InfoPage

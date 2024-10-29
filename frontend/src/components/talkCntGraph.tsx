@@ -1,7 +1,7 @@
 import React from 'react'
 
-const talkCntGraph: React.FC = () => {
+const TalkCntGraph: React.FC = () => {
   return <div>talkCntGraph</div>;
 };
 
-export default talkCntGraph
+export default TalkCntGraph

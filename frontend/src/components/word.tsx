@@ -1,9 +1,9 @@
 import React from 'react'
 
-const word: React.FC = () => {
+const Word: React.FC = () => {
   return (
     <div>word</div>
   )
 }
 
-export default word
+export default Word

@@ -1,7 +1,7 @@
 import React from 'react'
 
-const weekFrame: React.FC = () => {
+const WeekFrame: React.FC = () => {
   return <div>weekFrame</div>;
 };
 
-export default weekFrame
+export default WeekFrame

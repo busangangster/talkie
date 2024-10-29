@@ -1,7 +1,7 @@
 import React from 'react'
 
-const dayPage: React.FC = () => {
+const DayPage: React.FC = () => {
   return <div>dayPage</div>;
 };
 
-export default dayPage
+export default DayPage

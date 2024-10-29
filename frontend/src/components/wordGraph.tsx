@@ -1,7 +1,7 @@
 import React from 'react'
 
-const wordGraph: React.FC = () => {
+const WordGraph: React.FC = () => {
   return <div>wordGraph</div>;
 };
 
-export default wordGraph
+export default WordGraph

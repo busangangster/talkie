@@ -1,7 +1,7 @@
 import React from 'react'
 
-const weekPage: React.FC = () => {
+const WeekPage: React.FC = () => {
   return <div>weekPage</div>;
 };
 
-export default weekPage
+export default WeekPage

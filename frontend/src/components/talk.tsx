@@ -1,9 +1,9 @@
 import React from 'react'
 
-const talk:React.FC = () => {
+const Talk:React.FC = () => {
   return (
     <div>talk</div>
   )
 }
 
-export default talk
+export default Talk

@@ -1,9 +1,9 @@
 import React from 'react'
 
-const chatSummary: React.FC = () => {
+const ChatSummary: React.FC = () => {
   return (
     <div>chatSummary</div>
   )
 }
 
-export default chatSummary
+export default ChatSummary

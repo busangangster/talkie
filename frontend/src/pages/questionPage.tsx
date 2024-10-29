@@ -1,7 +1,7 @@
 import React from 'react'
 
-const questionPage: React.FC = () => {
+const QuestionPage: React.FC = () => {
   return <div>questionPage</div>;
 };
 
-export default questionPage
+export default QuestionPage

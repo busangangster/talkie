@@ -1,7 +1,7 @@
 import React from 'react'
 
-const talkPage: React.FC = () => {
+const TalkPage: React.FC = () => {
   return <div>talkPage</div>;
 };
 
-export default talkPage
+export default TalkPage

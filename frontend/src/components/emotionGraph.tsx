@@ -1,7 +1,7 @@
 import React from 'react'
 
-const emotionGraph: React.FC = () => {
+const EmotionGraph: React.FC = () => {
   return <div>emotionGraph</div>;
 };
 
-export default emotionGraph
+export default EmotionGraph
