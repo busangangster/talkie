@@ -1,5 +1,6 @@
 package com.e104.realtime.dto;
 
+import com.e104.realtime.domain.vo.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.util.List;
 @Data
 public class WeeklyConversationResponse {
 
-    private List<WeeklyConversation> sentimentResponses;
+    private List<WeeklyConversation> weeklyConversations = new ArrayList<>();
 
     private List<WordCloudResponse> wordCloudResponses = new ArrayList<>();
 
@@ -45,5 +46,33 @@ public class WeeklyConversationResponse {
     public static class WordCloudResponse {
         private String word;
         private int count;
+    }
+
+    public WeeklyConversationResponse(List<DayAnalytics> list) {
+        for (DayAnalytics conversation : list) {
+            WeeklyConversation weeklyConversation = new WeeklyConversation();
+            weeklyConversation.setVocabularyScore(conversation.getVocabularyScore());
+            weeklyConversation.setHappyScore(conversation.getHappyScore());
+            weeklyConversation.setLoveScore(conversation.getLoveScore());
+            weeklyConversation.setSadScore(conversation.getSadScore());
+            weeklyConversation.setScaryScore(conversation.getScaryScore());
+            weeklyConversation.setAngryScore(conversation.getAngryScore());
+            weeklyConversation.setAmazingScore(conversation.getAmazingScore());
+            weeklyConversation.setConversationCount(conversation.getConversationCount());
+            weeklyConversation.setCreatedAt(conversation.getCreatedAt());
+            // TODO: GTP로 대화 감정 요약 및 어휘 요약 생성
+            weeklyConversation.setEmotionSummary(null);
+            weeklyConversation.setVocabularySummary(null);
+            weeklyConversations.add(weeklyConversation);
+
+            WordCloudResponse wordCloudResponse = new WordCloudResponse();
+            for(DayWordCloud dayWordCloud : conversation.getDayWordClouds()){
+                wordCloudResponse.setWord(dayWordCloud.getWord());
+                wordCloudResponse.setCount(dayWordCloud.getCount());
+                wordCloudResponses.add(wordCloudResponse);
+            }
+        }
+        // TODO: GPT로 대화 워드 클라우드 요약 생성
+        this.wordCloudSummary = "대화 워드 클라우드 요약";
     }
 }

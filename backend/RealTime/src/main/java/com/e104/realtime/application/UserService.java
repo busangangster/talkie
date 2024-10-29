@@ -2,6 +2,7 @@ package com.e104.realtime.application;
 
 import com.e104.realtime.domain.entity.User;
 import com.e104.realtime.domain.vo.ConversationAnalytics;
+import com.e104.realtime.domain.vo.DayAnalytics;
 import com.e104.realtime.domain.vo.Question;
 import com.e104.realtime.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -79,17 +80,12 @@ public class UserService {
     // 주별 대화 통계 조회
     public WeeklyConversationResponse getWeeklyConversation(WeeklyConversationRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
-        List<ConversationAnalytics> conversationAnalytics = user.getConversationAnalytics();
+        List<DayAnalytics> dayAnalytics = user.getDayAnalytics();
 
         // startDate와 endDate 사이의 대화 통계만 필터링
-        List<ConversationAnalytics> filteredAnalytics = conversationAnalytics.stream()
+        List<DayAnalytics> filteredAnalytics = dayAnalytics.stream()
                 .filter(analytics -> analytics.getCreatedAt().isAfter(request.getStartTime()) && analytics.getCreatedAt().isBefore(request.getEndTime()))
                 .toList();
-
-        // TODO: OPEN AI GPT 4.0 API 호출 및 대화 내용 분석 ( 캐싱필요할듯 )
-        return new WeeklyConversationResponse();
+        return new WeeklyConversationResponse(filteredAnalytics);
     }
-
-
-    // TODO: 대화 내용 저장 및 분석
 }
