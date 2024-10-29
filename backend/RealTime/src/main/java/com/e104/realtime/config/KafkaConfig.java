@@ -3,8 +3,10 @@ package com.e104.realtime.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
 
 @Configuration
+@EnableKafka
 @ConfigurationProperties(prefix = "spring.kafka")
 @Data
 public class KafkaConfig {
