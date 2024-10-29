@@ -24,7 +24,12 @@ export const StyledCalendarWrapper = styled.div`
   }
 
   .react-calendar__navigation__label:hover {
-    color: white;
+    color: black;
+    border-radius: 10px;
+  }
+
+  .react-calendar__navigation__label {
+    color: black;
     border-radius: 10px;
   }
 
