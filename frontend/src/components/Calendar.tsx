@@ -68,9 +68,9 @@ const Calendar: React.FC = () => {
         <StyledCalendar
           value={date}
           onChange={handleDateChange}
-          formatDay={( date) => moment(date).format("D")}
-          formatYear={( date) => moment(date).format("YYYY")}
-          formatMonthYear={( date) => moment(date).format("YYYY. MM")}
+          formatDay={(_, date) => moment(date).format("D")}
+          formatYear={(_, date) => moment(date).format("YYYY")}
+          formatMonthYear={(_, date) => moment(date).format("YYYY. MM")}
           calendarType="gregory"
           showNeighboringMonth={true}
           next2Label={null}
