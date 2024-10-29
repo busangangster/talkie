@@ -16,6 +16,10 @@ public class WeeklyConversationResponse {
 
     private String wordCloudSummary; // 대화 워드 클라우드 요약
 
+    private String emotionSummary; // 대화 감정 요약
+
+    private String vocabularySummary; // 대화 어휘 요약
+
     @Data
     public static class WeeklyConversation {
 
@@ -37,9 +41,6 @@ public class WeeklyConversationResponse {
 
         private LocalDateTime createdAt; // 생성일
 
-        private String emotionSummary; // 대화 감정 요약
-
-        private String vocabularySummary; // 대화 어휘 요약
     }
 
     @Data
@@ -48,21 +49,9 @@ public class WeeklyConversationResponse {
         private int count;
     }
 
-    public WeeklyConversationResponse(List<DayAnalytics> list) {
+    public WeeklyConversationResponse(List<DayAnalytics> list, String emotionSummary, String vocabularySummary, String wordCloudSummary) {
         for (DayAnalytics conversation : list) {
-            WeeklyConversation weeklyConversation = new WeeklyConversation();
-            weeklyConversation.setVocabularyScore(conversation.getVocabularyScore());
-            weeklyConversation.setHappyScore(conversation.getHappyScore());
-            weeklyConversation.setLoveScore(conversation.getLoveScore());
-            weeklyConversation.setSadScore(conversation.getSadScore());
-            weeklyConversation.setScaryScore(conversation.getScaryScore());
-            weeklyConversation.setAngryScore(conversation.getAngryScore());
-            weeklyConversation.setAmazingScore(conversation.getAmazingScore());
-            weeklyConversation.setConversationCount(conversation.getConversationCount());
-            weeklyConversation.setCreatedAt(conversation.getCreatedAt());
-            // TODO: GTP로 대화 감정 요약 및 어휘 요약 생성
-            weeklyConversation.setEmotionSummary(null);
-            weeklyConversation.setVocabularySummary(null);
+            WeeklyConversation weeklyConversation = getWeeklyConversation(conversation);
             weeklyConversations.add(weeklyConversation);
 
             WordCloudResponse wordCloudResponse = new WordCloudResponse();
@@ -72,7 +61,22 @@ public class WeeklyConversationResponse {
                 wordCloudResponses.add(wordCloudResponse);
             }
         }
-        // TODO: GPT로 대화 워드 클라우드 요약 생성
-        this.wordCloudSummary = "대화 워드 클라우드 요약";
+        this.emotionSummary = emotionSummary;
+        this.vocabularySummary = vocabularySummary;
+        this.wordCloudSummary = wordCloudSummary;
+    }
+
+    private static WeeklyConversation getWeeklyConversation(DayAnalytics conversation) {
+        WeeklyConversation weeklyConversation = new WeeklyConversation();
+        weeklyConversation.setVocabularyScore(conversation.getVocabularyScore());
+        weeklyConversation.setHappyScore(conversation.getHappyScore());
+        weeklyConversation.setLoveScore(conversation.getLoveScore());
+        weeklyConversation.setSadScore(conversation.getSadScore());
+        weeklyConversation.setScaryScore(conversation.getScaryScore());
+        weeklyConversation.setAngryScore(conversation.getAngryScore());
+        weeklyConversation.setAmazingScore(conversation.getAmazingScore());
+        weeklyConversation.setConversationCount(conversation.getConversationCount());
+        weeklyConversation.setCreatedAt(conversation.getCreatedAt());
+        return weeklyConversation;
     }
 }
