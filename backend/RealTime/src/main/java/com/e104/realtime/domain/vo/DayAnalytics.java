@@ -51,6 +51,12 @@ public class DayAnalytics {
     private int conversationCount;  // 대화 횟수
 
     @Column(nullable = false)
+    private String emotionSummary; // 대화 감정 요약
+
+    @Column(nullable = false)
+    private String vocabularySummary; // 대화 어휘 요약
+
+    @Column(nullable = false)
     private LocalDateTime createdAt; // YYYY-MM-DD 형식의 생성 시간
 
     @OneToMany(mappedBy = "dayAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)

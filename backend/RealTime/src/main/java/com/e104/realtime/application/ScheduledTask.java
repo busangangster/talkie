@@ -19,6 +19,6 @@ public class ScheduledTask {
     public void runTask() {
         System.out.println("매일 밤 11시에 실행되는 작업입니다.");
         // 작업 로직을 여기에 추가합니다.
-        // TODO: 스케줄러 ( 일별 대화 통계 저장 , Kafka 구독 및 FastAPI, GPT 호출 [제목, 요약, 감정분석/워드클라우드/어휘력 설명] )
+        // TODO: 스케줄러 ( 일별 대화 통계 저장 )
     }
 }
