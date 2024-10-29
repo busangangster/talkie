@@ -3,6 +3,9 @@ package com.e104.realtime.application;
 import com.e104.realtime.domain.entity.User;
 import com.e104.realtime.domain.vo.*;
 import com.e104.realtime.dto.*;
+import com.e104.realtime.redis.hash.Conversation;
+import com.e104.realtime.redis.mapper.ConversationMapper;
+import com.e104.realtime.redis.repository.ConversationRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,9 @@ public class UserService {
     private final RepoUtil repoUtil;
     private final BuilderUtil builderUtil;
     private final ChatService chatService;
+    private final ConversationRedisRepository conversationRedisRepository;
+
+    private final ConversationMapper conversationMapper;
 
     // 로그인
     public LoginResponse login(String userId) {
@@ -106,4 +112,18 @@ public class UserService {
     }
 
     // TODO: Redis 조회, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
+
+    public void bufferConversation(Conversation conversation) {
+        conversationRedisRepository.save(conversation);
+    }
+
+    public void saveConversation(int userSeq) {
+        List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
+        List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
+
+        User user = repoUtil.findUser(userSeq);
+        user.addConversationContents(conversationContents);
+
+        conversationRedisRepository.deleteAllByUserSeq(userSeq);
+    }
 }

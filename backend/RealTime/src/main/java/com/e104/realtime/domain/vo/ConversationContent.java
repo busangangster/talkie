@@ -37,14 +37,14 @@ public class ConversationContent {
     private LocalDateTime createdAt; // 대화 내용 생성 시간
 
     // 생성 시간 설정
-    @PrePersist
-    public void prePersist() {
-        try {
-            this.createdAt = LocalDateTime.now(); // 대화 내용이 생성되면 현재 시간으로 설정
-        } catch (Exception e) {
-            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 생성 시간 설정 중 오류가 발생했습니다.");
-        }
-    }
+//    @PrePersist
+//    public void prePersist() {
+//        try {
+//            this.createdAt = LocalDateTime.now(); // 대화 내용이 생성되면 현재 시간으로 설정
+//        } catch (Exception e) {
+//            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 생성 시간 설정 중 오류가 발생했습니다.");
+//        }
+//    }
 
 //    // 양방향 관계 설정
 //    public void setConversationAnalytics(ConversationAnalytics conversationAnalytics) {
