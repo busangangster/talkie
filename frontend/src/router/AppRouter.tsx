@@ -1,6 +1,6 @@
 import React from 'react'
-import Calendar from 'react-calendar'
 import { Route, Routes } from 'react-router-dom'
+import Calendar from '../components/Calendar'
 
 const AppRouter:React.FC = () => {
   return (

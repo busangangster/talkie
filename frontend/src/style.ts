@@ -18,6 +18,16 @@ export const StyledCalendarWrapper = styled.div`
     background-color: white;
   }
 
+  .react-calendar__navigation__arrow:hover {
+    color: white;
+    border-radius: 30%;
+  }
+
+  .react-calendar__navigation__label:hover {
+    color: white;
+    border-radius: 10px;
+  }
+
   /* 선택된 주 강조 스타일 */
   .highlight-week {
     background-color: rgba(255, 215, 0, 0.3); /* 연한 노란색 배경 */
@@ -95,6 +105,7 @@ export const StyledCalendarWrapper = styled.div`
   /* 네비게이션 현재 월 스타일 적용 */
   .react-calendar__tile--hasActive {
     background-color: #76baff;
+    border-radius: 0.3rem;
     abbr {
       color: white;
     }
@@ -124,7 +135,6 @@ export const StyledCalendarWrapper = styled.div`
   }
 
   /* 선택한 날짜 스타일 적용 */
-
   .react-calendar__tile:enabled:focus,
   .react-calendar__tile--active {
     background-color: #76baff;
@@ -214,6 +224,7 @@ export const StyledLabel = styled.label`
   color: #6d6d6d; /* 텍스트 색상 */
 `;
 
+
 export const StyledCheckbox = styled.input`
   appearance: none;
   width: 14px;
@@ -244,3 +255,4 @@ export const StyledUnderline = styled.div`
   max-width: 200px;
   border-bottom: 1px solid #bdbdbd; /* 밑줄 색상 */
 `;
+
