@@ -1,6 +1,6 @@
 package com.e104.realtime.dto;
 
-import com.e104.realtime.domain.vo.*;
+import com.e104.realtime.domain.vo.WeekAnalytics;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -4,8 +4,6 @@ import com.e104.realtime.domain.vo.Answer;
 import com.e104.realtime.domain.vo.DayAnalytics;
 import com.e104.realtime.domain.vo.DayWordCloud;
 import com.e104.realtime.domain.vo.Question;
-import com.e104.realtime.dto.AnswerCreateRequest;
-import com.e104.realtime.dto.QuestionCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
