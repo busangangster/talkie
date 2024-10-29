@@ -1,7 +1,10 @@
 package com.e104.realtime.mqtt;
 
+import com.e104.realtime.application.Talker;
+import com.e104.realtime.application.UserService;
 import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
 import com.e104.realtime.mqtt.dto.OpenAiSessionUpdateRequest;
+import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,8 @@ public class ChatMqttToWebSocketHandler {
     private final MessageChannel mqttOutboundChannel;
 
     private final List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
+
+    private final UserService userService;
 
     @Value("${openai.api.key}")
     private String openAiApiKey;
@@ -87,20 +92,26 @@ public class ChatMqttToWebSocketHandler {
     // 메시지를 전송하는 기능
     private void handleMessageSend(String payload) {
         Integer userSeq = extractUserSeqFromPayload(payload);
-        if (userSeq != null) {
-            handleClientMessage(userSeq, payload);  // WebSocket으로 메시지 전송
-        }
+        if(userSeq == null) return;
+
+        // TODO: 페이로드 변경 시 수정 작업 필요.
+        Conversation conversation = Conversation.builder().talker(Talker.AI.getValue()).content(payload).build();
+        userService.bufferConversation(conversation);
+
+        handleClientMessage(userSeq, payload);  // WebSocket으로 메시지 전송
     }
 
     // 대화 종료 알림을 처리하는 기능
     private void handleConversationEnd(String payload) {
         Integer userSeq = extractUserSeqFromPayload(payload);
-        if (userSeq != null) {
-            WebSocketClient client = userWebSocketClients.remove(userSeq);
-            if (client != null) {
-                client.close();  // WebSocket 연결 종료
-                System.out.println("Conversation ended for user: " + userSeq);
-            }
+        if(userSeq == null) return;
+
+        userService.saveConversation(userSeq);
+
+        WebSocketClient client = userWebSocketClients.remove(userSeq);
+        if (client != null) {
+            client.close();  // WebSocket 연결 종료
+            System.out.println("Conversation ended for user: " + userSeq);
         }
     }
 
