@@ -1,5 +1,6 @@
 package com.e104.realtime.application;
 
+import com.e104.realtime.domain.vo.DayAnalytics;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,20 @@ public class ChatService {
 
         // multiChat 메서드를 통해 OpenAI API에 연속 메시지를 전달하고 응답을 받습니다.
         return chatgptService.multiChat(messages);
+    }
+
+    public String summarizeEmotions(List<DayAnalytics> filteredAnalytics) {
+        // TODO: 구현
+        return null;
+    }
+
+    public String summarizeVocabulary(List<DayAnalytics> filteredAnalytics) {
+        // TODO: 구현
+        return null;
+    }
+
+    public String summarizeWordCloud(List<DayAnalytics> filteredAnalytics) {
+        // TODO: 구현
+        return null;
     }
 }

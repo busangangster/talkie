@@ -17,6 +17,7 @@ public class UserService {
 
     private final RepoUtil repoUtil;
     private final BuilderUtil builderUtil;
+    private final ChatService chatService;
 
     // 로그인
     public int login(String userId) {
@@ -86,13 +87,11 @@ public class UserService {
                 .filter(analytics -> analytics.getCreatedAt().isAfter(request.getStartTime()) && analytics.getCreatedAt().isBefore(request.getEndTime()))
                 .toList();
 
-        // TODO: GPT 호출 주간 요약 새엇ㅇ
-        String emotionSummary = "감정 요약";
-        String vocabularySummary = "어휘 요약";
-        String wordCloudSummary = "워드클라우드 요약";
+        String emotionSummary = chatService.summarizeEmotions(filteredAnalytics);
+        String vocabularySummary = chatService.summarizeVocabulary(filteredAnalytics);
+        String wordCloudSummary = chatService.summarizeWordCloud(filteredAnalytics);
         return new WeeklyConversationResponse(filteredAnalytics, emotionSummary, vocabularySummary, wordCloudSummary);
     }
-
 
     // TODO: Kafka 구독, 대화 저장 , FAST API 호출,  GPT 호출 ( 대화 제목, 요약, 감정분석/워드클라우드/어휘력 설명 )
 }
