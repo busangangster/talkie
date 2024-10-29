@@ -1,6 +1,7 @@
 package com.e104.realtime.application;
 
 import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.vo.Answer;
 import com.e104.realtime.domain.vo.ConversationAnalytics;
 import com.e104.realtime.domain.vo.DayAnalytics;
 import com.e104.realtime.domain.vo.Question;
@@ -20,8 +21,16 @@ public class UserService {
     private final ChatService chatService;
 
     // 로그인
-    public int login(String userId) {
-        return repoUtil.login(userId);
+    public LoginResponse login(String userId) {
+        int userSeq = repoUtil.login(userId);
+        User user = repoUtil.findUser(userSeq);
+        return new LoginResponse(user.getUserSeq(), user.isNotFirstLogin());
+    }
+
+    // 유저정보 조회
+    public UserResponse getUser(int userSeq) {
+        User user = repoUtil.findUser(userSeq);
+        return new UserResponse(user);
     }
 
     // 유저 정보 수정
@@ -36,7 +45,7 @@ public class UserService {
     @Transactional
     public void createQuestion(QuestionCreateRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
-        Question question = builderUtil.buildQuestion(request);
+        Question question = builderUtil.buildQuestion(request.getContent());
         user.addQuestion(question);
     }
 
@@ -93,5 +102,14 @@ public class UserService {
         return new WeeklyConversationResponse(filteredAnalytics, emotionSummary, vocabularySummary, wordCloudSummary);
     }
 
-    // TODO: Kafka 구독, 대화 저장 , FAST API 호출,  GPT 호출 ( 대화 제목, 요약, 감정분석/워드클라우드/어휘력 설명 )
+    // 응답 등록
+    @Transactional
+    public void createAnswer(AnswerCreateRequest request) {
+        User user = repoUtil.findUser(request.getUserSeq());
+        Question question = user.getQuestion(request.getQuestionSeq());
+        Answer answer = builderUtil.buildAnswer(request.getContent());
+        question.addAnswer(answer);
+    }
+
+    // TODO: Kafka 구독, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
 }

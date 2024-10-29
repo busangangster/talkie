@@ -38,6 +38,9 @@ public class User {
     @Column
     private String favorite; // 사용자의 관심사
 
+    @Column(nullable = false)
+    private boolean isNotFirstLogin;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
@@ -60,6 +63,7 @@ public class User {
             this.age = newAge;
             this.gender = newGender;
             this.favorite = newFavorite;
+            this.isNotFirstLogin = true;
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "사용자 정보 업데이트 중 오류가 발생했습니다.");
         }

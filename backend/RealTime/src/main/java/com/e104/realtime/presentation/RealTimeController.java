@@ -20,8 +20,15 @@ public class RealTimeController {
     // 로그인
     @GetMapping("/login/{userId}")
     public ResponseEntity<ResponseDto> login(@PathVariable String userId) {
-        int userSeq = userService.login(userId);
-        return ResponseDto.response(StatusCode.SUCCESS, userSeq);
+        LoginResponse loginResponse = userService.login(userId);
+        return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
+    }
+
+    // 유저 정보 조회
+    @GetMapping("/user/{userSeq}")
+    public ResponseEntity<ResponseDto> getUser(@PathVariable int userSeq) {
+        UserResponse userResponse = userService.getUser(userSeq);
+        return ResponseDto.response(StatusCode.SUCCESS, userResponse);
     }
 
     // 유저 정보 등록 및 수정
