@@ -2,8 +2,7 @@ package com.e104.realtime.application;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.entity.User;
-import com.e104.realtime.domain.vo.*;
+import com.e104.realtime.domain.entity.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;

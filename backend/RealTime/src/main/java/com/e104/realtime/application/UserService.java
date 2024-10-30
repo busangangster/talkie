@@ -2,8 +2,7 @@ package com.e104.realtime.application;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.entity.User;
-import com.e104.realtime.domain.vo.*;
+import com.e104.realtime.domain.entity.*;
 import com.e104.realtime.dto.*;
 import com.e104.realtime.mqtt.ChatMqttToWebSocketHandler;
 import com.e104.realtime.redis.hash.Conversation;
@@ -136,12 +135,13 @@ public class UserService {
         List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
         List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
 
-        // 대화 내용 저장할때 부모의 질문 활성화 되있으면 , 응답에도 저장해야함.
+        // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
         User user = repoUtil.findUser(userSeq);
         List<Question> questions = user.getQuestions();
         Question question = questions.get(questions.size() - 1);
-        boolean check = question.isActive();
-        if(check) {
+        boolean isActive = question.isActive();
+        boolean isAnswered = question.isAnswered();
+        if(isActive && isAnswered) {
             String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
             Answer answer = builderUtil.buildAnswer(content);
             question.addAnswer(answer);

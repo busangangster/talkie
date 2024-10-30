@@ -1,7 +1,7 @@
 package com.e104.realtime.application;
 
-import com.e104.realtime.domain.vo.DayAnalytics;
-import com.e104.realtime.domain.vo.WeekWordCloud;
+import com.e104.realtime.domain.entity.DayAnalytics;
+import com.e104.realtime.domain.entity.WeekWordCloud;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import lombok.RequiredArgsConstructor;

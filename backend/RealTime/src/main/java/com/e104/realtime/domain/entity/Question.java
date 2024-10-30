@@ -1,8 +1,7 @@
-package com.e104.realtime.domain.vo;
+package com.e104.realtime.domain.entity;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +30,9 @@ public class Question {
     private boolean isActive;  // 질문 활성화 여부
 
     @Column(nullable = false)
+    private boolean isAnswered;  // 질문에 대한 답변이 있는지 여부
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;  // 질문 생성 시간
 
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,6 +44,7 @@ public class Question {
     @PrePersist
     public void prePersist() {
         this.isActive = true;  // 질문이 생성되면 기본적으로 활성화됨
+        this.isAnswered = false;  // 질문에 대한 답변이 없음
         this.createdAt = LocalDateTime.now();
     }
 

@@ -2,7 +2,6 @@ package com.e104.realtime.domain.entity;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.vo.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
