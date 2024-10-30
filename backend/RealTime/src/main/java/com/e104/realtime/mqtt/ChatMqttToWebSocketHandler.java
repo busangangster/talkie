@@ -40,11 +40,11 @@ public class ChatMqttToWebSocketHandler {
     private String openAiWebSocketUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Map<Integer, WebSocketClient> userWebSocketClients = new ConcurrentHashMap<>(); // userSeq 타입을 Integer로 변경
     private final List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
 
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
+    private final OpenAISocketService openAISocketService;
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
@@ -87,7 +87,8 @@ public class ChatMqttToWebSocketHandler {
         Integer userSeq = dto.getUserSeq();
         if (userSeq != null) {
             WebSocketClient webSocketClient = createWebSocketClient(userSeq);
-            userWebSocketClients.put(userSeq, webSocketClient);  // 맵에 WebSocket 저장
+//            userWebSocketClients.put(userSeq, webSocketClient);  // 맵에 WebSocket 저장
+            openAISocketService.addSocket(userSeq, webSocketClient);
         }
     }
 
@@ -143,7 +144,8 @@ public class ChatMqttToWebSocketHandler {
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
                     System.out.println("OpenAI WebSocket closed for user: " + userSeq + " - " + reason);
-                    userWebSocketClients.remove(userSeq);
+//                    userWebSocketClients.remove(userSeq);
+                    openAISocketService.removeSocket(userSeq);
                 }
 
                 @Override
@@ -165,7 +167,8 @@ public class ChatMqttToWebSocketHandler {
     // userSeq에 따라 WebSocket을 통해 사용자 메시지를 전송하는 메서드
     private void handleClientMessage(Integer userSeq, String userMessage) {
         try {
-            WebSocketClient webSocketClient = userWebSocketClients.computeIfAbsent(userSeq, this::createWebSocketClient);
+//            WebSocketClient webSocketClient = userWebSocketClients.computeIfAbsent(userSeq, this::createWebSocketClient);
+            WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
             if (webSocketClient != null && webSocketClient.isOpen()) {
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 webSocketClient.send(jsonMessage);
@@ -178,7 +181,8 @@ public class ChatMqttToWebSocketHandler {
     // OpenAI로부터 받은 메시지를 클라이언트로 MQTT를 통해 전송하는 메서드
     private void handleOpenAiResponse(Integer userSeq, String message) {
         try {
-            WebSocketClient webSocketClient = userWebSocketClients.get(userSeq);
+//            WebSocketClient webSocketClient = userWebSocketClients.get(userSeq);
+            WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
             JsonNode jsonResponse = objectMapper.readTree(message);
             String eventType = jsonResponse.path("type").asText();
 
@@ -235,19 +239,6 @@ public class ChatMqttToWebSocketHandler {
         }
 
         return outputStream.toByteArray(); // 합쳐진 오디오 데이터를 반환
-    }
-
-    // OpenAI와 연결된 WebSocket 세션 설정을 전송하는 메서드
-    public void sendSessionUpdate(User user) {
-        try {
-            String gender = user.getGender().equals("M") ? "남자" : "여자";
-            WebSocketClient webSocketClient = userWebSocketClients.get(user.getUserSeq());
-            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(Instruction.INSTRUCTION + "아이의 이름은: " + user.getName() + ", 아이의 나이는: " + user.getAge() + ", 아이의 성별은 : " + gender + ", 아이가 좋아하는 건: " + user.getFavorite() + ". 아이의 인적사항에 알맞게 대화해야해. \n"));
-            webSocketClient.send(sessionUpdateJson);
-            System.out.println("Session update sent.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }
