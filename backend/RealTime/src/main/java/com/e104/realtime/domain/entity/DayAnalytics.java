@@ -1,8 +1,7 @@
-package com.e104.realtime.domain.vo;
+package com.e104.realtime.domain.entity;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.entity.User;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;

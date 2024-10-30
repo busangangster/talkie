@@ -1,8 +1,6 @@
 package com.e104.realtime.application;
 
-import com.e104.realtime.domain.vo.*;
-import com.e104.realtime.dto.AnswerCreateRequest;
-import com.e104.realtime.dto.QuestionCreateRequest;
+import com.e104.realtime.domain.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
