@@ -1,6 +1,7 @@
 package com.e104.realtime.mqtt.config;
 
 import com.e104.realtime.mqtt.ChatMqttToWebSocketHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Setter;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -103,7 +104,11 @@ public class MqttIntegrationConfig {
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public MessageHandler handler(ChatMqttToWebSocketHandler handler) {
         return (Message<?> message) -> {
-            handler.handleMessageFromMqtt((Message<String>) message);
+            try {
+                handler.handleMessageFromMqtt((Message<String>) message);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         };
     }
 

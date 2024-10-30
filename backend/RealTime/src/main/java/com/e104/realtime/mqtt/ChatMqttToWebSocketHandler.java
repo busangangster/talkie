@@ -4,6 +4,7 @@ import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
 import com.e104.realtime.mqtt.dto.*;
 import com.e104.realtime.redis.hash.Conversation;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class ChatMqttToWebSocketHandler {
     private static final String TOPIC_VOICE_RECOGNITION = "topic/voice/recognition";
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
-    public void handleMessageFromMqtt(Message<String> message) {
+    public void handleMessageFromMqtt(Message<String> message) throws JsonProcessingException {
         String payload = message.getPayload();
         String topic = message.getHeaders().get("mqtt_receivedTopic", String.class); // 수신된 토픽을 가져옴
 
@@ -81,8 +82,8 @@ public class ChatMqttToWebSocketHandler {
 
     // WebSocket 연결을 관리하고 맵에 저장
     // 언제 실행되지?
-    private void handleWebSocketConnect(String payload) {
-        MqttWebsocketConnectDto dto = objectMapper.convertValue(payload, MqttWebsocketConnectDto.class);
+    private void handleWebSocketConnect(String payload) throws JsonProcessingException {
+        MqttWebsocketConnectDto dto = objectMapper.readValue(payload, MqttWebsocketConnectDto.class);
         Integer userSeq = dto.getUserSeq();
         if (userSeq != null) {
             WebSocketClient webSocketClient = createWebSocketClient(userSeq);
@@ -91,23 +92,22 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // 사용자의 메시지를 chatGPT 에게 전송하는 기능
-    private void handleMessageSend(String payload) {
-        MqttMessageSendDto dto = objectMapper.convertValue(payload, MqttMessageSendDto.class);
-        Integer userSeq = dto.getUserSeq();
-        if(userSeq == null) return;
+    private void handleMessageSend(String payload) throws JsonProcessingException {
+        MqttMessageSendDto dto = objectMapper.readValue(payload, MqttMessageSendDto.class);
+        Integer userSeq = dto.userSeq();
 
         Conversation conversation = Conversation.builder()
                 .talker(Talker.AI.getValue())
-                .content(dto.getContent())
+                .content(dto.content())
                 .build();
         userService.bufferConversation(conversation);
 
-        handleClientMessage(userSeq, dto.getContent());  // WebSocket으로 메시지 전송
+        handleClientMessage(userSeq, dto.content());  // WebSocket으로 메시지 전송
     }
 
     // 대화 종료 알림을 처리하는 기능
-    private void handleConversationEnd(String payload) {
-        MqttConversationEndDto dto = objectMapper.convertValue(payload, MqttConversationEndDto.class);
+    private void handleConversationEnd(String payload) throws JsonProcessingException {
+        MqttConversationEndDto dto = objectMapper.readValue(payload, MqttConversationEndDto.class);
         Integer userSeq = dto.getUserSeq();
         if(userSeq == null) return;
 
