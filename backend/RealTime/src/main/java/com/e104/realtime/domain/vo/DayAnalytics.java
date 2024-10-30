@@ -55,7 +55,7 @@ public class DayAnalytics {
 
     @OneToMany(mappedBy = "dayAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
-    private List<DayWordCloud> dayWordClouds = new ArrayList<>(); // 일별 워드 클라우드 리스트, 일별 분석과 양방향 관계를 설정하며, 일별 분석이 삭제되면 워드 클라우드도 함께 삭제됨 (CascadeType.ALL)
+    private final List<DayWordCloud> dayWordClouds = new ArrayList<>(); // 일별 워드 클라우드 리스트, 일별 분석과 양방향 관계를 설정하며, 일별 분석이 삭제되면 워드 클라우드도 함께 삭제됨 (CascadeType.ALL)
 
     // 날짜 생성
     @PrePersist

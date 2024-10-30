@@ -34,7 +34,7 @@ public class WeekAnalytics {
 
     @OneToMany(mappedBy = "weekAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
-    private List<WeekWordCloud> weekWordClouds = new ArrayList<>();
+    private final List<WeekWordCloud> weekWordClouds = new ArrayList<>();
 
     @Column(nullable = false)
     private int year;

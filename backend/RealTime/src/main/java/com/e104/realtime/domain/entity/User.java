@@ -46,19 +46,19 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
-    private List<DayAnalytics> dayAnalytics = new ArrayList<>();
+    private final List<DayAnalytics> dayAnalytics = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
-    private List<ConversationAnalytics> conversationAnalytics  = new ArrayList<>();
+    private final List<ConversationAnalytics> conversationAnalytics  = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
-    private List<WeekAnalytics> weekAnalytics = new ArrayList<>();
+    private final List<WeekAnalytics> weekAnalytics = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
-    private List<ConversationContent> conversationContents = new ArrayList<>();
+    private final List<ConversationContent> conversationContents = new ArrayList<>();
 
     // 사용자 정보 변경 메서드
     @Transactional
