@@ -2,6 +2,7 @@ package com.e104.realtime.mqtt;
 
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.mqtt.constant.Topic;
 import com.e104.realtime.mqtt.dto.*;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,14 +42,6 @@ public class ChatMqttToWebSocketHandler {
     @Value("${openai.websocket.url}")
     private String openAiWebSocketUrl;
 
-    // 토픽 이름을 상수로 정의하여 관리
-    // TODO: 실제 사용할 토픽 정의 및 각 메서드 구현 필요
-    private static final String TOPIC_WEBSOCKET_CONNECT = "topic/websocket/connect";
-    private static final String TOPIC_MESSAGE_SEND = "topic/message/send";
-    private static final String TOPIC_CONVERSATION_END = "topic/conversation/end";
-    private static final String TOPIC_USER_DETECTION = "topic/user/detection";
-    private static final String TOPIC_VOICE_RECOGNITION = "topic/voice/recognition";
-
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
@@ -56,23 +49,23 @@ public class ChatMqttToWebSocketHandler {
 
         try {
             switch (Objects.requireNonNull(topic)) {
-                case TOPIC_WEBSOCKET_CONNECT:
+                case Topic.TOPIC_WEBSOCKET_CONNECT:
                     handleWebSocketConnect(payload);
                     break;
 
-                case TOPIC_MESSAGE_SEND:
+                case Topic.TOPIC_MESSAGE_SEND:
                     handleMessageSend(payload);
                     break;
 
-                case TOPIC_CONVERSATION_END:
+                case Topic.TOPIC_CONVERSATION_END:
                     handleConversationEnd(payload);
                     break;
 
-                case TOPIC_USER_DETECTION:
+                case Topic.TOPIC_USER_DETECTION:
                     handleUserDetection(payload);
                     break;
 
-                case TOPIC_VOICE_RECOGNITION:
+                case Topic.TOPIC_VOICE_RECOGNITION:
                     handleVoiceRecognition(payload);
                     break;
 

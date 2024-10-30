@@ -1,6 +1,7 @@
 package com.e104.realtime.mqtt;
 
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.mqtt.constant.Topic;
 import com.e104.realtime.redis.hash.Conversation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,12 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class ChatMqttToWebSocketHandlerTest {
 
-    private static final String TOPIC_WEBSOCKET_CONNECT = "topic/websocket/connect";
-    private static final String TOPIC_MESSAGE_SEND = "topic/message/send";
-    private static final String TOPIC_CONVERSATION_END = "topic/conversation/end";
-    private static final String TOPIC_USER_DETECTION = "topic/user/detection";
-    private static final String TOPIC_VOICE_RECOGNITION = "topic/voice/recognition";
-
     @Spy
     @InjectMocks
     ChatMqttToWebSocketHandler handler;
@@ -35,7 +30,7 @@ class ChatMqttToWebSocketHandlerTest {
 
     @Test
     void mqttMessageSendTopicTest() {
-        GenericMessage<String> message = new GenericMessage<>("{\"userSeq\": 1, \"content\": \"test\"}", new MessageHeaders(Map.of("mqtt_receivedTopic", TOPIC_MESSAGE_SEND)));
+        GenericMessage<String> message = new GenericMessage<>("{\"userSeq\": 1, \"content\": \"test\"}", new MessageHeaders(Map.of("mqtt_receivedTopic", Topic.TOPIC_MESSAGE_SEND)));
         handler.handleMessageFromMqtt(message);
 
         ArgumentCaptor<Conversation> captor = ArgumentCaptor.forClass(Conversation.class);
