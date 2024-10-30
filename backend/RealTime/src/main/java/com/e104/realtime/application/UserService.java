@@ -5,6 +5,7 @@ import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.entity.User;
 import com.e104.realtime.domain.vo.*;
 import com.e104.realtime.dto.*;
+import com.e104.realtime.mqtt.ChatMqttToWebSocketHandler;
 import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
 import com.e104.realtime.redis.repository.ConversationRedisRepository;
@@ -26,6 +27,7 @@ public class UserService {
     private final BuilderUtil builderUtil;
     private final ChatService chatService;
     private final ConversationRedisRepository conversationRedisRepository;
+    private final ChatMqttToWebSocketHandler chatMqttToWebSocketHandler;
 
     private final ConversationMapper conversationMapper;
 
@@ -47,7 +49,7 @@ public class UserService {
     public void updateUser(UserUpdateRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
         user.updateUserInfo(request.getName(), request.getAge(), request.getGender(), request.getFavorite());
-        // TODO: 웹소켓 세션 업데이트
+        chatMqttToWebSocketHandler.sendSessionUpdate(user);
     }
 
     // 질문 등록

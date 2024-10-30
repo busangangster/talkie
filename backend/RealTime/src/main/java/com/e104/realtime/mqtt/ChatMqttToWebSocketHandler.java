@@ -1,7 +1,9 @@
 package com.e104.realtime.mqtt;
 
+import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.domain.entity.User;
 import com.e104.realtime.mqtt.constant.Instruction;
 import com.e104.realtime.mqtt.constant.Topic;
 import com.e104.realtime.mqtt.dto.*;
@@ -29,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatMqttToWebSocketHandler {
 
     public static final String MQTT_RECEIVED_TOPIC = "mqtt_receivedTopic";
+    private final RepoUtil repoUtil;
 
     @Value("${openai.api.key}")
     private String openAiApiKey;
@@ -79,7 +82,6 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // WebSocket 연결을 관리하고 맵에 저장
-    // 언제 실행되지?
     private void handleWebSocketConnect(String payload) throws JsonProcessingException {
         MqttWebsocketConnectDto dto = objectMapper.readValue(payload, MqttWebsocketConnectDto.class);
         Integer userSeq = dto.getUserSeq();
@@ -98,7 +100,7 @@ public class ChatMqttToWebSocketHandler {
                 .talker(Talker.CHILD.getValue())
                 .content(dto.content())
                 .build();
-        userService.bufferConversation(conversation);
+        userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
 
         handleClientMessage(userSeq, dto.content());  // WebSocket으로 메시지 전송
     }
@@ -108,25 +110,18 @@ public class ChatMqttToWebSocketHandler {
         MqttConversationEndDto dto = objectMapper.readValue(payload, MqttConversationEndDto.class);
         Integer userSeq = dto.getUserSeq();
         if (userSeq == null) return;
-
         userService.saveConversation(userSeq);
-
-        WebSocketClient client = userWebSocketClients.remove(userSeq);
-        if (client != null) {
-            client.close();  // WebSocket 연결 종료
-            System.out.println("Conversation ended for user: " + userSeq);
-        }
     }
 
     // 사용자 감지 알림을 처리하는 기능
     private void handleUserDetection(String payload) {
-        // 사용자 감지 시의 로직 구현
+        // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
         System.out.println("User detected: " + payload);
     }
 
     // 음성 인식 알림을 처리하는 기능
     private void handleVoiceRecognition(String payload) {
-        // 음성 인식 이벤트 처리 로직 구현
+        // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
         System.out.println("Voice recognition event received: " + payload);
     }
 
@@ -138,7 +133,6 @@ public class ChatMqttToWebSocketHandler {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     System.out.println("Connected to OpenAI WebSocket for user: " + userSeq);
-                    sendSessionUpdate(userSeq);
                 }
 
                 @Override
@@ -217,6 +211,7 @@ public class ChatMqttToWebSocketHandler {
                         String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));
                         webSocketClient.send(jsonMessage);
 
+                        // AI 대답 Redis 저장
                         Conversation conversation = Conversation.builder()
                                 .talker(Talker.AI.getValue())
                                 .content(jsonMessage)
@@ -243,10 +238,11 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // OpenAI와 연결된 WebSocket 세션 설정을 전송하는 메서드
-    private void sendSessionUpdate(Integer userSeq) {
+    public void sendSessionUpdate(User user) {
         try {
-            WebSocketClient webSocketClient = userWebSocketClients.get(userSeq);
-            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(Instruction.INSTRUCTION));
+            String gender = user.getGender().equals("M") ? "남자" : "여자";
+            WebSocketClient webSocketClient = userWebSocketClients.get(user.getUserSeq());
+            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(Instruction.INSTRUCTION + "아이의 이름은: " + user.getName() + ", 아이의 나이는: " + user.getAge() + ", 아이의 성별은 : " + gender + ", 아이가 좋아하는 건: " + user.getFavorite() + ". 아이의 인적사항에 알맞게 대화해야해. \n"));
             webSocketClient.send(sessionUpdateJson);
             System.out.println("Session update sent.");
         } catch (Exception e) {
