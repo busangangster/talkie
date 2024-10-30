@@ -148,7 +148,7 @@ public class UserService {
         user.addConversationContents(conversationContents);
 
         // TODO: FAST API에서 대화 제목, 대화 내용요약, 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
-        // GPT에서 감정분석, 워드클라우드, 어휘력 설명 가져오기
+        // TODO: GPT에서 감정분석, 워드클라우드, 어휘력 설명 가져오기
         ConversationAnalytics conversationAnalytics = null;
         user.addConversationAnalytics(conversationAnalytics);
 
