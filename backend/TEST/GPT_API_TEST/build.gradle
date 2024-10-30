@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.flicker'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+
+    implementation 'org.springframework.kafka:spring-kafka'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // HTTP 요청을 위한 WebClient (OpenAI API 통신용)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // JSON 처리 라이브러리 (필요 시)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  // QueryDSL JPA 모듈 추가 (Jakarta 버전)
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    // QueryDSL APT 설정 (QueryDSL 코드 생성기)
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"  // Jakarta 어노테이션 API 의존성 추가 (Jakarta 어노테이션을 위한 설정)
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    // Jakarta Persistence API 의존성 추가 (JPA를 사용하기 위한 Jakarta API 설정)
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
