@@ -4,7 +4,6 @@ import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.entity.*;
 import com.e104.realtime.dto.*;
-import com.e104.realtime.mqtt.ChatMqttToWebSocketHandler;
 import com.e104.realtime.mqtt.OpenAISocketService;
 import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
