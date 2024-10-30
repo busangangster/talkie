@@ -50,18 +50,29 @@ const DayPage: React.FC = () => {
       {/* 구름과 날짜 */}
       <div className="flex items-center justify-center mt-16 relative">
         <img src="/assets/cloud.png" alt="cloud" className="w-80" />
-        <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-700 mt-3">
-          <FaRegCalendarAlt
-            onClick={toggleCalendar}
-            className="cursor-pointer mr-2"
-          />
+        <div
+          onClick={toggleCalendar}
+          className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-700 mt-3 cursor-pointer"
+        >
+          <FaRegCalendarAlt className="cursor-pointer mr-2" />
           <span>10월 11일 월요일</span>
         </div>
       </div>
 
       {/* 이야기 리스트 */}
-      <div className="w-4/5 mt-20 p-4 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[550px] overflow-y-scroll py-14 px-10">
-        <div className="grid grid-cols-2 gap-y-14 gap-x-10">
+      <div className="w-4/5 mt-24 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[450px] overflow-y-scroll py-16 px-10">
+        <style>{`
+        /* 위아래로 미세하게 움직이는 애니메이션 */
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-4px);
+          }
+        }
+      `}</style>
+        <div className="grid grid-cols-2 gap-y-20 gap-x-10">
           {stories.map((story, index) => (
             <div key={story.id} className="relative">
               {/* 왼쪽 상단의 "첫번째 이야기" */}
@@ -75,9 +86,9 @@ const DayPage: React.FC = () => {
               >
                 {/* 동물 이미지 */}
                 <img
-                  src={`/assets/animals/animal${(index % 5) + 1}.png`} // 동물 이미지를 랜덤으로 매칭
+                  src={`/assets/animals/animal${(index % 3) + 1}.png`} // 동물 이미지를 랜덤으로 매칭
                   alt="animal"
-                  className="w-48 rounded-3xl px-12 py-3 bg-[#dadbe9] mr-4"
+                  className="w-40 rounded-3xl px-10 py-3 bg-[#dadbe9] mr-4"
                 />
 
                 {/* 이야기 제목과 시간 */}
@@ -89,9 +100,9 @@ const DayPage: React.FC = () => {
                 </div>
 
                 {/* 오른쪽 하단의 "결과 상세 보기" */}
-                <span className="absolute bottom-4 right-6 text-[#616161] text-sm underline">
+                {/* <span className="absolute bottom-4 right-6 text-[#616161] text-sm underline">
                   결과 상세 보기
-                </span>
+                </span> */}
               </div>
             </div>
           ))}
