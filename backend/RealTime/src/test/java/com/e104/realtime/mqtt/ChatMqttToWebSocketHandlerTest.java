@@ -12,6 +12,8 @@ import org.springframework.messaging.support.GenericMessage;
 
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @ExtendWith(MockitoExtension.class)
 class ChatMqttToWebSocketHandlerTest {
 
@@ -32,18 +34,14 @@ class ChatMqttToWebSocketHandlerTest {
     DirectChannel outboundChannel;
 
     @Test
-    void test() {
-
-        System.out.println(outboundChannel);
-        System.out.println(userServiceMock);
-        System.out.println(handler);
-
+    void mqttMessageSendTopicTest() {
         GenericMessage<String> message = new GenericMessage<>("{\"userSeq\": 1, \"content\": \"test\"}", new MessageHeaders(Map.of("mqtt_receivedTopic", TOPIC_MESSAGE_SEND)));
         handler.handleMessageFromMqtt(message);
 
         ArgumentCaptor<Conversation> captor = ArgumentCaptor.forClass(Conversation.class);
         Mockito.verify(userServiceMock).bufferConversation(captor.capture());
-        System.out.println(captor.getValue());
+
+        assertEquals("test", captor.getValue().getContent());
     }
 
 
