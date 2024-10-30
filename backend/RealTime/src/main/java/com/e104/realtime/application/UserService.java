@@ -84,8 +84,9 @@ public class UserService {
     // 대화 상세 조회
     public ConversationDetailResponse getConversationDetail(int userSeq, int conversationSeq) {
         User user = repoUtil.findUser(userSeq);
-        ConversationAnalytics conversationAnalytics = user.getConversationAnalytics(conversationSeq);
-        return new ConversationDetailResponse(conversationAnalytics);
+        List<ConversationContent> contents = user.getConversationContents();
+        ConversationAnalytics analytics = user.getConversationAnalytics(conversationSeq);
+        return new ConversationDetailResponse(analytics, contents);
     }
 
     // 대화 내용 요약 조회

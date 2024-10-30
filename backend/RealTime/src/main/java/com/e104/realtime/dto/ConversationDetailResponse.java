@@ -1,6 +1,7 @@
 package com.e104.realtime.dto;
 
 import com.e104.realtime.domain.vo.ConversationAnalytics;
+import com.e104.realtime.domain.vo.ConversationContent;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -51,7 +52,7 @@ public class ConversationDetailResponse {
         private LocalDateTime createdAt;
     }
 
-    public ConversationDetailResponse(ConversationAnalytics conversationAnalytics) {
+    public ConversationDetailResponse(ConversationAnalytics conversationAnalytics, List<ConversationContent> contents) {
         this.conversationSeq = conversationAnalytics.getConversationSeq();
         this.emotionSummary = conversationAnalytics.getEmotionSummary();
         this.vocabularySummary = conversationAnalytics.getVocabularySummary();
@@ -71,7 +72,7 @@ public class ConversationDetailResponse {
             wordClouds.add(wordCloudResponse);
         });
 
-        conversationAnalytics.getConversationContents().forEach(conversationContent -> {
+        conversationContents.forEach(conversationContent -> {
             ConversationContentResponse conversationContentResponse = new ConversationContentResponse();
             conversationContentResponse.setContent(conversationContent.getContent());
             conversationContentResponse.setAnswer(conversationContent.isAnswer());

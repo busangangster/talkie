@@ -53,10 +53,6 @@ public class ConversationAnalytics {
     @Column
     private final List<WordCloud> wordClouds = new ArrayList<>();  // 대화에 대한 단어 클라우드 리스트, 대화와 양방향 관계를 설정하며, 대화가 삭제되면 단어 클라우드도 함께 삭제됨 (CascadeType.ALL)
 
-    @OneToMany(mappedBy = "conversationAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
-    private final List<ConversationContent> conversationContents = new ArrayList<>();  // 대화에 대한 대화 내용 리스트, 대화와 양방향 관계를 설정하며, 대화가 삭제되면 대화 내용도 함께 삭제됨 (CascadeType.ALL)
-
     @OneToOne(mappedBy = "conversationAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn
     private ConversationSummary conversationSummary;
@@ -102,17 +98,6 @@ public class ConversationAnalytics {
             }
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "워드클라우드 추가 중 오류가 발생했습니다.");
-        }
-    }
-
-    // 대화 내용 추가
-    @Transactional
-    public void addConversationContent(List<ConversationContent> conversationContents) {
-        try {
-            // 대화 내용 리스트에 새로운 대화 내용 추가
-            this.conversationContents.addAll(conversationContents);
-        } catch (Exception e) {
-            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 추가 중 오류가 발생했습니다.");
         }
     }
 
