@@ -117,36 +117,41 @@ public class UserService {
                 .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
                 .toList();
 
-        if(weekAnalytics == null) {
+        if (weekAnalytics == null) {
             throw new RestApiException(StatusCode.NO_CONTENT, "주간 대화 통계가 존재하지 않습니다.");
         }
         return new WeeklyConversationResponse(weekAnalytics, filteredDayAnalytics);
     }
 
 
-
     // TODO: Redis 조회, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
-
     public void bufferConversation(Conversation conversation) {
         conversationRedisRepository.save(conversation);
     }
 
+    @Transactional
     public void saveConversation(int userSeq) {
         List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
         List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
 
+        // 대화 내용 저장할때 부모의 질문 활성화 되있으면 , 응답에도 저장해야함.
         User user = repoUtil.findUser(userSeq);
+        List<Question> questions = user.getQuestions();
+        Question question = questions.get(questions.size() - 1);
+        boolean check = question.isActive();
+        if(check) {
+            String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
+            Answer answer = builderUtil.buildAnswer(content);
+            question.addAnswer(answer);
+        }
         user.addConversationContents(conversationContents);
 
-        conversationRedisRepository.deleteAllByUserSeq(userSeq);
-    }
+        // FAST API에서 대화 제목, 대화 내용요약, 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
+        // GPT에서 감정분석, 워드클라우드, 어휘력 설명 가져오기
+        ConversationAnalytics conversationAnalytics = null;
+        user.addConversationAnalytics(conversationAnalytics);
 
-    // 응답 등록
-    @Transactional
-    public void createAnswer(AnswerCreateRequest request) {
-        User user = repoUtil.findUser(request.getUserSeq());
-        Question question = user.getQuestion(request.getQuestionSeq());
-        Answer answer = builderUtil.buildAnswer(request.getContent());
-        question.addAnswer(answer);
+        // Redis 대화 삭제
+        conversationRedisRepository.deleteAllByUserSeq(userSeq);
     }
 }

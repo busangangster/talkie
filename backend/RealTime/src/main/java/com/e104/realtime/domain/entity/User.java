@@ -151,6 +151,10 @@ public class User {
 
     @Transactional
     public void addConversationContents(List<ConversationContent> conversationContents) {
-        this.conversationContents.addAll(conversationContents);
+        try {
+            this.conversationContents.addAll(conversationContents);
+        } catch (Exception e) {
+            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 추가 중 오류가 발생했습니다.");
+        }
     }
 }

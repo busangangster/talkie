@@ -95,7 +95,7 @@ public class ChatMqttToWebSocketHandler {
         Integer userSeq = dto.userSeq();
 
         Conversation conversation = Conversation.builder()
-                .talker(Talker.AI.getValue())
+                .talker(Talker.CHILD.getValue())
                 .content(dto.content())
                 .build();
         userService.bufferConversation(conversation);
@@ -216,6 +216,12 @@ public class ChatMqttToWebSocketHandler {
                         // 대화 항목 생성 요청 전송
                         String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));
                         webSocketClient.send(jsonMessage);
+
+                        Conversation conversation = Conversation.builder()
+                                .talker(Talker.AI.getValue())
+                                .content(jsonMessage)
+                                .build();
+                        userService.bufferConversation(conversation);
                     }
                 }
             }
