@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 
 
-//TODO: 수정
 @Data
 public class WeeklyConversationResponse {
 
