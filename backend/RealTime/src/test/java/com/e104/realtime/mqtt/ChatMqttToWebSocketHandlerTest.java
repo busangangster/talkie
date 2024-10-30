@@ -2,7 +2,6 @@ package com.e104.realtime.mqtt;
 
 import com.e104.realtime.application.UserService;
 import com.e104.realtime.redis.hash.Conversation;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -33,7 +32,7 @@ class ChatMqttToWebSocketHandlerTest {
     DirectChannel outboundChannel;
 
     @Test
-    void test() throws JsonProcessingException {
+    void test() {
 
         System.out.println(outboundChannel);
         System.out.println(userServiceMock);

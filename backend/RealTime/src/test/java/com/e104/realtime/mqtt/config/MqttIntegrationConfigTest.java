@@ -1,15 +1,12 @@
 package com.e104.realtime.mqtt.config;
 
 import com.e104.realtime.mqtt.ChatMqttToWebSocketHandler;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +35,7 @@ class MqttIntegrationConfigTest {
 
     @DisplayName("MQTT 입력이 잘 작동하는지 확인한다.")
     @Test
-    void mqttChannelTest() throws JsonProcessingException {
+    void mqttChannelTest() {
         var message = new GenericMessage<>("테스트!");
         Mockito.doNothing().when(handler).handleMessageFromMqtt(Mockito.any());
         Objects.requireNonNull(inbound.getOutputChannel()).send(message);
