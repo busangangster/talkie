@@ -2,8 +2,7 @@ package com.e104.realtime.mqtt;
 
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
-import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
-import com.e104.realtime.mqtt.dto.OpenAiSessionUpdateRequest;
+import com.e104.realtime.mqtt.dto.*;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,29 +80,35 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // WebSocket 연결을 관리하고 맵에 저장
+    // 언제 실행되지?
     private void handleWebSocketConnect(String payload) {
-        Integer userSeq = extractUserSeqFromPayload(payload);
+        MqttWebsocketConnectDto dto = objectMapper.convertValue(payload, MqttWebsocketConnectDto.class);
+        Integer userSeq = dto.getUserSeq();
         if (userSeq != null) {
             WebSocketClient webSocketClient = createWebSocketClient(userSeq);
             userWebSocketClients.put(userSeq, webSocketClient);  // 맵에 WebSocket 저장
         }
     }
 
-    // 메시지를 전송하는 기능
+    // 사용자의 메시지를 chatGPT 에게 전송하는 기능
     private void handleMessageSend(String payload) {
-        Integer userSeq = extractUserSeqFromPayload(payload);
+        MqttMessageSendDto dto = objectMapper.convertValue(payload, MqttMessageSendDto.class);
+        Integer userSeq = dto.getUserSeq();
         if(userSeq == null) return;
 
-        // TODO: 페이로드 변경 시 수정 작업 필요.
-        Conversation conversation = Conversation.builder().talker(Talker.AI.getValue()).content(payload).build();
+        Conversation conversation = Conversation.builder()
+                .talker(Talker.AI.getValue())
+                .content(dto.getContent())
+                .build();
         userService.bufferConversation(conversation);
 
-        handleClientMessage(userSeq, payload);  // WebSocket으로 메시지 전송
+        handleClientMessage(userSeq, dto.getContent());  // WebSocket으로 메시지 전송
     }
 
     // 대화 종료 알림을 처리하는 기능
     private void handleConversationEnd(String payload) {
-        Integer userSeq = extractUserSeqFromPayload(payload);
+        MqttConversationEndDto dto = objectMapper.convertValue(payload, MqttConversationEndDto.class);
+        Integer userSeq = dto.getUserSeq();
         if(userSeq == null) return;
 
         userService.saveConversation(userSeq);
@@ -275,13 +280,4 @@ public class ChatMqttToWebSocketHandler {
         }
     }
 
-    // payload에서 userSeq를 추출하고 Integer로 변환하는 메서드
-    private Integer extractUserSeqFromPayload(String payload) {
-        try {
-            return Integer.parseInt(payload); // payload를 Integer로 변환하여 반환
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid userSeq format: " + payload);
-            return null; // 혹은 예외를 던지거나 기본값 반환
-        }
-    }
 }
