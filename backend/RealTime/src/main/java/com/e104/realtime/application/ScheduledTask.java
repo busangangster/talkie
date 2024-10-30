@@ -83,61 +83,64 @@ public class ScheduledTask {
     }
 
     private void updateWeekAnalytics(User user, DayAnalytics dayAnalytics) {
+        try {
+            // 오늘이 몇년, 몇월, 몇주차 인지 찾기 (타겟주)
+            LocalDate today = LocalDate.now();
+            int year = today.getYear();
+            int month = today.getMonthValue();
+            WeekFields weekFields = WeekFields.of(Locale.KOREA);
+            int week = today.get(weekFields.weekOfMonth());
 
-        // 오늘이 몇년, 몇월, 몇주차 인지 찾기 (타겟주)
-        LocalDate today = LocalDate.now();
-        int year = today.getYear();
-        int month = today.getMonthValue();
-        WeekFields weekFields = WeekFields.of(Locale.KOREA);
-        int week = today.get(weekFields.weekOfMonth());
+            WeekAnalytics weekAnalytics = user.getWeekAnalytics().stream()
+                    .filter(w -> w.getYear() == year && w.getMonth() == month && w.getWeek() == week)
+                    .findFirst()
+                    .orElse(null);
 
-        WeekAnalytics weekAnalytics = user.getWeekAnalytics().stream()
-                .filter(w -> w.getYear() == year && w.getMonth() == month && w.getWeek() == week)
-                .findFirst()
-                .orElse(null);
-
-        List<DayAnalytics> filteredDayAnalytics = user.getDayAnalytics().stream()
-                .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
-                .toList();
+            List<DayAnalytics> filteredDayAnalytics = user.getDayAnalytics().stream()
+                    .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
+                    .toList();
 
 
-        HashMap<String, Integer> hashMap = new HashMap<>();
-        if(weekAnalytics != null) {
-            List<WeekWordCloud> weekWordClouds = weekAnalytics.getWeekWordClouds();
-            for (WeekWordCloud weekWordCloud : weekWordClouds) {
-                hashMap.put(weekWordCloud.getWord(), weekWordCloud.getCount());
+            HashMap<String, Integer> hashMap = new HashMap<>();
+            if (weekAnalytics != null) {
+                List<WeekWordCloud> weekWordClouds = weekAnalytics.getWeekWordClouds();
+                for (WeekWordCloud weekWordCloud : weekWordClouds) {
+                    hashMap.put(weekWordCloud.getWord(), weekWordCloud.getCount());
+                }
             }
-        }
-        List<DayWordCloud> dayWordClouds = dayAnalytics.getDayWordClouds();
-        for (DayWordCloud dayWordCloud : dayWordClouds) {
-            String word = dayWordCloud.getWord();
-            int count = dayWordCloud.getCount();
-            if (hashMap.containsKey(word)) {
-                hashMap.put(word, hashMap.get(word) + count);
+            List<DayWordCloud> dayWordClouds = dayAnalytics.getDayWordClouds();
+            for (DayWordCloud dayWordCloud : dayWordClouds) {
+                String word = dayWordCloud.getWord();
+                int count = dayWordCloud.getCount();
+                if (hashMap.containsKey(word)) {
+                    hashMap.put(word, hashMap.get(word) + count);
+                } else {
+                    hashMap.put(word, count);
+                }
+            }
+            List<WeekWordCloud> newWeekWordClouds = new ArrayList<>();
+            for (String word : hashMap.keySet()) {
+                WeekWordCloud weekWordCloud = builderUtil.buildWeekWordCloud(word, hashMap.get(word));
+                newWeekWordClouds.add(weekWordCloud);
+            }
+
+            // 감정 요약
+            String emotionSummary = chatService.summarizeEmotions(filteredDayAnalytics);
+            // 어휘 요약
+            String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics);
+            // 워드 클라우드 요약
+            String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
+            // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
+            if (weekAnalytics == null) {
+                weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, year, month, week);
+                user.addWeekAnalytics(weekAnalytics);
             } else {
-                hashMap.put(word, count);
+                weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary);
+                weekAnalytics.clearWordClouds();
             }
+            weekAnalytics.addWordClouds(newWeekWordClouds);
+        } catch (Exception e) {
+            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주간 통계 업데이트 중 오류가 발생했습니다.");
         }
-        List<WeekWordCloud> newWeekWordClouds = new ArrayList<>();
-        for(String word : hashMap.keySet()) {
-            WeekWordCloud weekWordCloud = builderUtil.buildWeekWordCloud(word, hashMap.get(word));
-            newWeekWordClouds.add(weekWordCloud);
-        }
-
-        // 감정 요약
-        String emotionSummary = chatService.summarizeEmotions(filteredDayAnalytics);
-        // 어휘 요약
-        String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics);
-        // 워드 클라우드 요약
-        String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
-        // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
-        if (weekAnalytics == null) {
-            weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, year, month, week);
-            user.addWeekAnalytics(weekAnalytics);
-        } else {
-            weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary);
-            weekAnalytics.clearWordClouds();
-        }
-        weekAnalytics.addWordClouds(newWeekWordClouds);
     }
 }

@@ -33,12 +33,12 @@ public class ChatService {
         return chatgptService.multiChat(messages);
     }
 
-    public String summarizeEmotions(List<DayAnalytics> filteredAnalytics) {
+    public String summarizeEmotions(List<DayAnalytics> dayAnalyticsList) {
         // TODO: 구현
         return null;
     }
 
-    public String summarizeVocabulary(List<DayAnalytics> filteredAnalytics) {
+    public String summarizeVocabulary(List<DayAnalytics> dayAnalyticsList) {
         // TODO: 구현
         return null;
     }
