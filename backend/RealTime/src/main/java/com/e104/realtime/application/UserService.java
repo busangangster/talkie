@@ -126,7 +126,6 @@ public class UserService {
     }
 
 
-    // TODO: Redis 조회, 대화 저장 , FAST API 호출,  GPT 호출 ( 감정분석/워드클라우드/어휘력 설명 )
     public void bufferConversation(Conversation conversation) {
         conversationRedisRepository.save(conversation);
     }
@@ -149,8 +148,8 @@ public class UserService {
         }
         user.addConversationContents(conversationContents);
 
-        // FAST API에서 대화 제목, 대화 내용요약, 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
-        // GPT에서 감정분석, 워드클라우드, 어휘력 설명 가져오기
+        // TODO: FAST API에서 대화 제목, 대화 내용요약, 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
+        // TODO: GPT에서 감정분석, 워드클라우드, 어휘력 설명 가져오기
         ConversationAnalytics conversationAnalytics = null;
         user.addConversationAnalytics(conversationAnalytics);
 

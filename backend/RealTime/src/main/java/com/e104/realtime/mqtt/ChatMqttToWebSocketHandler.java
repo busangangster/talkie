@@ -114,13 +114,13 @@ public class ChatMqttToWebSocketHandler {
         userService.saveConversation(userSeq);
     }
 
-    // 사용자 감지 알림을 처리하는 기능
+    // TODO: 사용자 감지 알림을 처리하는 기능
     private void handleUserDetection(String payload) {
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
         System.out.println("User detected: " + payload);
     }
 
-    // 음성 인식 알림을 처리하는 기능
+    // TODO: 음성 인식 알림을 처리하는 기능
     private void handleVoiceRecognition(String payload) {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
         System.out.println("Voice recognition event received: " + payload);
