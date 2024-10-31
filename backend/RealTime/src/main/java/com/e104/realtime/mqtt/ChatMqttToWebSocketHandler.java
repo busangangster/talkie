@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ChatMqttToWebSocketHandler {
@@ -73,7 +75,7 @@ public class ChatMqttToWebSocketHandler {
                     break;
 
                 default:
-                    System.out.println("Unknown topic: " + topic);
+                    log.info("Unknown topic: " + topic);
             }
         } catch (JsonProcessingException e) {
 //            throw new RuntimeException(e);
@@ -117,13 +119,13 @@ public class ChatMqttToWebSocketHandler {
     // TODO: 사용자 감지 알림을 처리하는 기능
     private void handleUserDetection(String payload) {
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
-        System.out.println("User detected: " + payload);
+        log.info("User detected: " + payload);
     }
 
     // TODO: 음성 인식 알림을 처리하는 기능
     private void handleVoiceRecognition(String payload) {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
-        System.out.println("Voice recognition event received: " + payload);
+        log.info("Voice recognition event received: " + payload);
     }
 
     // userSeq 별로 WebSocket을 생성하여 저장하는 메서드
@@ -133,7 +135,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
-                    System.out.println("Connected to OpenAI WebSocket for user: " + userSeq);
+                    log.info("Connected to OpenAI WebSocket for user: " + userSeq);
                 }
 
                 @Override
@@ -143,7 +145,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    System.out.println("OpenAI WebSocket closed for user: " + userSeq + " - " + reason);
+                    log.info("OpenAI WebSocket closed for user: " + userSeq + " - " + reason);
 //                    userWebSocketClients.remove(userSeq);
                     openAISocketService.removeSocket(userSeq);
                 }
@@ -209,7 +211,7 @@ public class ChatMqttToWebSocketHandler {
                     // 첫 번째 content에서 type이 audio인 경우에만 transcript 추출
                     if (contentArray.get(0).path("type").asText().equals("audio")) {
                         String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
-                        System.out.println("Transcript: " + transcript);
+                        log.info("Transcript: " + transcript);
 
                         // 대화 항목 생성 요청 전송
                         String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));
