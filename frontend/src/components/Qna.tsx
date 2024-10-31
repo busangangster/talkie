@@ -61,16 +61,19 @@ const Qna: React.FC<QnaProps> = ({ data, itemsPerPage }) => {
               <span className="text-sm ml-12 mr-3 bottom-0">{item.date}</span>
             </div>
             {openQuestions.includes(item.id) && (
-              <div className="mt-3 ml-6">
+              <div className="mt-3 ml-6 mr-28">
                 {item.answer ? (
                   <p>{item.answer}</p>
                 ) : (
                   <div className="text-gray-400">
                     <p>아직 질문을 하지 않았어요!</p>
-                    <div className="flex space-x-2 mt-2">
-                      <button className="text-blue-500">수정</button>
-                      <button className="text-red-500">삭제</button>
-                    </div>
+                  </div>
+                )}
+                {/* 수정/삭제 버튼 */}
+                {!item.answer && (
+                  <div className="flex space-x-2 mt-2">
+                    <button className="text-blue-500">수정</button>
+                    <button className="text-red-500">삭제</button>
                   </div>
                 )}
               </div>
