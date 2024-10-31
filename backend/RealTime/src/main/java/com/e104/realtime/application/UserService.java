@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -147,9 +148,37 @@ public class UserService {
         }
         user.addConversationContents(conversationContents);
 
-        // TODO: FAST API에서 대화 제목, 대화 내용요약, 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
-        // TODO: GPT에서 감정분석, 워드클라우드, 어휘력 설명 가져오기
-        ConversationAnalytics conversationAnalytics = null;
+        // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
+        List<WordCloud> wordClouds= null;
+        Vocabulary vocabulary = null;
+        Sentiment sentiment = null;
+
+        // 대화제목, 대화 내용 요약 가져오기
+        String TitleAndContentSummary = chatService.getConversationSummary(conversationContents);
+        String conversationContentSummary = null;
+        String title = null;
+        // "요약:"과 "제목:"을 기준으로 분리
+        String[] parts = TitleAndContentSummary.split("제목:");
+        if (parts.length == 2) {
+            String[] summaryParts = parts[0].split("요약:");
+            if (summaryParts.length == 2) {
+                conversationContentSummary = summaryParts[1].trim(); // 요약 부분
+            }
+            title = parts[1].trim(); // 제목 부분
+        }
+
+        // 감정분석, 워드클라우드, 어휘력 설명 가져오기
+        String wordCloudSummary = chatService.summarizeConversationWordCloud(wordClouds);
+        String emotionSummary = chatService.summarizeConversationEmotion(sentiment);
+        String vocabularySummary = chatService.summarizeConversationVocabulary(vocabulary, user.getAge());
+
+        // 대화 통계 생성 및 저장
+        ConversationAnalytics conversationAnalytics = builderUtil.buildConversationAnalytics(title, emotionSummary, vocabularySummary, wordCloudSummary);
+        ConversationSummary conversationSummary = builderUtil.buildConversationSummary(conversationContentSummary);
+        conversationAnalytics.addConversationSummary(conversationSummary);
+        conversationAnalytics.addSentiment(sentiment);
+        conversationAnalytics.addVocabulary(vocabulary);
+        conversationAnalytics.addWordCloud(wordClouds);
         user.addConversationAnalytics(conversationAnalytics);
 
         // Redis 대화 삭제
