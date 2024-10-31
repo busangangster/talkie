@@ -43,8 +43,8 @@ public class ChatService {
         return message.toString();
     }
 
-    public String summarizeVocabulary(List<DayAnalytics> dayAnalyticsList) {
-        String message = getWeekVocabularyMessage(dayAnalyticsList);
+    public String summarizeVocabulary(List<DayAnalytics> dayAnalyticsList, int age) {
+        String message = getWeekVocabularyMessage(dayAnalyticsList, age);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
                         너는 내가 제공하는 아이의 일주일치 어휘력 점수를 바탕으로 부모님께 요약해줘야 해요. 아이의 어휘력 변화를 쉽게 이해할 수 있게 설명해 주세요. 예를 들어:
@@ -62,14 +62,24 @@ public class ChatService {
         return chatgptService.multiChat(messages);
     }
 
-    private String getWeekVocabularyMessage(List<DayAnalytics> dayAnalyticsList) {
+    private String getWeekVocabularyMessage(List<DayAnalytics> dayAnalyticsList, int age) {
         StringBuilder message = new StringBuilder();
         for (int i = 1; i <= dayAnalyticsList.size(); i++) {
             DayAnalytics dayAnalytics = dayAnalyticsList.get(i - 1);
             message.append("Day ").append(i).append(":\n").append("어휘 점수: ").append(dayAnalytics.getVocabularyScore()).append("\n");
         }
         message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
-        message.append(("동나이 어린이의 어휘력 평균 점수: 3.75\n"));
+        double avgScore = 0;
+        if(age == 5) {
+            avgScore = 3.75;
+        } else if(age == 6) {
+            avgScore = 4.0;
+        } else if(age == 7) {
+            avgScore = 4.25;
+        } else {
+            avgScore = 4.5;
+        }
+        message.append("동나이 어린이의 어휘력 평균 점수: ").append(avgScore).append("\n");
         return message.toString();
     }
 
@@ -185,8 +195,8 @@ public class ChatService {
         return "기쁨: " + sentiment.getHappyScore() + "\n" + "사랑스러움: " + sentiment.getLoveScore() + "\n" + "슬픔: " + sentiment.getSadScore() + "\n" + "화남: " + sentiment.getAngryScore() + "\n" + "놀라움: " + sentiment.getAmazingScore() + "\n" + "두려움: " + sentiment.getScaryScore() + "\n";
     }
 
-    public String summarizeConversationVocabulary(Vocabulary vocabulary) {
-        String message = getConversationVocabularyMessage(vocabulary);
+    public String summarizeConversationVocabulary(Vocabulary vocabulary, int age) {
+        String message = getConversationVocabularyMessage(vocabulary,age);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
                         제공된 아이의 어휘력 점수를 바탕으로 부모님께 쉽게 설명해 주세요. 예시 형식은 다음과 같습니다:
@@ -204,9 +214,20 @@ public class ChatService {
         return chatgptService.multiChat(messages);
     }
 
-    private String getConversationVocabularyMessage(Vocabulary vocabulary) {
+    private String getConversationVocabularyMessage(Vocabulary vocabulary, int age) {
+        double avgScore = 0;
+        if(age == 5) {
+            avgScore = 3.75;
+        } else if(age == 6) {
+            avgScore = 4.0;
+        } else if(age == 7) {
+            avgScore = 4.25;
+        } else {
+            avgScore = 4.5;
+        }
         return "어휘 점수: " + vocabulary.getVocabularyScore() + "\n" +
-                "동나이대 평균 어휘 점수: 3.75\n";
+                "동나이대 평균 어휘 점수: " +  avgScore +"\n";
+
     }
 
     // TODO: 나이대별 평균 어휘점수 수정

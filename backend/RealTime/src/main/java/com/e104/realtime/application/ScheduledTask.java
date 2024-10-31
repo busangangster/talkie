@@ -122,11 +122,10 @@ public class ScheduledTask {
                 WeekWordCloud weekWordCloud = builderUtil.buildWeekWordCloud(word, hashMap.get(word));
                 newWeekWordClouds.add(weekWordCloud);
             }
-
             // 감정 요약
             String emotionSummary = chatService.summarizeEmotions(filteredDayAnalytics);
             // 어휘 요약
-            String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics);
+            String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics, user.getAge());
             // 워드 클라우드 요약
             String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
             // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
