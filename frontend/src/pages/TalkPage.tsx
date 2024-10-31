@@ -119,7 +119,7 @@ const TalkPage: React.FC = () => {
       {/* 그래프 및 분석 결과 영역 */}
       <div className="flex flex-wrap justify-between mt-5 w-full space-y-8">
         {/* 첫 번째 열: WordCloud 및 관심사 */}
-        <div className="w-[42%] bg-white rounded-xl shadow-md mt-6 p-8">
+        <div className="w-[42%] h-[400px] bg-white rounded-xl shadow-md mt-6 p-8">
           <WordCloud />
         </div>
         <div className="w-[53%] bg-white p-8 rounded-xl shadow-md bg-opacity-60">

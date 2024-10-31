@@ -14,6 +14,7 @@ const WeekInterest:React.FC = () => {
           },
           legend: {
             orient: "horizontal",
+            selectedMode: false, // 클릭 시 필터링 비활성화
             bottom: "70px",
           },
           series: [
@@ -41,7 +42,7 @@ const WeekInterest:React.FC = () => {
 
         // 옵션을 설정하여 차트를 렌더링합니다.
         chartInstance.setOption(option);
-
+        
         // 컴포넌트가 언마운트될 때 차트를 인스턴스에서 제거합니다.
         return () => {
           chartInstance.dispose();

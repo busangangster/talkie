@@ -8,7 +8,7 @@ const data = [
   {
     name: "Mon",
     기쁨: 11,
-    놀라움: 19,
+    놀람: 19,
     사랑스러움: 73,
     화남: 95,
     슬픔: 8,
@@ -17,7 +17,7 @@ const data = [
   {
     name: "Tue",
     기쁨: 33,
-    놀라움: 4,
+    놀람: 4,
     사랑스러움: 82,
     화남: 16,
     슬픔: 79,
@@ -26,7 +26,7 @@ const data = [
   {
     name: "Wen",
     기쁨: 38,
-    놀라움: 54,
+    놀람: 54,
     사랑스러움: 61,
     화남: 67,
     슬픔: 0,
@@ -35,7 +35,7 @@ const data = [
   {
     name: "Thu",
     기쁨: 46,
-    놀라움: 49,
+    놀람: 49,
     사랑스러움: 6,
     화남: 21,
     슬픔: 20,
@@ -44,7 +44,7 @@ const data = [
   {
     name: "Fri",
     기쁨: 93,
-    놀라움: 65,
+    놀람: 65,
     사랑스러움: 72,
     화남: 60,
     슬픔: 54,
@@ -53,7 +53,7 @@ const data = [
   {
     name: "Sat",
     기쁨: 6,
-    놀라움: 53,
+    놀람: 53,
     사랑스러움: 12,
     화남: 89,
     슬픔: 25,
@@ -62,7 +62,7 @@ const data = [
   {
     name: "Sun",
     기쁨: 89,
-    놀라움: 37,
+    놀람: 37,
     사랑스러움: 8,
     화남: 85,
     슬픔: 72,
@@ -73,11 +73,11 @@ const data = [
 const WeekEmotion: React.FC = () => {
   const [lines, setLines] = useState<Record<LineKeys, boolean>>({
     기쁨: true,
-    놀람: true,
-    사랑스러움: true,
-    화남: true,
-    슬픔: true,
-    두려움: true,
+    놀람: false,
+    사랑스러움: false,
+    화남: false,
+    슬픔: false,
+    두려움: false,
   });
 
   const handleToggle = (lineKey: LineKeys) => {
@@ -88,8 +88,8 @@ const WeekEmotion: React.FC = () => {
   }
 
   return (
-    <div style={{ width: "800px", height: "600px", paddingTop: "100px" }}>
-      <div>
+    <div style={{ width: "800px", height: "410px", paddingTop: "0px" }}>
+      <div className="flex gap-2 mb-2">
         <label>
           <input
             type="checkbox"
@@ -141,8 +141,10 @@ const WeekEmotion: React.FC = () => {
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}
-        margin={{top: 5, right: 30, left: 20, bottom: 5}}>
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis domain={[0, 100]} />
