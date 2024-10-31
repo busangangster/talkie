@@ -3,6 +3,7 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.util.TimeChecker;
 import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
@@ -42,7 +43,7 @@ public class ChatMqttToWebSocketHandler {
     private String openAiWebSocketUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
+    private final List<String> audioDeltas = Collections.synchronizedList(new ArrayList<>()); // 오디오 델타 문자열을 저장할 리스트
 
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
@@ -51,9 +52,10 @@ public class ChatMqttToWebSocketHandler {
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
-        String topic = message.getHeaders().get(MQTT_RECEIVED_TOPIC, String.class); // 수신된 토픽을 가져옴
+        Optional<String> topic = Optional.ofNullable(message.getHeaders().get(MQTT_RECEIVED_TOPIC, String.class)); // 수신된 토픽을 가져옴
+        if(topic.isEmpty()) throw new RestApiException(null);
         try {
-            switch (Objects.requireNonNull(topic)) {
+            switch (topic.get()) {
                 case Topic.TOPIC_WEBSOCKET_CONNECT:
                     handleWebSocketConnect(payload);
                     break;
@@ -78,8 +80,7 @@ public class ChatMqttToWebSocketHandler {
                     log.info("Unknown topic: " + topic);
             }
         } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-            e.printStackTrace();
+            log.error("JSON 파싱 중 오류가 발생했습니다.", e);
         }
     }
 
@@ -144,7 +145,7 @@ public class ChatMqttToWebSocketHandler {
                     ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
                     """.formatted(clock));
         }
-        log.info("User detected: " + payload);
+        log.info("User detected: {}", payload);
     }
 
     // 대화 시작 신호를 처리하는 기능
@@ -154,7 +155,7 @@ public class ChatMqttToWebSocketHandler {
         handleClientMessage(dto.getUserSeq(), """
                 ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
                 """);
-        log.info("Voice recognition event received: " + payload);
+        log.info("Voice recognition event received: {}", payload);
     }
 
     // userSeq 별로 WebSocket을 생성하여 저장하는 메서드
@@ -164,7 +165,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
-                    log.info("Connected to OpenAI WebSocket for user: " + userSeq);
+                    log.info("Connected to OpenAI WebSocket for user: {}", userSeq);
                 }
 
                 @Override
@@ -174,7 +175,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    log.info("OpenAI WebSocket closed for user: " + userSeq + " - " + reason);
+                    log.info("OpenAI WebSocket closed for user: {} - {}", userSeq, reason);
 //                    userWebSocketClients.remove(userSeq);
                     openAISocketService.removeSocket(userSeq);
                 }
