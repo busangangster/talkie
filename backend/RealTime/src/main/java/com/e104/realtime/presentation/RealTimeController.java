@@ -52,6 +52,13 @@ public class RealTimeController {
         return ResponseDto.response(StatusCode.SUCCESS, "부모 질문 삭제 성공");
     }
 
+    // 부모 질문 수정
+    @PutMapping("/question/update")
+    public ResponseEntity<ResponseDto> updateQuestion(@RequestBody QuestionUpdateRequest request) {
+        userService.updateQuestion(request);
+        return ResponseDto.response(StatusCode.SUCCESS, "부모 질문 수정 성공");
+    }
+
 
     // 질문 및 응답 조회
     @GetMapping("/question/{userSeq}")

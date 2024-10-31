@@ -79,6 +79,15 @@ public class UserService {
         user.removeQuestion(request.getQuestionSeq());
     }
 
+    // 질문 수정
+    @Transactional
+    public void updateQuestion(QuestionUpdateRequest request) {
+        User user = repoUtil.findUser(request.getUserSeq());
+        List<Question> questions = user.getQuestions();
+        Question question = questions.get(questions.size() - 1);
+        question.updateQuestion(request.getContent());
+    }
+
     // 질문 및 응답 조회
     public List<QuestionAndResponseDto> getQuestionAndAnswerList(int userSeq) {
         User user = repoUtil.findUser(userSeq);
@@ -160,7 +169,7 @@ public class UserService {
         }
         user.addConversationContents(conversationContents);
 
-        // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
+        // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기, DTO 생성 및 매핑
         fetchPostRequest(conversationContents);
         List<WordCloud> wordClouds= null;
         Vocabulary vocabulary = null;
@@ -218,5 +227,4 @@ public class UserService {
         String responseBody = responseEntity.getBody();
         System.out.println("POST Response: " + responseBody);
     }
-
 }

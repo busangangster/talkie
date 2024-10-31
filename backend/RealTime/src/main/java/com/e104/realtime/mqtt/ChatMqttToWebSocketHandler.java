@@ -130,11 +130,13 @@ public class ChatMqttToWebSocketHandler {
         User user = repoUtil.findUser(dto.getUserSeq());
         List<Question> questions = user.getQuestions();
         Question question = questions.get(questions.size() - 1);
+        // TODO: Conversation (AI) 저장
         if (question.isActive()) {
             handleClientMessage(dto.getUserSeq(), """
                     ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
                     질문: %s
                     """.formatted(question.getContent()));
+            question.updateAnswerd(); // 질문이 대답되었음을 표시
         }
         else {
             // 현재 시간 추출
@@ -155,6 +157,7 @@ public class ChatMqttToWebSocketHandler {
                 ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
                 """);
         log.info("Voice recognition event received: " + payload);
+        // TODO: Conversation (AI) 저장
     }
 
     // userSeq 별로 WebSocket을 생성하여 저장하는 메서드
