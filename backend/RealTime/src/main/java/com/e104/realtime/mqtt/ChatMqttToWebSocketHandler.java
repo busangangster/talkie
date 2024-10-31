@@ -3,10 +3,11 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
-import com.e104.realtime.domain.entity.User;
-import com.e104.realtime.mqtt.constant.Instruction;
 import com.e104.realtime.mqtt.constant.Topic;
-import com.e104.realtime.mqtt.dto.*;
+import com.e104.realtime.mqtt.dto.MqttConversationEndDto;
+import com.e104.realtime.mqtt.dto.MqttMessageSendDto;
+import com.e104.realtime.mqtt.dto.MqttWebsocketConnectDto;
+import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,7 +26,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
