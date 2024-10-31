@@ -85,6 +85,9 @@ public class User {
     @Transactional
     public void addQuestion(Question question) {
         try {
+            if(questions.get(questions.size()-1).isActive()) {
+                throw new RestApiException(StatusCode.BAD_REQUEST, "이미 활성화된 질문이 있습니다.");
+            }
             question.setUser(this);  // 양방향 관계 설정 (Actor 객체가 이 영화에 속해 있음을 명시)
             this.questions.add(question);  // 질문리스트에 새로운 질문 추가
         } catch (Exception e) {
@@ -147,7 +150,8 @@ public class User {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주별 통계 추가 중 오류가 발생했습니다.");
         }
     }
-
+    
+    // 대화 내용 추가
     @Transactional
     public void addConversationContents(List<ConversationContent> conversationContents) {
         try {
