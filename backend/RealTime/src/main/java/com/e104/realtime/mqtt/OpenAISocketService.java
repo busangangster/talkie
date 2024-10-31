@@ -5,12 +5,14 @@ import com.e104.realtime.mqtt.constant.Instruction;
 import com.e104.realtime.mqtt.dto.OpenAiSessionUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class OpenAISocketService {
@@ -26,14 +28,23 @@ public class OpenAISocketService {
     // OpenAI와 연결된 WebSocket 세션 설정을 전송하는 메서드
     public void sendSessionUpdate(User user) {
         try {
-            String gender = user.getGender().equals("M") ? "남자" : "여자";
             WebSocketClient webSocketClient = userWebSocketClients.get(user.getUserSeq());
-            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(Instruction.INSTRUCTION + "아이의 이름은: " + user.getName() + ", 아이의 나이는: " + user.getAge() + ", 아이의 성별은 : " + gender + ", 아이가 좋아하는 건: " + user.getFavorite() + ". 아이의 인적사항에 알맞게 대화해야해. \n"));
+            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(getInstructions(user)));
             webSocketClient.send(sessionUpdateJson);
-            System.out.println("Session update sent.");
+            log.info("Session update sent.");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getInstructions(User user) {
+        String gender = user.getGender().equals("M") ? "남자" : "여자";
+        return Instruction.INSTRUCTION +
+        "아이의 이름은: " + user.getName() +
+        ", 아이의 나이는: " + user.getAge() +
+        ", 아이의 성별은 : " + gender +
+        ", 아이가 좋아하는 건: " + user.getFavorite() +
+        ". 아이의 인적사항에 알맞게 대화해야해. \n";
     }
 
     public WebSocketClient getWebSocketClient(int userSeq) {
