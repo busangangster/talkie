@@ -3,7 +3,7 @@ import wave
 import requests
 import io
 import numpy as np
-from src.config.api_keys import CLIENT_ID, CLIENT_SECRET, URL
+from src.config.api_key import CLIENT_ID, CLIENT_SECRET, URL
 
 # 오디오 설정
 RATE = 16000  # 샘플링 속도
