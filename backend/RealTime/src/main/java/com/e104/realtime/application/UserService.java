@@ -9,12 +9,19 @@ import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
 import com.e104.realtime.redis.repository.ConversationRedisRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +37,11 @@ public class UserService {
 
     private final OpenAISocketService openAISocketService;
     private final ConversationMapper conversationMapper;
+
+    private final RestTemplate restTemplate;
+
+    @Value("${fastapi.url}")
+    private String fastApiUrl;
 
     // 로그인
     public LoginResponse login(String userId) {
@@ -149,6 +161,7 @@ public class UserService {
         user.addConversationContents(conversationContents);
 
         // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
+        fetchPostRequest(conversationContents);
         List<WordCloud> wordClouds= null;
         Vocabulary vocabulary = null;
         Sentiment sentiment = null;
@@ -184,4 +197,26 @@ public class UserService {
         // Redis 대화 삭제
         conversationRedisRepository.deleteAllByUserSeq(userSeq);
     }
+
+    private void fetchPostRequest(List<ConversationContent> conversationContents) {
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 요청 데이터 생성
+        MultiValueMap<String, List<ConversationContent>> requestData = new LinkedMultiValueMap<>();
+        requestData.add("Conversation", conversationContents);
+
+        // HTTP 엔티티 생성 (헤더와 데이터를 함께 설정)
+        HttpEntity<MultiValueMap<String, List<ConversationContent>>> requestEntity = new HttpEntity<>(requestData, headers);
+
+        // HTTP POST 요청 보내기
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(fastApiUrl, requestEntity, String.class);
+
+        // 응답 값
+        String responseBody = responseEntity.getBody();
+        System.out.println("POST Response: " + responseBody);
+    }
+
 }
