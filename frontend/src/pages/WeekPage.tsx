@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import WeekFrame from "../components/WeekFrame";
 import Calendar from "../components/Calendar";
+import useTabStore from "../store/useTabStore";
 
 const WeekPage: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState("감정");
+  const tabs = ["감정", "어휘력", "관심사", "대화 빈도"];
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const toggleCalendar = () => setShowCalendar(!showCalendar);
+  // Zustand에서 상태 가져오기
+  const { selectedTab, setSelectedTab } = useTabStore();
 
-  const tabs = ["감정", "어휘력", "관심사", "대화 빈도"];
+  const toggleCalendar = () => setShowCalendar(!showCalendar);
 
   return (
     <div className="flex flex-col items-center min-h-screen relative">
