@@ -1,4 +1,4 @@
-package com.e104.realtime.domain.entity;
+package com.e104.realtime.domain.WeekAnalytics;
 
 
 import com.e104.realtime.common.exception.RestApiException;

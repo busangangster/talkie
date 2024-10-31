@@ -1,6 +1,6 @@
 package com.e104.realtime.redis.mapper;
 
-import com.e104.realtime.domain.entity.ConversationContent;
+import com.e104.realtime.domain.User.ConversationContent;
 import com.e104.realtime.redis.hash.Conversation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

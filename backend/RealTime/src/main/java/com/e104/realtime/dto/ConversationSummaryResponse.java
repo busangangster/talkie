@@ -1,6 +1,6 @@
 package com.e104.realtime.dto;
 
-import com.e104.realtime.domain.entity.ConversationSummary;
+import com.e104.realtime.domain.ConversationAnalytics.ConversationSummary;
 import lombok.Data;
 
 @Data

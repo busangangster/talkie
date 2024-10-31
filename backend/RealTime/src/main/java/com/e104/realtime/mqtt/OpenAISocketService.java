@@ -1,6 +1,6 @@
 package com.e104.realtime.mqtt;
 
-import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.User.User;
 import com.e104.realtime.mqtt.constant.Instruction;
 import com.e104.realtime.mqtt.dto.OpenAiSessionUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;

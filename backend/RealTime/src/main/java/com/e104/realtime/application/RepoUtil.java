@@ -2,7 +2,7 @@ package com.e104.realtime.application;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.User.User;
 import com.e104.realtime.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

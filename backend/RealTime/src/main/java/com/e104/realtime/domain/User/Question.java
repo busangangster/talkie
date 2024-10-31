@@ -1,4 +1,4 @@
-package com.e104.realtime.domain.entity;
+package com.e104.realtime.domain.User;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;

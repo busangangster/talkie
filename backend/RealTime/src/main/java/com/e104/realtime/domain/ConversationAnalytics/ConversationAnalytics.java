@@ -1,7 +1,8 @@
-package com.e104.realtime.domain.entity;
+package com.e104.realtime.domain.ConversationAnalytics;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
+import com.e104.realtime.domain.User.User;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;

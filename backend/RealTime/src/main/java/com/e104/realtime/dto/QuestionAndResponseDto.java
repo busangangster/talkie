@@ -1,6 +1,6 @@
 package com.e104.realtime.dto;
 
-import com.e104.realtime.domain.entity.Question;
+import com.e104.realtime.domain.User.Question;
 import lombok.Data;
 
 import java.time.LocalDateTime;

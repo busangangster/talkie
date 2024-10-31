@@ -1,7 +1,10 @@
-package com.e104.realtime.domain.entity;
+package com.e104.realtime.domain.User;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
+import com.e104.realtime.domain.ConversationAnalytics.ConversationAnalytics;
+import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
+import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;

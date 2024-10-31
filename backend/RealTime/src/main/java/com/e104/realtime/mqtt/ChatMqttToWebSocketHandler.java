@@ -4,8 +4,8 @@ import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
 import com.e104.realtime.common.util.TimeChecker;
-import com.e104.realtime.domain.entity.Question;
-import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.User.Question;
+import com.e104.realtime.domain.User.User;
 import com.e104.realtime.mqtt.constant.Topic;
 import com.e104.realtime.mqtt.dto.*;
 import com.e104.realtime.redis.hash.Conversation;
@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalTime;
 import java.util.*;
 
 @Slf4j

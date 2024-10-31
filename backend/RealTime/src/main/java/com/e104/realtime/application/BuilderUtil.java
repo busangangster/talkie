@@ -1,6 +1,13 @@
 package com.e104.realtime.application;
 
-import com.e104.realtime.domain.entity.*;
+import com.e104.realtime.domain.ConversationAnalytics.ConversationAnalytics;
+import com.e104.realtime.domain.ConversationAnalytics.ConversationSummary;
+import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
+import com.e104.realtime.domain.DayAnalytics.DayWordCloud;
+import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
+import com.e104.realtime.domain.WeekAnalytics.WeekWordCloud;
+import com.e104.realtime.domain.User.Answer;
+import com.e104.realtime.domain.User.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

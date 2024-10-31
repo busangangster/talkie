@@ -1,7 +1,7 @@
 package com.e104.realtime.dto;
 
-import com.e104.realtime.domain.entity.ConversationAnalytics;
-import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.ConversationAnalytics.ConversationAnalytics;
+import com.e104.realtime.domain.User.User;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package com.e104.realtime.domain.entity;
+package com.e104.realtime.domain.User;
 
 import jakarta.persistence.*;
 import lombok.*;

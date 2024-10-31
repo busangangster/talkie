@@ -1,8 +1,8 @@
 package com.e104.realtime.dto;
 
-import com.e104.realtime.domain.entity.DayAnalytics;
-import com.e104.realtime.domain.entity.WeekAnalytics;
-import com.e104.realtime.domain.entity.WeekWordCloud;
+import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
+import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
+import com.e104.realtime.domain.WeekAnalytics.WeekWordCloud;
 import lombok.Data;
 
 import java.time.LocalDate;
