@@ -218,9 +218,7 @@ public class UserService {
 
         // HTTP 엔티티 생성 (헤더와 데이터를 함께 설정)
         HttpEntity<MultiValueMap<String, List<ConversationContent>>> requestEntity = new HttpEntity<>(requestData, headers);
-
         // HTTP POST 요청 보내기
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(fastApiUrl, requestEntity, String.class);
 
         // 응답 값
