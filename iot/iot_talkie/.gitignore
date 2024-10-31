@@ -1,0 +1,37 @@
+# Python 기본 파일 및 폴더
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# 가상환경 폴더
+venv/
+env/
+.venv/
+
+# 환경 설정 파일
+.env                # 환경 변수 파일
+
+# 로컬 개발 시 생성되는 파일
+*.log
+*.tmp
+*.swp
+.DS_Store           # macOS에서 생성되는 메타데이터 파일
+.idea/              # PyCharm 등 IDE의 설정 파일
+.vscode/            # Visual Studio Code 설정 파일
+
+# 패키지 의존성
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Docker 관련 파일
+docker-compose.override.yml
+*.pid
+*.log
+
+# MQTT 관련 임시 파일 (필요 시)
+mqtt.log
