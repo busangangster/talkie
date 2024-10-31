@@ -12,7 +12,7 @@ env/
 .venv/
 
 # 환경 설정 파일
-**/api_key.py  # 설정 파일을 Git에서 관리하지 않으려면 추가
+src/config/api_key.py  # 설정 파일을 Git에서 관리하지 않으려면 추가
 .env                # 환경 변수 파일
 
 # 로컬 개발 시 생성되는 파일
