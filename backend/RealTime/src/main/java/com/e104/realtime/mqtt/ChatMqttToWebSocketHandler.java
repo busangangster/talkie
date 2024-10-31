@@ -3,11 +3,11 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.common.util.TimeChecker;
+import com.e104.realtime.domain.entity.Question;
+import com.e104.realtime.domain.entity.User;
 import com.e104.realtime.mqtt.constant.Topic;
-import com.e104.realtime.mqtt.dto.MqttConversationEndDto;
-import com.e104.realtime.mqtt.dto.MqttMessageSendDto;
-import com.e104.realtime.mqtt.dto.MqttWebsocketConnectDto;
-import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
+import com.e104.realtime.mqtt.dto.*;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalTime;
 import java.util.*;
 
 @Slf4j
@@ -116,15 +117,43 @@ public class ChatMqttToWebSocketHandler {
         userService.saveConversation(userSeq);
     }
 
-    // TODO: 사용자 감지 알림을 처리하는 기능
-    private void handleUserDetection(String payload) {
+    // 사용자 감지 알림을 처리하는 기능
+    private void handleUserDetection(String payload) throws JsonProcessingException {
+
+        // 현재 시각이 밤중이라면 발동하지 않게 하기.
+        if(TimeChecker.isNight()) {
+            return;
+        }
+
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
+        MqttUserDetectionDto dto = objectMapper.readValue(payload, MqttUserDetectionDto.class);
+        User user = repoUtil.findUser(dto.getUserSeq());
+        List<Question> questions = user.getQuestions();
+        Question question = questions.get(questions.size() - 1);
+        if (question.isActive()) {
+            handleClientMessage(dto.getUserSeq(), """
+                    ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
+                    질문: %s
+                    """.formatted(question.getContent()));
+        }
+        else {
+            // 현재 시간 추출
+            String clock = TimeChecker.now();
+            // 각 시간에 맞는 인사를 해달라고 하기
+            handleClientMessage(dto.getUserSeq(), """
+                    ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
+                    """.formatted(clock));
+        }
         log.info("User detected: " + payload);
     }
 
-    // TODO: 음성 인식 알림을 처리하는 기능
-    private void handleVoiceRecognition(String payload) {
+    // 대화 시작 신호를 처리하는 기능
+    private void handleVoiceRecognition(String payload) throws JsonProcessingException {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
+        MqttVoiceRecognitionDto dto = objectMapper.readValue(payload, MqttVoiceRecognitionDto.class);
+        handleClientMessage(dto.getUserSeq(), """
+                ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
+                """);
         log.info("Voice recognition event received: " + payload);
     }
 
