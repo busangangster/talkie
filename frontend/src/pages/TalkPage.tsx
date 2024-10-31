@@ -4,6 +4,7 @@ import Calendar from "../components/Calendar";
 import WordCloud from "../components/WordCloud";
 
 import ChatSummary from "../components/ChatSummary";
+import Chat from "../components/Chat";
 import TalkVoca from "../components/TalkVoca";
 import TalkEmotion from "../components/TalkEmotion";
 
@@ -69,12 +70,11 @@ const TalkPage: React.FC = () => {
   return (
     <div className="relative flex flex-col items-center px-[260px] py-12 min-h-screen overflow-y-scroll">
       <style>{`
-        /* 커스텀 말풍선 꼬리 스타일 */
         .left-tail::after {
           content: '';
           position: absolute;
           bottom: 5;
-          left: -20px; /* 꼬리 위치 조정 */
+          left: -20px;
           border-width: 14px;
           border-style: solid;
           border-color: transparent #D9D9D9 transparent transparent;
@@ -84,7 +84,7 @@ const TalkPage: React.FC = () => {
           content: '';
           position: absolute;
           bottom: 5;
-          right: -20px; /* 꼬리 위치 조정 */
+          right: -20px;
           border-width: 14px;
           border-style: solid;
           border-color: transparent transparent transparent #CED1EE;
@@ -189,28 +189,8 @@ const TalkPage: React.FC = () => {
         </span>
       </div>
 
-      {/* 대화 내용 */}
-      <div className="bg-[#F9F9F9] p-10 rounded-xl mt-5 w-full overflow-y-scroll space-y-4 max-h-[720px]">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex items-start ${
-              message.user_Seq === 1 ? "justify-end" : ""
-            } space-x-2`}
-          >
-            <span
-              className={`px-4 py-3 rounded-2xl relative ${
-                message.user_Seq === 0
-                  ? "bg-[#D9D9D9] left-tail"
-                  : "bg-[#CED1EE] right-tail"
-              }`}
-              style={{ maxWidth: "60%" }}
-            >
-              {message.content}
-            </span>
-          </div>
-        ))}
-      </div>
+      {/* 대화 내용 컴포넌트 */}
+      <Chat messages={messages} />
 
       {/* 달력 모달 */}
       {showCalendar && (
