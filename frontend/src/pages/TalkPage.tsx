@@ -4,11 +4,15 @@ import Calendar from "../components/Calendar";
 import WordCloud from "../components/WordCloud";
 import Word from "../components/Word";
 import Emotion from "../components/Emotion";
+import ChatSummary from "../components/ChatSummary";
 
 const TalkPage: React.FC = () => {
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   const toggleCalendar = () => setShowCalendar(!showCalendar);
+  const openSummary = () => setShowSummary(true);
+  const closeSummary = () => setShowSummary(false);
 
   // 대화 목업데이터 (user_Seq: 0 - AI, 1 - 아이)
   const messages = [
@@ -176,7 +180,10 @@ const TalkPage: React.FC = () => {
             이야기 전체 내용
           </span>
         </div>
-        <span className="text-black underline cursor-pointer hover:text-[#4e4e4e] mr-3 text-2xl">
+        <span
+          className="text-black underline cursor-pointer hover:text-[#4e4e4e] mr-3 text-2xl"
+          onClick={openSummary}
+        >
           요약보기
         </span>
       </div>
@@ -215,6 +222,15 @@ const TalkPage: React.FC = () => {
             onClick={() => setShowCalendar(false)}
           />
         </div>
+      )}
+
+      {/* 요약 모달 */}
+      {showSummary && (
+        <ChatSummary
+          title="놀이터 이야기"
+          content={`아이들은 엄마와 함께 놀이터에 가서 미끄럼틀을 타고,\n 친구들과 즐거운 시간을 보냈어요.\n유치원 친구들과의 관계가 더욱 돈독해졌답니다.`}
+          onClose={closeSummary}
+        />
       )}
     </div>
   );
