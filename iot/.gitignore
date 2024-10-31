@@ -12,6 +12,7 @@ env/
 .venv/
 
 # 환경 설정 파일
+iot/src/config/api_key.py
 .env                # 환경 변수 파일
 
 # 로컬 개발 시 생성되는 파일
