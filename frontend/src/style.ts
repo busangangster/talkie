@@ -229,9 +229,8 @@ export const StyledLabel = styled.label`
   color: #6d6d6d; /* 텍스트 색상 */
 `;
 
-
 export const StyledCheckbox = styled.input`
-  appearance: none;
+  appearance: none; /* 브라우저의 기본 체크박스 제거 */
   width: 14px;
   height: 14px;
   border: 2px solid #a084ca; /* 체크박스 외곽선 */
@@ -243,13 +242,14 @@ export const StyledCheckbox = styled.input`
   cursor: pointer;
 
   &:checked {
-    background-color: #a084ca; /* 체크된 색상 */
+    background-color: #a084ca !important; /* 체크된 색상 */
     border: none;
 
     &::after {
       content: "✔";
-      color: white;
+      color: white !important;
       font-size: 0.7rem;
+      display: block;
     }
   }
 `;
@@ -260,4 +260,3 @@ export const StyledUnderline = styled.div`
   max-width: 200px;
   border-bottom: 1px solid #bdbdbd; /* 밑줄 색상 */
 `;
-
