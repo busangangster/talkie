@@ -203,6 +203,9 @@ public class ChatMqttToWebSocketHandler {
             if (webSocketClient != null && webSocketClient.isOpen()) {
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 webSocketClient.send(jsonMessage);
+                // 응답 생성 요청 전송
+                String responseCreateJsonMessage = "{\"type\":\"response.create\"}";
+                webSocketClient.send(responseCreateJsonMessage);
             }
         } catch (Exception e) {
             e.printStackTrace();
