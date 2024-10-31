@@ -25,9 +25,9 @@ const data: DataItem[] = [
 ];
 const TalkEmotion: React.FC = () => {
 return (
-  <div style={{ width: "800px", height: "600px" }}>
+  <div style={{ width: "600px", height: "350px" }}>
     <ResponsiveContainer width="100%" height="100%">
-      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
+      <RadarChart cx="250" cy="180" outerRadius="80%" data={data}>
         <PolarGrid stroke="#000" strokeWidth={2} />
         <PolarAngleAxis dataKey="subject" tickSize={20} />
         <PolarRadiusAxis tick={false} axisLine={false} />

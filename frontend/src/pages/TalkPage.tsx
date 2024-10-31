@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import Calendar from "../components/Calendar";
 import WordCloud from "../components/WordCloud";
-import Word from "../components/Word";
-import Emotion from "../components/Emotion";
+
 import ChatSummary from "../components/ChatSummary";
+import TalkVoca from "../components/TalkVoca";
+import TalkEmotion from "../components/TalkEmotion";
 
 const TalkPage: React.FC = () => {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -135,8 +136,8 @@ const TalkPage: React.FC = () => {
         </div>
 
         {/* 두 번째 열: Word 및 어휘력 */}
-        <div className="w-[42%] bg-white rounded-xl shadow-md mt-6 p-8">
-          <Word />
+        <div className="w-[42%] h-[400px] bg-white rounded-xl shadow-md mt-6 p-8">
+          <TalkVoca />
         </div>
         <div className="w-[53%] bg-white p-8 rounded-xl shadow-md bg-opacity-60">
           <div className="flex items-center mb-4">
@@ -153,8 +154,8 @@ const TalkPage: React.FC = () => {
         </div>
 
         {/* 세 번째 열: Emotion 및 감정 */}
-        <div className="w-[42%] bg-white rounded-xl shadow-md mt-6 p-8">
-          <Emotion />
+        <div className="w-[42%] h-[400px] bg-white rounded-xl shadow-md mt-6 p-8">
+          <TalkEmotion />
         </div>
         <div className="w-[53%] bg-white p-8 rounded-xl shadow-md bg-opacity-60">
           <div className="flex items-center mb-4">
