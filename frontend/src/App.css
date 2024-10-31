@@ -23,7 +23,7 @@ body {
 
 /* 스크롤바 색상 및 둥글기 설정 */
 ::-webkit-scrollbar-thumb {
-  background-color: #8c8c8c; /* 회색 */
+  background-color: #b0b0b0; /* 회색 */
   border-radius: 10px;
 }
 
