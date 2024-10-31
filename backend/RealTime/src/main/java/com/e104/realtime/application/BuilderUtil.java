@@ -56,4 +56,20 @@ public class BuilderUtil {
                 .week(week)
                 .build();
     }
+
+
+    public ConversationSummary buildConversationSummary(String content) {
+        return ConversationSummary.builder()
+                .content(content)
+                .build();
+    }
+
+    public ConversationAnalytics buildConversationAnalytics(String title, String emotionSummary, String vocabularySummary, String wordCloudSummary) {
+        return ConversationAnalytics.builder()
+                .title(title)
+                .emotionSummary(emotionSummary)
+                .vocabularySummary(vocabularySummary)
+                .wordCloudSummary(wordCloudSummary)
+                .build();
+    }
 }
