@@ -53,7 +53,7 @@ public class ChatMqttToWebSocketHandler {
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
         Optional<String> topic = Optional.ofNullable(message.getHeaders().get(MQTT_RECEIVED_TOPIC, String.class)); // 수신된 토픽을 가져옴
-        if(topic.isEmpty()) throw new RestApiException(null);
+        if(topic.isEmpty()) throw new NullPointerException("토픽이 입력되지 않았습니다.");
         try {
             switch (topic.get()) {
                 case Topic.TOPIC_WEBSOCKET_CONNECT:
