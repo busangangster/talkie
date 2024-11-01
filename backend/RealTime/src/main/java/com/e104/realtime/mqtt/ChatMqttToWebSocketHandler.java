@@ -8,8 +8,11 @@ import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
 import com.e104.realtime.mqtt.constant.Topic;
 import com.e104.realtime.mqtt.dto.*;
+import com.e104.realtime.mqtt.dto.mqtt.*;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -51,28 +54,37 @@ public class ChatMqttToWebSocketHandler {
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
-        Optional<String> topic = Optional.ofNullable(message.getHeaders().get(MQTT_RECEIVED_TOPIC, String.class)); // 수신된 토픽을 가져옴
-        if(topic.isEmpty()) throw new NullPointerException("토픽이 입력되지 않았습니다.");
+
+        MqttBaseDto dto = null;
         try {
-            switch (topic.get()) {
+            dto = objectMapper.readValue(payload, MqttBaseDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        String topic = dto.header();
+
+        if(Objects.isNull(topic)) throw new NullPointerException("토픽이 입력되지 않았습니다.");
+
+        try {
+            switch (topic) {
                 case Topic.TOPIC_WEBSOCKET_CONNECT:
-                    handleWebSocketConnect(payload);
+                    handleWebSocketConnect(dto);
                     break;
 
                 case Topic.TOPIC_MESSAGE_SEND:
-                    handleMessageSend(payload);
+                    handleMessageSend(dto);
                     break;
 
                 case Topic.TOPIC_CONVERSATION_END:
-                    handleConversationEnd(payload);
+                    handleConversationEnd(dto);
                     break;
 
                 case Topic.TOPIC_USER_DETECTION:
-                    handleUserDetection(payload);
+                    handleUserDetection(dto);
                     break;
 
                 case Topic.TOPIC_VOICE_RECOGNITION:
-                    handleVoiceRecognition(payload);
+                    handleVoiceRecognition(dto);
                     break;
 
                 default:
@@ -84,8 +96,7 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // WebSocket 연결을 관리하고 맵에 저장
-    private void handleWebSocketConnect(String payload) throws JsonProcessingException {
-        MqttWebsocketConnectDto dto = objectMapper.readValue(payload, MqttWebsocketConnectDto.class);
+    private void handleWebSocketConnect(MqttBaseDto dto) throws JsonProcessingException {
         int userSeq = dto.userSeq();
         if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
         WebSocketClient webSocketClient = createWebSocketClient(userSeq);
@@ -93,30 +104,30 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // 사용자의 메시지를 chatGPT 에게 전송하는 기능
-    private void handleMessageSend(String payload) throws JsonProcessingException {
-        MqttMessageSendDto dto = objectMapper.readValue(payload, MqttMessageSendDto.class);
+    private void handleMessageSend(MqttBaseDto dto) throws JsonProcessingException {
         int userSeq = dto.userSeq();
         if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
 
+        String content = dto.data().get("content");
+
         Conversation conversation = Conversation.builder()
                 .talker(Talker.CHILD.getValue())
-                .content(dto.content())
+                .content(content)
                 .build();
         userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
 
-        handleClientMessage(userSeq, dto.content());  // WebSocket으로 메시지 전송
+        handleClientMessage(userSeq, content);  // WebSocket으로 메시지 전송
     }
 
     // 대화 종료 알림을 처리하는 기능
-    private void handleConversationEnd(String payload) throws JsonProcessingException {
-        MqttConversationEndDto dto = objectMapper.readValue(payload, MqttConversationEndDto.class);
+    private void handleConversationEnd(MqttBaseDto dto) throws JsonProcessingException {
         int userSeq = dto.userSeq();
         if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
         userService.saveConversation(userSeq);
     }
 
     // 사용자 감지 알림을 처리하는 기능
-    private void handleUserDetection(String payload) throws JsonProcessingException {
+    private void handleUserDetection(MqttBaseDto dto) throws JsonProcessingException {
 
         // 현재 시각이 밤중이라면 발동하지 않게 하기.
         if(TimeChecker.isNight()) {
@@ -124,12 +135,11 @@ public class ChatMqttToWebSocketHandler {
         }
 
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
-        MqttUserDetectionDto dto = objectMapper.readValue(payload, MqttUserDetectionDto.class);
-        User user = repoUtil.findUser(dto.getUserSeq());
+        User user = repoUtil.findUser(dto.userSeq());
         List<Question> questions = user.getQuestions();
         Question question = questions.get(questions.size() - 1);
         if (question.isActive()) {
-            handleClientMessage(dto.getUserSeq(), """
+            handleClientMessage(dto.userSeq(), """
                     ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
                     질문: %s
                     """.formatted(question.getContent()));
@@ -139,23 +149,22 @@ public class ChatMqttToWebSocketHandler {
             // 현재 시간 추출
             String clock = TimeChecker.now();
             // 각 시간에 맞는 인사를 해달라고 하기
-            handleClientMessage(dto.getUserSeq(), """
+            handleClientMessage(dto.userSeq(), """
                     ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
                     """.formatted(clock));
         }
-        log.info("User detected: {}", payload);
+        log.info("User detected: {}", dto);
     }
 
     // 대화 시작 신호를 처리하는 기능
-    private void handleVoiceRecognition(String payload) throws JsonProcessingException {
+    private void handleVoiceRecognition(MqttBaseDto dto) throws JsonProcessingException {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
-        MqttVoiceRecognitionDto dto = objectMapper.readValue(payload, MqttVoiceRecognitionDto.class);
         int userSeq = dto.userSeq();
         if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
         handleClientMessage(userSeq, """
                 ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
                 """);
-        log.info("Voice recognition event received: {}", payload);
+        log.info("Voice recognition event received: {}", dto);
     }
 
     // userSeq 별로 WebSocket을 생성하여 저장하는 메서드
