@@ -135,7 +135,7 @@ public class ChatMqttToWebSocketHandler {
                     ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
                     질문: %s
                     """.formatted(question.getContent()));
-            question.updateAnswerd(); // 질문이 대답되었음을 표시
+            question.updateAnswerd(true); // 질문이 대답되었음을 표시
         }
         else {
             // 현재 시간 추출

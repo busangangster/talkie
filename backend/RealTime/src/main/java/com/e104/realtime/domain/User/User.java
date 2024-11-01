@@ -76,14 +76,6 @@ public class User {
         }
     }
 
-    // 질문 조회
-    public Question getQuestion(int questionSeq) {
-        return this.questions.stream()
-                .filter(question -> question.getQuestionSeq() == questionSeq)
-                .findFirst()
-                .orElseThrow(() -> new RestApiException(StatusCode.NOT_FOUND, "해당 질문을 찾을 수 없습니다."));
-    }
-
     // 질문추가
     @Transactional
     public void addQuestion(Question question) {
@@ -100,14 +92,14 @@ public class User {
 
     // 질문 삭제
     @Transactional
-    public void removeQuestion(int questionSeq) {
+    public void removeQuestion() {
         try {
-            Question removeQuestion = this.getQuestion(questionSeq);
-            if(!removeQuestion.isActive()) {
+            Question question = this.questions.get(this.questions.size()-1);
+            if(!question.isActive()) {
                 throw new RestApiException(StatusCode.BAD_REQUEST, "대답이 완료된 질문은 삭제할 수 없습니다.");
             }
-            removeQuestion.setUser(null);  // 양방향 관계 해제
-            this.questions.remove(removeQuestion);
+            question.setUser(null);  // 양방향 관계 해제
+            this.questions.remove(question);
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 제거 중 오류가 발생했습니다.");
         }
