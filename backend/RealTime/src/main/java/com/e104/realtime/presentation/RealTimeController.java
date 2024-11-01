@@ -65,8 +65,8 @@ public class RealTimeController {
     // 질문 및 응답 조회
     @GetMapping("/question/{userSeq}")
     public ResponseEntity<ResponseDto> getQuestionAndAnswerList(@PathVariable int userSeq) {
-        List<QuestionAndResponseDto> questionAndResponseDtos = userService.getQuestionAndAnswerList(userSeq);
-        return ResponseDto.response(StatusCode.SUCCESS, questionAndResponseDtos);
+        List<QuestionAndResponse> questionAndResponses = userService.getQuestionAndAnswerList(userSeq);
+        return ResponseDto.response(StatusCode.SUCCESS, questionAndResponses);
     }
 
     // 일자별 대화 목록 조회
