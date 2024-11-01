@@ -57,7 +57,7 @@ const TalkVoca: React.FC = () => {
     }
   }, []); // 빈 배열을 두어 한 번만 실행되도록 설정
 
-  return <div ref={chartRef} style={{ width: "500px", height: "400px" }} />;
+  return <div ref={chartRef} style={{ width: "450px", height: "400px" }} />;
 };
 
 export default TalkVoca;

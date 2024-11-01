@@ -77,7 +77,7 @@ const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
 
 const WeekVoca: React.FC = () => {
   return (
-    <div style={{ width: "800px", height: "600px", paddingTop: "100px" }}>
+    <div style={{ width: "800px", height: "480px", paddingTop: "30px" }}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
