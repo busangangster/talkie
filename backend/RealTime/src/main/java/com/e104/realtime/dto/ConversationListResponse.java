@@ -21,13 +21,12 @@ public class ConversationListResponse {
         private LocalDateTime createdAt;
     }
 
-    public ConversationListResponse(User user, LocalDateTime day) {
+    public ConversationListResponse(User user, LocalDate day) {
         List<ConversationAnalytics> conversationAnalytics = user.getConversationAnalytics();
         // Convert the input date to LocalDate to ignore time
-        LocalDate targetDate = day.toLocalDate();
         // Find conversations that have the same year, month, and day
         for (ConversationAnalytics conversation : conversationAnalytics) {
-            if (conversation.getCreatedAt().toLocalDate().equals(targetDate)) {
+            if (conversation.getCreatedAt().toLocalDate().equals(day)) {
                 ConversationList conversationList = new ConversationList();
                 conversationList.setConversationSeq(conversation.getConversationSeq());
                 conversationList.setTitle(conversation.getTitle());
