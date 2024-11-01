@@ -46,9 +46,9 @@ public class RealTimeController {
     }
 
     // 부모 질문 삭제
-    @DeleteMapping("/question/delete")
-    public ResponseEntity<ResponseDto> deleteQuestion(@RequestBody QuestionDeleteRequest request) {
-        userService.deleteQuestion(request);
+    @DeleteMapping("/question/delete/{userSeq}")
+    public ResponseEntity<ResponseDto> deleteQuestion(@PathVariable int userSeq) {
+        userService.deleteQuestion(userSeq);
         return ResponseDto.response(StatusCode.SUCCESS, "부모 질문 삭제 성공");
     }
 

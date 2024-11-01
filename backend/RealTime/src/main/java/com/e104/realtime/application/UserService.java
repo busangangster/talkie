@@ -80,9 +80,9 @@ public class UserService {
 
     // 질문 삭제
     @Transactional
-    public void deleteQuestion(QuestionDeleteRequest request) {
-        User user = repoUtil.findUser(request.getUserSeq());
-        user.removeQuestion(request.getQuestionSeq());
+    public void deleteQuestion(int userSeq) {
+        User user = repoUtil.findUser(userSeq);
+        user.removeQuestion();
     }
 
     // 질문 수정
@@ -161,9 +161,6 @@ public class UserService {
     public void saveConversation(int userSeq) {
         List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
         // 아이가 한번도 대답하지 않음
-        if (conversations.size() > 1) {
-            return;
-        }
         List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
 
         // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
@@ -173,9 +170,16 @@ public class UserService {
         boolean isActive = question.isActive();
         boolean isAnswered = question.isAnswered();
         if (isActive && isAnswered) {
+            if(conversations.size() <= 1) {
+                question.updateAnswerd(false);
+                return;
+            }
             String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
             Answer answer = builderUtil.buildAnswer(content);
             question.addAnswer(answer);
+        }
+        if(conversations.size() <= 1) {
+            return;
         }
         user.addConversationContents(conversationContents);
 
