@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./router/AppRouter";
 import SnowfallBackground from "./components/SnowfallBackground";
+import QuestionButton from "./components/QuestionButton";
 // import { useSnowfall } from "./hooks/useSnowfall";
 
 const App: React.FC = () => {
@@ -26,6 +27,9 @@ const App: React.FC = () => {
           <AppRouter />
         </div>
 
+        {/* 오른쪽 하단 질문 버튼 */}
+        <QuestionButton />
+
         {/* 눈 내림 효과를 제어하는 버튼 */}
         {/* <div className="fixed top-6 right-6 flex items-center z-20">
           <label className="relative inline-flex items-center cursor-pointer">
@@ -37,8 +41,8 @@ const App: React.FC = () => {
             />
             <div className="w-11 h-6 bg-[#d2d2d2] peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-[#ACC4EA]"></div> */}
 
-            {/* 토글 스위치의 동그라미 부분에 이미지 배경 추가 */}
-            {/* <span
+        {/* 토글 스위치의 동그라미 부분에 이미지 배경 추가 */}
+        {/* <span
               className="absolute left-[2px] top-[2px] bg-[#507ECE] w-5 h-5 rounded-full transition-transform peer-checked:translate-x-5"
               style={{
                 backgroundImage: "url('/assets/snow.png')",
@@ -51,6 +55,6 @@ const App: React.FC = () => {
       </div>
     </BrowserRouter>
   );
-}; 
+};
 
 export default App;
