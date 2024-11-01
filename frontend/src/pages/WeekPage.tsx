@@ -1,17 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import WeekFrame from "../components/WeekFrame";
 import Calendar from "../components/Calendar";
 import useTabStore from "../store/useTabStore";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper as SwiperClass } from "swiper";
+import "swiper/swiper-bundle.css";
+import { EffectCube } from "swiper/modules";
 
 const WeekPage: React.FC = () => {
   const tabs = ["감정", "어휘력", "관심사", "대화 빈도"];
   const [showCalendar, setShowCalendar] = useState(false);
 
-  // Zustand에서 상태 가져오기
   const { selectedTab, setSelectedTab } = useTabStore();
 
   const toggleCalendar = () => setShowCalendar(!showCalendar);
+
+  const swiperRef = useRef<SwiperClass | null>(null);
+
+  const currentTabIndex = tabs.findIndex((tab) => tab === selectedTab);
+
+  const handleTabClick = (tab: string) => {
+    const index = tabs.findIndex((t) => t === tab);
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(index);
+    }
+    setSelectedTab(tab);
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen relative">
@@ -28,8 +43,8 @@ const WeekPage: React.FC = () => {
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setSelectedTab(tab)}
-            className={`w-48 py-2 rounded-xl text-2xl font-semibold shadow-md  ${
+            onClick={() => handleTabClick(tab)}
+            className={`w-48 py-2 rounded-xl text-2xl font-semibold shadow-md ${
               selectedTab === tab
                 ? "bg-[#C4BDF5] text-black hover:bg-[#d3cdf4]"
                 : "bg-white text-black hover:bg-[#e9e9e9]"
@@ -40,11 +55,30 @@ const WeekPage: React.FC = () => {
         ))}
       </div>
 
-      {/* WeekFrame 컨텐츠 영역 */}
-      <div className="mt-8 p-12 w-2/3 rounded-2xl shadow-md bg-[#C7D2E3] bg-opacity-80">
-        <WeekFrame selectedTab={selectedTab} />
-      </div>
-
+      {/* Swiper 적용 */}
+      <Swiper
+        effect="cube"
+        modules={[EffectCube]}
+        cubeEffect={{
+          shadow: true,
+          slideShadows: true,
+          shadowOffset: 20,
+          shadowScale: 0.94,
+        }}
+        onSlideChange={(swiper) => {
+          setSelectedTab(tabs[swiper.activeIndex]);
+        }}
+        initialSlide={currentTabIndex}
+        className="mt-8 w-2/3 h-[650px] " 
+        onSwiper={(swiper) => (swiperRef.current = swiper)}
+      >
+        {tabs.map((tab) => (
+          <SwiperSlide key={tab}>
+            <WeekFrame selectedTab={tab} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      
       {/* 달력 모달 */}
       {showCalendar && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
