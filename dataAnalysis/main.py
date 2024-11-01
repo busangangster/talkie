@@ -8,6 +8,7 @@ from konlpy.tag import Okt
 from typing import Dict, List, Tuple
 import re
 from collections import Counter
+
 # 감정 레이블 리스트
 LABELS = ['불평/불만', '환영/호의', '감동/감탄', '지긋지긋', '고마움', '슬픔', '화남/분노', '존경', '기대감',
           '우쭐댐/무시함', '안타까움/실망', '비장함', '의심/불신', '뿌듯함', '편안/쾌적', '신기함/관심', '아껴주는',
@@ -53,13 +54,12 @@ app = FastAPI()
 
 
 # 요청 데이터 모델
-class TextRequest(BaseModel):
-    text: str
+class TextListRequest(BaseModel):
+    textList: List[str]
 
 #응답 Dto
 class EmotionResponse(BaseModel):
-    text: str
-    predictions: Dict[str,float]
+    predictions: Dict[str,int]
 
 class MorphAnalyzeResponse(BaseModel):
     morph_analyze: float
@@ -101,32 +101,50 @@ def map_emotion_scores(emotion_preds):
 
     return category_scores
 
-# 감성 분석 API 엔드포인트
 @app.post("/api/data/emotion", response_model=EmotionResponse)
-async def predict_emotion(request: TextRequest):
-    text = request.text
-    with torch.no_grad():
-        # 모델을 통해 44개 감정 예측 점수 계산
-        preds = trained_model(text)[0]
-        # 감정 레이블과 예측 점수를 쌍으로 묶어 사전 형태로 변환
-        emotion_preds = {label: float(pred) for label, pred in zip(LABELS, preds)}
+async def predict_emotion(request: TextListRequest):
 
-    # 예측 결과 중 0.4 이상의 점수를 가진 감정만 필터링
-    filtered_emotion_preds = {label: score for label, score in emotion_preds.items() if score > 0.4}
+    texts = request.textList
 
-    # 44개의 감정을 6개의 주요 감정으로 매핑하여 합산
-    mapped_scores = map_emotion_scores(filtered_emotion_preds)
+    mapped_scores = {
+        '기쁨점수': 0,
+        '사랑스러움점수': 0,
+        '슬픔점수': 0,
+        '두려움점수': 0,
+        '분노점수': 0,
+        '놀라움점수': 0
+    }
 
-    total = 0
+    # 각 텍스트에 대한 감정 예측 수행 및 합산
+    for text in texts:
+        with torch.no_grad():
+            preds = trained_model(text)[0]
+            emotion_preds = {label: float(pred) for label, pred in zip(LABELS, preds)}
 
-    for key, value in mapped_scores.items():
-        total +=value
+        filtered_emotion_preds = {label: score for label, score in emotion_preds.items() if score > 0.4}
+        mapped_score = map_emotion_scores(filtered_emotion_preds)
 
-    for key, value in mapped_scores.items():
-        mapped_scores[key] = int(round(mapped_scores[key]*100/total))
+        # mapped_score 값을 mapped_scores에 누적
+        for key in mapped_scores.keys():
+            mapped_scores[key] += mapped_score.get(key, 0)
 
+    # 모든 점수의 합 구하기
+    total = sum(mapped_scores.values())
+    if total > 0:
+        # 각 감정 점수를 총합 100이 되도록 정규화
+        for key in mapped_scores:
+            mapped_scores[key] = int(round(mapped_scores[key] * 100 / total))
 
-    return EmotionResponse(text=text, predictions=mapped_scores)
+    # 정규화 후 다시 합산하여 정확히 100이 되도록 조정
+    total_after_rounding = sum(mapped_scores.values())
+    difference = 100 - total_after_rounding
+    if difference != 0:
+        # 가장 큰 값에 남은 차이를 더하거나 빼서 100으로 맞춤
+        max_key = max(mapped_scores, key=mapped_scores.get)
+        mapped_scores[max_key] += difference
+
+    return EmotionResponse(predictions=mapped_scores)
+
 
 @app.post("/api/data/vocabulary",response_model=MorphAnalyzeResponse)
 async def morphAnalyze(request: TextRequest):
