@@ -1,11 +1,11 @@
 package com.e104.realtime.application;
 
-import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
 import com.e104.realtime.domain.ConversationAnalytics.Sentiment;
 import com.e104.realtime.domain.ConversationAnalytics.Vocabulary;
 import com.e104.realtime.domain.ConversationAnalytics.WordCloud;
-import com.e104.realtime.domain.WeekAnalytics.WeekWordCloud;
+import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
 import com.e104.realtime.domain.User.ConversationContent;
+import com.e104.realtime.domain.WeekAnalytics.WeekWordCloud;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +74,7 @@ public class ChatService {
             message.append("Day ").append(i).append(":\n").append("어휘 점수: ").append(dayAnalytics.getVocabularyScore()).append("\n");
         }
         message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
-        double avgScore = 0;
+        double avgScore;
         if (age == 5) {
             avgScore = 4.5;
         } else if (age == 6) {
@@ -220,7 +220,7 @@ public class ChatService {
     }
 
     private String getConversationVocabularyMessage(Vocabulary vocabulary, int age) {
-        double avgScore = 0;
+        double avgScore;
         if (age == 5) {
             avgScore = 4.5;
         } else if (age == 6) {

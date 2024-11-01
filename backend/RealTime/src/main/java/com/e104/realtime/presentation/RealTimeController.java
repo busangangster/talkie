@@ -5,9 +5,11 @@ import com.e104.realtime.common.response.ResponseDto;
 import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -46,9 +48,9 @@ public class RealTimeController {
     }
 
     // 부모 질문 삭제
-    @DeleteMapping("/question/delete")
-    public ResponseEntity<ResponseDto> deleteQuestion(@RequestBody QuestionDeleteRequest request) {
-        userService.deleteQuestion(request);
+    @DeleteMapping("/question/delete/{userSeq}")
+    public ResponseEntity<ResponseDto> deleteQuestion(@PathVariable int userSeq) {
+        userService.deleteQuestion(userSeq);
         return ResponseDto.response(StatusCode.SUCCESS, "부모 질문 삭제 성공");
     }
 
@@ -68,9 +70,11 @@ public class RealTimeController {
     }
 
     // 일자별 대화 목록 조회
-    @PostMapping("/conversation/list")
-    public ResponseEntity<ResponseDto> getConversationList(@RequestBody ConversationListRequest request) {
-        ConversationListResponse conversationList = userService.getConversationList(request);
+    @GetMapping("/conversation/list/{userSeq}")
+    public ResponseEntity<ResponseDto> getConversationList(
+            @PathVariable int userSeq,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
+        ConversationListResponse conversationList = userService.getConversationList(userSeq, day);
         return ResponseDto.response(StatusCode.SUCCESS, conversationList);
     }
 
@@ -89,10 +93,13 @@ public class RealTimeController {
     }
 
     // 주별 대화 통계 조회
-    @PostMapping("/conversation/weekly")
-    public ResponseEntity<ResponseDto> getWeeklyConversation(@RequestBody WeeklyConversationRequest request) {
-        WeeklyConversationResponse weeklyConversation = userService.getWeeklyConversation(request);
+    @GetMapping("/conversation/week/{userSeq}")
+    public ResponseEntity<ResponseDto> getWeeklyConversation(
+            @PathVariable int userSeq,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDay,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDay) {
+
+        WeeklyConversationResponse weeklyConversation = userService.getWeeklyConversation(userSeq, startDay, endDay);
         return ResponseDto.response(StatusCode.SUCCESS, weeklyConversation);
     }
-
 }

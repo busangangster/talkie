@@ -84,9 +84,9 @@ public class Question {
     }
 
     @Transactional
-    public void updateAnswerd() {
+    public void updateAnswerd(boolean isAnswered) {
         try {
-            this.isAnswered = true;
+            this.isAnswered = isAnswered;
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 답변 여부 업데이트 중 오류가 발생했습니다.");
         }

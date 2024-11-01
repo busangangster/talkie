@@ -3,7 +3,6 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
-import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.util.TimeChecker;
 import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
@@ -87,18 +86,17 @@ public class ChatMqttToWebSocketHandler {
     // WebSocket 연결을 관리하고 맵에 저장
     private void handleWebSocketConnect(String payload) throws JsonProcessingException {
         MqttWebsocketConnectDto dto = objectMapper.readValue(payload, MqttWebsocketConnectDto.class);
-        Integer userSeq = dto.getUserSeq();
-        if (userSeq != null) {
-            WebSocketClient webSocketClient = createWebSocketClient(userSeq);
-//            userWebSocketClients.put(userSeq, webSocketClient);  // 맵에 WebSocket 저장
-            openAISocketService.addSocket(userSeq, webSocketClient);
-        }
+        int userSeq = dto.userSeq();
+        if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
+        WebSocketClient webSocketClient = createWebSocketClient(userSeq);
+        openAISocketService.addSocket(userSeq, webSocketClient);
     }
 
     // 사용자의 메시지를 chatGPT 에게 전송하는 기능
     private void handleMessageSend(String payload) throws JsonProcessingException {
         MqttMessageSendDto dto = objectMapper.readValue(payload, MqttMessageSendDto.class);
-        Integer userSeq = dto.userSeq();
+        int userSeq = dto.userSeq();
+        if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
 
         Conversation conversation = Conversation.builder()
                 .talker(Talker.CHILD.getValue())
@@ -112,8 +110,8 @@ public class ChatMqttToWebSocketHandler {
     // 대화 종료 알림을 처리하는 기능
     private void handleConversationEnd(String payload) throws JsonProcessingException {
         MqttConversationEndDto dto = objectMapper.readValue(payload, MqttConversationEndDto.class);
-        Integer userSeq = dto.getUserSeq();
-        if (userSeq == null) return;
+        int userSeq = dto.userSeq();
+        if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
         userService.saveConversation(userSeq);
     }
 
@@ -135,7 +133,7 @@ public class ChatMqttToWebSocketHandler {
                     ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
                     질문: %s
                     """.formatted(question.getContent()));
-            question.updateAnswerd(); // 질문이 대답되었음을 표시
+            question.updateAnswerd(true); // 질문이 대답되었음을 표시
         }
         else {
             // 현재 시간 추출
@@ -152,7 +150,9 @@ public class ChatMqttToWebSocketHandler {
     private void handleVoiceRecognition(String payload) throws JsonProcessingException {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
         MqttVoiceRecognitionDto dto = objectMapper.readValue(payload, MqttVoiceRecognitionDto.class);
-        handleClientMessage(dto.getUserSeq(), """
+        int userSeq = dto.userSeq();
+        if(userSeq == 0) throw new NullPointerException("잘못된 사용자 시퀀스입니다.");
+        handleClientMessage(userSeq, """
                 ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
                 """);
         log.info("Voice recognition event received: {}", payload);
@@ -199,7 +199,6 @@ public class ChatMqttToWebSocketHandler {
     // userSeq에 따라 WebSocket을 통해 사용자 메시지를 전송하는 메서드
     private void handleClientMessage(Integer userSeq, String userMessage) {
         try {
-//            WebSocketClient webSocketClient = userWebSocketClients.computeIfAbsent(userSeq, this::createWebSocketClient);
             WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
             if (webSocketClient != null && webSocketClient.isOpen()) {
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
@@ -216,7 +215,6 @@ public class ChatMqttToWebSocketHandler {
     // OpenAI로부터 받은 메시지를 클라이언트로 MQTT를 통해 전송하는 메서드
     private void handleOpenAiResponse(Integer userSeq, String message) {
         try {
-//            WebSocketClient webSocketClient = userWebSocketClients.get(userSeq);
             WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
             JsonNode jsonResponse = objectMapper.readTree(message);
             String eventType = jsonResponse.path("type").asText();

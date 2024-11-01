@@ -3,12 +3,12 @@ package com.e104.realtime.application;
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.ConversationAnalytics.*;
-import com.e104.realtime.domain.DayAnalytics.*;
-import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
+import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
 import com.e104.realtime.domain.User.Answer;
 import com.e104.realtime.domain.User.ConversationContent;
 import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
+import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
 import com.e104.realtime.dto.*;
 import com.e104.realtime.mqtt.OpenAISocketService;
 import com.e104.realtime.redis.hash.Conversation;
@@ -80,9 +80,9 @@ public class UserService {
 
     // 질문 삭제
     @Transactional
-    public void deleteQuestion(QuestionDeleteRequest request) {
-        User user = repoUtil.findUser(request.getUserSeq());
-        user.removeQuestion(request.getQuestionSeq());
+    public void deleteQuestion(int userSeq) {
+        User user = repoUtil.findUser(userSeq);
+        user.removeQuestion();
     }
 
     // 질문 수정
@@ -105,9 +105,9 @@ public class UserService {
     }
 
     // 일자별 대화 목록 조회
-    public ConversationListResponse getConversationList(ConversationListRequest request) {
-        User user = repoUtil.findUser(request.getUserSeq());
-        return new ConversationListResponse(user, request.getDay());
+    public ConversationListResponse getConversationList(int userSeq, LocalDate day) {
+        User user = repoUtil.findUser(userSeq);
+        return new ConversationListResponse(user, day);
     }
 
     // 대화 상세 조회
@@ -126,24 +126,29 @@ public class UserService {
     }
 
     // 주별 대화 통계 조회
-    public WeeklyConversationResponse getWeeklyConversation(WeeklyConversationRequest request) {
-        User user = repoUtil.findUser(request.getUserSeq());
+    public WeeklyConversationResponse getWeeklyConversation(int userSeq, LocalDate startDay, LocalDate endDay) {
+        User user = repoUtil.findUser(userSeq);
         List<WeekAnalytics> weekAnalyticses = user.getWeekAnalytics();
 
         // 오늘이 몇년, 몇월, 몇주차 인지 찾기
-        LocalDate today = LocalDate.now();
-        int year = today.getYear();
-        int month = today.getMonthValue();
+        int startYear = startDay.getYear();
+        int endYear = endDay.getYear();
+        int startMonth = startDay.getMonthValue();
+        int endMonth = endDay.getMonthValue();
         WeekFields weekFields = WeekFields.of(Locale.KOREA);
-        int week = today.get(weekFields.weekOfMonth());
+        int startWeek = startDay.get(weekFields.weekOfMonth());
+        int endWeek = endDay.get(weekFields.weekOfMonth());
+        if(startYear != endYear || startMonth != endMonth || startWeek != endWeek) {
+            throw new RestApiException(StatusCode.BAD_REQUEST, "시작 날짜와 끝 날짜가 같은 년도,월,주차에 있어야 합니다.");
+        }
 
         // 현재 연도, 월, 주차에 맞는 주간 대화 통계 조회
         WeekAnalytics weekAnalytics = weekAnalyticses.stream()
-                .filter(w -> w.getYear() == year && w.getMonth() == month && w.getWeek() == week)
+                .filter(w -> w.getYear() == endYear && w.getMonth() == endMonth && w.getWeek() == endWeek)
                 .findFirst()
                 .orElse(null);
         List<DayAnalytics> filteredDayAnalytics = user.getDayAnalytics().stream()
-                .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
+                .filter(d -> d.getCreatedAt().getYear() == endYear && d.getCreatedAt().getMonthValue() == endMonth && d.getCreatedAt().get(weekFields.weekOfMonth()) == endWeek)
                 .toList();
 
         if (weekAnalytics == null) {
@@ -161,9 +166,6 @@ public class UserService {
     public void saveConversation(int userSeq) {
         List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
         // 아이가 한번도 대답하지 않음
-        if (conversations.size() > 1) {
-            return;
-        }
         List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
 
         // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
@@ -173,9 +175,16 @@ public class UserService {
         boolean isActive = question.isActive();
         boolean isAnswered = question.isAnswered();
         if (isActive && isAnswered) {
+            if(conversations.size() <= 1) {
+                question.updateAnswerd(false);
+                return;
+            }
             String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
             Answer answer = builderUtil.buildAnswer(content);
             question.addAnswer(answer);
+        }
+        if(conversations.size() <= 1) {
+            return;
         }
         user.addConversationContents(conversationContents);
 
