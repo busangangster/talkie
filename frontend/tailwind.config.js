@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      backgroundPosition: {
+        "center-top": "center top",
+      },
+    },
   },
   plugins: [],
 };

@@ -125,7 +125,8 @@ const Calendar: React.FC = () => {
         />
         <MoveNext>이동하기</MoveNext>
         <StyledWrapper>
-          <StyledLabel>
+        <StyledLabel>
+          
             <StyledCheckbox
               type="checkbox"
               checked={checked}
