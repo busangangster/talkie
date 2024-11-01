@@ -43,7 +43,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     // JSON 처리 라이브러리 (필요 시)
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'  // Spring Data MongoDB 의존성 추가 (MongoDB 사용을 위한 설정)
+//    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'  // Spring Data MongoDB 의존성 추가 (MongoDB 사용을 위한 설정)
 
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  // QueryDSL JPA 모듈 추가 (Jakarta 버전)
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
