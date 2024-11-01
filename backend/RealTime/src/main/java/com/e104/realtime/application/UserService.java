@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -95,12 +96,12 @@ public class UserService {
     }
 
     // 질문 및 응답 조회
-    public List<QuestionAndResponseDto> getQuestionAndAnswerList(int userSeq) {
+    public List<QuestionAndResponse> getQuestionAndAnswerList(int userSeq) {
         User user = repoUtil.findUser(userSeq);
         List<Question> questions = user.getQuestions();
 
         return questions.stream()
-                .map(QuestionAndResponseDto::new)
+                .map(QuestionAndResponse::new)
                 .toList();
     }
 
@@ -188,11 +189,24 @@ public class UserService {
         }
         user.addConversationContents(conversationContents);
 
-        // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기, DTO 생성 및 매핑
-        fetchPostRequest(conversationContents);
-        List<WordCloud> wordClouds = null;
-        Vocabulary vocabulary = null;
-        Sentiment sentiment = null;
+        // TODO: DTO 매핑
+        List<String> conversationOfKid = conversationContents.stream().filter(ConversationContent::isAnswer).map(ConversationContent::getContent).toList();
+        FastApiWordCloudResponse fastApiWordCloudResponse = fetchPostRequest(conversationOfKid, FastApiWordCloudResponse.class);
+        FastApiSentimentResponse fastApiSentimentResponse = fetchPostRequest(conversationOfKid, FastApiSentimentResponse.class);
+        FastApiVocabularyResponse fastApiVocabularyResponse = fetchPostRequest(conversationOfKid, FastApiVocabularyResponse.class);
+        List<WordCloud> wordClouds = new ArrayList<>();
+        for (FastApiWordCloudResponse.wordCloud wordCloud : fastApiWordCloudResponse.getWordCloud()) {
+            wordClouds.add(WordCloud.builder().word(wordCloud.getWord()).count(wordCloud.getCount()).build());
+        }
+        Vocabulary vocabulary = Vocabulary.builder().vocabularyScore(fastApiVocabularyResponse.getMorph_analyze()).build();
+        Sentiment sentiment = Sentiment.builder()
+                .happyScore(fastApiSentimentResponse.getHappyScore())
+                .loveScore(fastApiSentimentResponse.getLoveScore())
+                .sadScore(fastApiSentimentResponse.getSadScore())
+                .scaryScore(fastApiSentimentResponse.getScaryScore())
+                .angryScore(fastApiSentimentResponse.getAngryScore())
+                .amazingScore(fastApiSentimentResponse.getAmazingScore())
+                .build();
 
         // 대화제목, 대화 내용 요약 가져오기
         String TitleAndContentSummary = chatService.getConversationSummary(conversationContents);
@@ -226,22 +240,23 @@ public class UserService {
         conversationRedisRepository.deleteAllByUserSeq(userSeq);
     }
 
-    private void fetchPostRequest(List<ConversationContent> conversationContents) {
+    private <T> T fetchPostRequest(List<String> conversationOfKid, Class<T> responseType) {
         // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // 요청 데이터 생성
-        MultiValueMap<String, List<ConversationContent>> requestData = new LinkedMultiValueMap<>();
-        requestData.add("Conversation", conversationContents);
+        MultiValueMap<String, List<String>> requestData = new LinkedMultiValueMap<>();
+        requestData.add("Conversation", conversationOfKid);
 
         // HTTP 엔티티 생성 (헤더와 데이터를 함께 설정)
-        HttpEntity<MultiValueMap<String, List<ConversationContent>>> requestEntity = new HttpEntity<>(requestData, headers);
+        HttpEntity<MultiValueMap<String, List<String>>> requestEntity = new HttpEntity<>(requestData, headers);
+
         // HTTP POST 요청 보내기
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(fastApiUrl, requestEntity, String.class);
+        ResponseEntity<T> responseEntity = restTemplate.postForEntity(fastApiUrl, requestEntity, responseType);
 
         // 응답 값
-        String responseBody = responseEntity.getBody();
-        System.out.println("POST Response: " + responseBody);
+        return responseEntity.getBody();
     }
+
 }

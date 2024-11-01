@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class QuestionAndResponseDto {
+public class QuestionAndResponse {
 
     private int questionSeq;
 
@@ -21,7 +21,7 @@ public class QuestionAndResponseDto {
     private LocalDateTime answerCreatedAt;
 
     // Question 객체를 받아서 필드 초기화하는 생성자 추가
-    public QuestionAndResponseDto(Question question) {
+    public QuestionAndResponse(Question question) {
         this.questionSeq = question.getQuestionSeq();
         this.question = question.getContent();
         this.questionCreatedAt = question.getCreatedAt();
