@@ -20,8 +20,8 @@ public class RealTimeController {
     private final UserService userService;
 
     // 로그인
-    @GetMapping("/login/{userId}")
-    public ResponseEntity<ResponseDto> login(@PathVariable String userId) {
+    @PostMapping("/login/{userId}")
+    public ResponseEntity<ResponseDto> login(@RequestBody String userId) {
         LoginResponse loginResponse = userService.login(userId);
         return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
     }
