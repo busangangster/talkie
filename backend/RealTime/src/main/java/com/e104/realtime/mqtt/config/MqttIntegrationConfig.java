@@ -32,8 +32,8 @@ public class MqttIntegrationConfig {
 
     private String brokerUrl;  // MQTT 브로커 URL
     private String clientId;  // MQTT 클라이언트 ID
-    private String subscribeTopic;  // MQTT 구독 토픽
-    private String publishTopic;  // MQTT 발행 토픽
+    private String subscribeTopic = "tokie-server";  // MQTT 구독 토픽
+    private String publishTopic = "tokie-client";  // MQTT 발행 토픽
 
     /**
      * MQTT 메시지 수신 채널<br>
@@ -69,7 +69,7 @@ public class MqttIntegrationConfig {
     public MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory());
         messageHandler.setAsync(true);  // 비동기 전송 설정
-//        messageHandler.setDefaultTopic(publishTopic);  // 기본 발행 토픽 설정
+        messageHandler.setDefaultTopic(publishTopic);  // 기본 발행 토픽 설정
         return messageHandler;
     }
 
