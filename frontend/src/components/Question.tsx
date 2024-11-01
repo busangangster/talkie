@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import AlertModal from "../components/AlertModal";
 
 interface QuestionProps {
   isQuestionUsed: boolean;
@@ -12,10 +13,11 @@ const Question: React.FC<QuestionProps> = ({
   onQuestionSubmit,
 }) => {
   const [question, setQuestion] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSubmit = () => {
     if (!question.trim()) {
-      alert("질문을 입력해주세요");
+      setIsModalOpen(true); // 질문이 없을 경우 모달을 표시
     } else {
       onQuestionSubmit();
       setQuestion(""); // 질문 제출 후 입력란 초기화
@@ -61,10 +63,19 @@ const Question: React.FC<QuestionProps> = ({
       <button
         onClick={handleSubmit}
         className="w-2/5 p-3 mt-2 bg-[#869FD3] text-white rounded-lg ml-auto hover:bg-[#7286b0] disabled:opacity-50"
-        disabled={isQuestionUsed} // isQuestionUsed에 따라 클릭만 비활성화
+        disabled={isQuestionUsed}
       >
         등록하기
       </button>
+
+      {/* AlertModal */}
+      {isModalOpen && (
+        <AlertModal
+          icon={<img src="/assets/alerticon/question.png" alt="alert icon" />}
+          message="질문을 입력해주세요"
+          onConfirm={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

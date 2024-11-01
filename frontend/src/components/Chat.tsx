@@ -11,7 +11,7 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ messages }) => {
   return (
-    <div className="bg-[#F9F9F9] p-10 rounded-xl mt-5 w-full overflow-y-scroll space-y-4 max-h-[720px]">
+    <div className="bg-[#F9F9F9] p-10 rounded-xl mt-5 w-[1100px] overflow-y-scroll space-y-4 max-h-[720px]">
       {messages.map((message, index) => (
         <div
           key={index}

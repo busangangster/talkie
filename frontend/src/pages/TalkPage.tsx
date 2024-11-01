@@ -129,13 +129,13 @@ const TalkPage: React.FC = () => {
         <div className="w-[42%] h-[400px] bg-white rounded-xl shadow-md mt-6 p-8">
           <WordCloud />
         </div>
-        <div className="w-[53%] bg-white p-8 rounded-xl shadow-md bg-opacity-60">
+        <div className="w-[53%] bg-white p-10 rounded-xl shadow-md bg-opacity-60">
           <div className="flex items-center mb-4">
-            <span className="bg-[#b3c5d3] text-black text-[24px] px-5 py-2 rounded-2xl font-bold mr-2">
+            <span className="bg-[#b3c5d3] text-black text-[25px] px-5 py-2 rounded-2xl font-bold mr-2">
               관심사
             </span>
           </div>
-          <p className="text-gray-900 text-[22px] leading-relaxed">
+          <p className="text-gray-900 text-[25px] leading-relaxed">
             어린 아이가 관심을 가지는 단어들로
             <br /> 토끼인형, 엄마, 고구마, 티니핑 등이 포함되어 있어요. <br />
             아이가 좋아하는 장난감, 가족, 계절, 음식 등이 주된 주제로 보여요.
@@ -146,13 +146,13 @@ const TalkPage: React.FC = () => {
         <div className="w-[42%] h-[400px] bg-white rounded-xl shadow-md mt-6 p-8 z-20">
           <TalkVoca />
         </div>
-        <div className="w-[53%] bg-white p-8 rounded-xl shadow-md bg-opacity-60">
+        <div className="w-[53%] bg-white p-10 rounded-xl shadow-md bg-opacity-60">
           <div className="flex items-center mb-4">
-            <span className="bg-[#C6D4DF] text-black text-[24px] px-5 py-2 rounded-2xl font-bold mr-2">
+            <span className="bg-[#C6D4DF] text-black text-[25px] px-5 py-2 rounded-2xl font-bold mr-2">
               어휘력
             </span>
           </div>
-          <p className="text-gray-900 text-[22px] leading-relaxed">
+          <p className="text-gray-900 text-[25px] leading-relaxed">
             그래프에 따르면, <br />
             재산의 어휘력은 평균 이상으로, 또래보다 더 많은 어휘를 사용하는
             것으로 나타나요. <br /> 이는 언어 발달에서 긍정적인 신호로 볼 수
@@ -164,13 +164,13 @@ const TalkPage: React.FC = () => {
         <div className="w-[42%] h-[400px] bg-white rounded-xl shadow-md mt-6 p-8 z-20">
           <TalkEmotion />
         </div>
-        <div className="w-[53%] bg-white p-8 rounded-xl shadow-md bg-opacity-60">
+        <div className="w-[53%] bg-white p-10 rounded-xl shadow-md bg-opacity-60">
           <div className="flex items-center mb-4">
-            <span className="bg-[#E3E7F0] text-black text-[24px] px-5 py-2 rounded-2xl font-bold mr-2">
+            <span className="bg-[#E3E7F0] text-black text-[25px] px-5 py-2 rounded-2xl font-bold mr-2">
               감정
             </span>
           </div>
-          <p className="text-gray-900 text-[22px] leading-relaxed">
+          <p className="text-gray-900 text-[25px] leading-relaxed">
             아이의 감정 그래프를 보면, <br />
             기쁨과 놀라움에서 높은 반응을 보이며,
             <br />
@@ -197,7 +197,9 @@ const TalkPage: React.FC = () => {
       </div>
 
       {/* 대화 내용 컴포넌트 */}
-      <Chat messages={messages} />
+      <div className="z-30">
+        <Chat messages={messages} />
+      </div>
 
       {/* 달력 모달 */}
       {showCalendar && (
