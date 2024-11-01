@@ -1,6 +1,6 @@
 package com.e104.realtime.dto;
 
-import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.User.User;
 import lombok.Data;
 
 @Data

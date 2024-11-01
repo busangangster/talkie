@@ -1,6 +1,6 @@
 package com.e104.realtime.infrastructure;
 
-import com.e104.realtime.domain.entity.User;
+import com.e104.realtime.domain.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

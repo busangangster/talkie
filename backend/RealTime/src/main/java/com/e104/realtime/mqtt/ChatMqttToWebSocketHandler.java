@@ -3,11 +3,12 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.common.exception.RestApiException;
+import com.e104.realtime.common.util.TimeChecker;
+import com.e104.realtime.domain.User.Question;
+import com.e104.realtime.domain.User.User;
 import com.e104.realtime.mqtt.constant.Topic;
-import com.e104.realtime.mqtt.dto.MqttConversationEndDto;
-import com.e104.realtime.mqtt.dto.MqttMessageSendDto;
-import com.e104.realtime.mqtt.dto.MqttWebsocketConnectDto;
-import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
+import com.e104.realtime.mqtt.dto.*;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,7 +43,7 @@ public class ChatMqttToWebSocketHandler {
     private String openAiWebSocketUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final List<String> audioDeltas = new ArrayList<>(); // 오디오 델타 문자열을 저장할 리스트
+    private final List<String> audioDeltas = Collections.synchronizedList(new ArrayList<>()); // 오디오 델타 문자열을 저장할 리스트
 
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
@@ -51,9 +52,10 @@ public class ChatMqttToWebSocketHandler {
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
-        String topic = message.getHeaders().get(MQTT_RECEIVED_TOPIC, String.class); // 수신된 토픽을 가져옴
+        Optional<String> topic = Optional.ofNullable(message.getHeaders().get(MQTT_RECEIVED_TOPIC, String.class)); // 수신된 토픽을 가져옴
+        if(topic.isEmpty()) throw new NullPointerException("토픽이 입력되지 않았습니다.");
         try {
-            switch (Objects.requireNonNull(topic)) {
+            switch (topic.get()) {
                 case Topic.TOPIC_WEBSOCKET_CONNECT:
                     handleWebSocketConnect(payload);
                     break;
@@ -78,8 +80,7 @@ public class ChatMqttToWebSocketHandler {
                     log.info("Unknown topic: " + topic);
             }
         } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-            e.printStackTrace();
+            log.error("JSON 파싱 중 오류가 발생했습니다.", e);
         }
     }
 
@@ -116,16 +117,45 @@ public class ChatMqttToWebSocketHandler {
         userService.saveConversation(userSeq);
     }
 
-    // TODO: 사용자 감지 알림을 처리하는 기능
-    private void handleUserDetection(String payload) {
+    // 사용자 감지 알림을 처리하는 기능
+    private void handleUserDetection(String payload) throws JsonProcessingException {
+
+        // 현재 시각이 밤중이라면 발동하지 않게 하기.
+        if(TimeChecker.isNight()) {
+            return;
+        }
+
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
-        log.info("User detected: " + payload);
+        MqttUserDetectionDto dto = objectMapper.readValue(payload, MqttUserDetectionDto.class);
+        User user = repoUtil.findUser(dto.getUserSeq());
+        List<Question> questions = user.getQuestions();
+        Question question = questions.get(questions.size() - 1);
+        if (question.isActive()) {
+            handleClientMessage(dto.getUserSeq(), """
+                    ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
+                    질문: %s
+                    """.formatted(question.getContent()));
+            question.updateAnswerd(); // 질문이 대답되었음을 표시
+        }
+        else {
+            // 현재 시간 추출
+            String clock = TimeChecker.now();
+            // 각 시간에 맞는 인사를 해달라고 하기
+            handleClientMessage(dto.getUserSeq(), """
+                    ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
+                    """.formatted(clock));
+        }
+        log.info("User detected: {}", payload);
     }
 
-    // TODO: 음성 인식 알림을 처리하는 기능
-    private void handleVoiceRecognition(String payload) {
+    // 대화 시작 신호를 처리하는 기능
+    private void handleVoiceRecognition(String payload) throws JsonProcessingException {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
-        log.info("Voice recognition event received: " + payload);
+        MqttVoiceRecognitionDto dto = objectMapper.readValue(payload, MqttVoiceRecognitionDto.class);
+        handleClientMessage(dto.getUserSeq(), """
+                ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
+                """);
+        log.info("Voice recognition event received: {}", payload);
     }
 
     // userSeq 별로 WebSocket을 생성하여 저장하는 메서드
@@ -135,7 +165,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
-                    log.info("Connected to OpenAI WebSocket for user: " + userSeq);
+                    log.info("Connected to OpenAI WebSocket for user: {}", userSeq);
                 }
 
                 @Override
@@ -145,7 +175,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    log.info("OpenAI WebSocket closed for user: " + userSeq + " - " + reason);
+                    log.info("OpenAI WebSocket closed for user: {} - {}", userSeq, reason);
 //                    userWebSocketClients.remove(userSeq);
                     openAISocketService.removeSocket(userSeq);
                 }
@@ -174,6 +204,9 @@ public class ChatMqttToWebSocketHandler {
             if (webSocketClient != null && webSocketClient.isOpen()) {
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 webSocketClient.send(jsonMessage);
+                // 응답 생성 요청 전송
+                String responseCreateJsonMessage = "{\"type\":\"response.create\"}";
+                webSocketClient.send(responseCreateJsonMessage);
             }
         } catch (Exception e) {
             e.printStackTrace();

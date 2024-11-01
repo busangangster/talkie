@@ -2,19 +2,32 @@ package com.e104.realtime.application;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
-import com.e104.realtime.domain.entity.*;
+import com.e104.realtime.domain.ConversationAnalytics.*;
+import com.e104.realtime.domain.DayAnalytics.*;
+import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
+import com.e104.realtime.domain.User.Answer;
+import com.e104.realtime.domain.User.ConversationContent;
+import com.e104.realtime.domain.User.Question;
+import com.e104.realtime.domain.User.User;
 import com.e104.realtime.dto.*;
 import com.e104.realtime.mqtt.OpenAISocketService;
 import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
 import com.e104.realtime.redis.repository.ConversationRedisRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +43,11 @@ public class UserService {
 
     private final OpenAISocketService openAISocketService;
     private final ConversationMapper conversationMapper;
+
+    private final RestTemplate restTemplate;
+
+    @Value("${fastapi.url}")
+    private String fastApiUrl;
 
     // 로그인
     public LoginResponse login(String userId) {
@@ -65,6 +83,15 @@ public class UserService {
     public void deleteQuestion(QuestionDeleteRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
         user.removeQuestion(request.getQuestionSeq());
+    }
+
+    // 질문 수정
+    @Transactional
+    public void updateQuestion(QuestionUpdateRequest request) {
+        User user = repoUtil.findUser(request.getUserSeq());
+        List<Question> questions = user.getQuestions();
+        Question question = questions.get(questions.size() - 1);
+        question.updateQuestion(request.getContent());
     }
 
     // 질문 및 응답 조회
@@ -133,6 +160,10 @@ public class UserService {
     @Transactional
     public void saveConversation(int userSeq) {
         List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
+        // 아이가 한번도 대답하지 않음
+        if (conversations.size() > 1) {
+            return;
+        }
         List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
 
         // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
@@ -141,15 +172,16 @@ public class UserService {
         Question question = questions.get(questions.size() - 1);
         boolean isActive = question.isActive();
         boolean isAnswered = question.isAnswered();
-        if(isActive && isAnswered) {
+        if (isActive && isAnswered) {
             String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
             Answer answer = builderUtil.buildAnswer(content);
             question.addAnswer(answer);
         }
         user.addConversationContents(conversationContents);
 
-        // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기 (WebClient, WebFlux?)
-        List<WordCloud> wordClouds= null;
+        // TODO: FAST API에서 감정분석, 워드클라우드, 어휘력 가져오기, DTO 생성 및 매핑
+        fetchPostRequest(conversationContents);
+        List<WordCloud> wordClouds = null;
         Vocabulary vocabulary = null;
         Sentiment sentiment = null;
 
@@ -183,5 +215,24 @@ public class UserService {
 
         // Redis 대화 삭제
         conversationRedisRepository.deleteAllByUserSeq(userSeq);
+    }
+
+    private void fetchPostRequest(List<ConversationContent> conversationContents) {
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 요청 데이터 생성
+        MultiValueMap<String, List<ConversationContent>> requestData = new LinkedMultiValueMap<>();
+        requestData.add("Conversation", conversationContents);
+
+        // HTTP 엔티티 생성 (헤더와 데이터를 함께 설정)
+        HttpEntity<MultiValueMap<String, List<ConversationContent>>> requestEntity = new HttpEntity<>(requestData, headers);
+        // HTTP POST 요청 보내기
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(fastApiUrl, requestEntity, String.class);
+
+        // 응답 값
+        String responseBody = responseEntity.getBody();
+        System.out.println("POST Response: " + responseBody);
     }
 }

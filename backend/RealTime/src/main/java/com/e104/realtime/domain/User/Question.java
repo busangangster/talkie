@@ -1,4 +1,4 @@
-package com.e104.realtime.domain.entity;
+package com.e104.realtime.domain.User;
 
 import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
@@ -73,10 +73,22 @@ public class Question {
     @Transactional
     public void updateQuestion(String content) {
         try {
+            if (!this.isActive) {
+                throw new RestApiException(StatusCode.BAD_REQUEST, "이미 답변이 달린 질문은 수정할 수 없습니다.");
+            }
             this.content = content;
             this.createdAt = LocalDateTime.now();
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 정보 업데이트 중 오류가 발생했습니다.");
+        }
+    }
+
+    @Transactional
+    public void updateAnswerd() {
+        try {
+            this.isAnswered = true;
+        } catch (Exception e) {
+            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 답변 여부 업데이트 중 오류가 발생했습니다.");
         }
     }
 }
