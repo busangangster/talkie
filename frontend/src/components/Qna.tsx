@@ -1,36 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-
-interface QnaProps {
-  data: Array<{
-    id: number;
-    question: string;
-    answer: string;
-    date: string;
-  }>;
-  itemsPerPage: number;
-}
+import { QnaProps } from "../type";
+import { deleteQuestion } from "../apis/api";
+import AlertModal from "../components/AlertModal";
+import useUserStore from "../store/useUserStore";
 
 const Qna: React.FC<QnaProps> = ({ data, itemsPerPage }) => {
+  const [questions, setQuestions] = useState(data); // questions 상태로 초기 데이터를 관리
   const [activePage, setActivePage] = useState(1);
-  const [openQuestions, setOpenQuestions] = useState<number[]>([]);
+  const [openQuestionSeq, setOpenQuestionSeq] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { userSeq } = useUserStore();
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data.slice(
+  // 초기 데이터가 변경될 때 questions 상태를 업데이트
+  useEffect(() => {
+    setQuestions(data);
+  }, [data]);
+
+  // 콘솔로 데이터를 확인
+  // console.log("Data received:", data);
+  // console.log("Questions state:", questions);
+
+  // questionCreatedAt 기준으로 최신순으로 정렬
+  const sortedData = [...questions].sort((a, b) => {
+    for (let i = 0; i < a.questionCreatedAt.length; i++) {
+      if (a.questionCreatedAt[i] !== b.questionCreatedAt[i]) {
+        return b.questionCreatedAt[i] - a.questionCreatedAt[i];
+      }
+    }
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const paginatedData = sortedData.slice(
     (activePage - 1) * itemsPerPage,
     activePage * itemsPerPage
   );
 
   const handlePageChange = (page: number) => {
     setActivePage(page);
-    setOpenQuestions([]);
+    setOpenQuestionSeq(null); // 페이지가 바뀔 때 모든 질문 닫기
   };
 
-  const toggleQuestion = (id: number) => {
-    if (openQuestions.includes(id)) {
-      setOpenQuestions(openQuestions.filter((questionId) => questionId !== id));
-    } else {
-      setOpenQuestions([...openQuestions, id]);
+  const toggleQuestion = (questionSeq: number) => {
+    setOpenQuestionSeq(openQuestionSeq === questionSeq ? null : questionSeq);
+  };
+
+  const formatDate = (dateArray: number[]) => {
+    if (dateArray.length >= 3) {
+      const year = dateArray[0];
+      const month = String(dateArray[1]).padStart(2, "0");
+      const day = String(dateArray[2]).padStart(2, "0");
+      return `${year}.${month}.${day}`;
+    }
+    return "유효하지 않은 날짜";
+  };
+
+  const handleDelete = async (questionSeq: number) => {
+    try {
+      if (userSeq !== null) {
+        await deleteQuestion(userSeq); // userSeq를 사용하여 삭제
+        setQuestions((prevQuestions) =>
+          prevQuestions.filter(
+            (question) => question.questionSeq !== questionSeq
+          )
+        );
+        setIsModalOpen(true); // 삭제 후 모달 열기
+      } else {
+        console.error("userSeq가 설정되지 않았습니다.");
+      }
+    } catch (error) {
+      console.error("질문 삭제 중 오류 발생:", error);
     }
   };
 
@@ -39,13 +79,13 @@ const Qna: React.FC<QnaProps> = ({ data, itemsPerPage }) => {
       {/* 질문 리스트 영역 */}
       <div className="overflow-y-auto h-[500px] space-y-2.5">
         {paginatedData.map((item) => (
-          <div key={item.id} className="border-b pb-3 mb-3">
+          <div key={item.questionSeq} className="border-b pb-3 mb-3">
             <div
               className="flex justify-between items-center cursor-pointer"
-              onClick={() => toggleQuestion(item.id)}
+              onClick={() => toggleQuestion(item.questionSeq)}
             >
               <div className="flex items-center space-x-3">
-                {openQuestions.includes(item.id) ? (
+                {openQuestionSeq === item.questionSeq ? (
                   <IoIosArrowUp className="text-gray-500" />
                 ) : (
                   <IoIosArrowDown className="text-gray-500 text-lg" />
@@ -58,22 +98,31 @@ const Qna: React.FC<QnaProps> = ({ data, itemsPerPage }) => {
                   {item.question}
                 </p>
               </div>
-              <span className="text-sm ml-12 mr-3 bottom-0">{item.date}</span>
+              <div className="flex items-center space-x-2">
+                {/* 삭제 버튼은 답변이 없는 경우에만 표시 */}
+                {!item.answer && userSeq !== null && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(item.questionSeq);
+                    }}
+                    className="text-red-500"
+                  >
+                    삭제
+                  </button>
+                )}
+                <span className="text-sm ml-12 mr-3 bottom-0">
+                  {formatDate(item.questionCreatedAt)}
+                </span>
+              </div>
             </div>
-            {openQuestions.includes(item.id) && (
+            {openQuestionSeq === item.questionSeq && (
               <div className="mt-3 ml-6 mr-28">
                 {item.answer ? (
                   <p>{item.answer}</p>
                 ) : (
                   <div className="text-gray-400">
                     <p>아직 질문을 하지 않았어요!</p>
-                  </div>
-                )}
-                {/* 수정/삭제 버튼 */}
-                {!item.answer && (
-                  <div className="flex space-x-2 mt-2">
-                    <button className="text-blue-500">수정</button>
-                    <button className="text-red-500">삭제</button>
                   </div>
                 )}
               </div>
@@ -116,6 +165,15 @@ const Qna: React.FC<QnaProps> = ({ data, itemsPerPage }) => {
           &gt;
         </button>
       </div>
+
+      {/* 삭제 완료 모달 */}
+      {isModalOpen && (
+        <AlertModal
+          icon={<img src="/assets/alerticon/check.png" alt="alert icon" />}
+          message="질문이 삭제되었어요."
+          onConfirm={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
