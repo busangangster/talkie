@@ -76,7 +76,7 @@ public class User {
     @Transactional
     public void addQuestion(Question question) {
         try {
-            if(!questions.isEmpty() && questions.get(questions.size()-1).isActive()) {
+            if(!this.questions.isEmpty() && this.questions.get(this.questions.size()-1).isActive()) {
                 throw new RestApiException(StatusCode.BAD_REQUEST, "이미 활성화된 질문이 있습니다.");
             }
             question.setUser(this);  // 양방향 관계 설정 (Actor 객체가 이 영화에 속해 있음을 명시)
