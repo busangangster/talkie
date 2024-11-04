@@ -40,11 +40,12 @@ public class OpenAISocketService {
     private static String getInstructions(User user) {
         String gender = user.getGender().equals("M") ? "남자" : "여자";
         return Instruction.INSTRUCTION +
-        "아이의 이름은: " + user.getName() +
-        ", 아이의 나이는: " + user.getAge() +
-        ", 아이의 성별은 : " + gender +
-        ", 아이가 좋아하는 건: " + user.getFavorite() +
-        ". 아이의 인적사항에 알맞게 대화해야해. \n";
+                "아이의 이름은: " + user.getName() +
+                ", 아이의 나이는: " + user.getAge() +
+                ", 아이의 성별은 : " + gender +
+                ", 아이가 좋아하는 건: " + user.getFavorite() +
+                ",아이의 특이사항은: " + user.getRemark() +
+                ". 아이의 인적사항에 알맞게 대화해야해. \n";
     }
 
     public WebSocketClient getWebSocketClient(int userSeq) {
