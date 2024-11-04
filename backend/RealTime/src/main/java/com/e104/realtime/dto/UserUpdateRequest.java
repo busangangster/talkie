@@ -9,4 +9,5 @@ public class UserUpdateRequest {
     private int age;
     private String gender;
     private String favorite;
+    private String remark;
 }

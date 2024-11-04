@@ -51,8 +51,8 @@ public class UserService {
     private String fastApiUrl;
 
     // 로그인
-    public LoginResponse login(String userId) {
-        int userSeq = repoUtil.login(userId);
+    public LoginResponse login(LoginRequest request) {
+        int userSeq = repoUtil.login(request.getUserId());
         User user = repoUtil.findUser(userSeq);
         return new LoginResponse(user.getUserSeq(), user.isNotFirstLogin());
     }
@@ -67,7 +67,7 @@ public class UserService {
     @Transactional
     public void updateUser(UserUpdateRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
-        user.updateUserInfo(request.getName(), request.getAge(), request.getGender(), request.getFavorite());
+        user.updateUserInfo(request.getName(), request.getAge(), request.getGender(), request.getFavorite(), request.getRemark());
         openAISocketService.sendSessionUpdate(user);
     }
 

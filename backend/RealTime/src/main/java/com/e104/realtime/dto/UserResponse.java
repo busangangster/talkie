@@ -17,6 +17,8 @@ public class UserResponse {
 
     private String favorite; // 사용자의 관심사
 
+    private String remark; // 사용자의 비고
+
     private boolean isNotFirstLogin;
 
     public UserResponse(User user) {
@@ -26,5 +28,6 @@ public class UserResponse {
         this.age = user.getAge();
         this.gender = user.getGender();
         this.favorite = user.getFavorite();
+        this.remark = user.getRemark();
     }
 }
