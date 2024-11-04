@@ -1,38 +1,72 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { updateUserInfo } from "../apis/api";
+import useUserStore from "../store/useUserStore";
 
 const InfoPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
-    birthDate: "",
+    age: 0,
     gender: "",
-    favoriteColor: "",
-    notes: "",
+    favorite: "",
+    remark: "",
   });
-  const [errorField, setErrorField] = useState(""); // 에러가 발생한 필드만 저장
+  const [errorField, setErrorField] = useState("");
   const navigate = useNavigate();
+  const { userSeq } = useUserStore();
 
-  // 입력값이 변경될 때 formData 업데이트
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrorField(""); // 입력 시 에러 메시지 초기화
+  const calculateKoreanAge = (birthDate: string) => {
+    const birthYear = new Date(birthDate).getFullYear();
+    const currentYear = new Date().getFullYear();
+    return currentYear - birthYear + 1;
   };
 
-  // 폼 제출 시 동작
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "age") {
+      const age = calculateKoreanAge(value);
+      setFormData((prevData) => ({ ...prevData, age }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
+    setErrorField("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!userSeq) {
+      console.error("userSeq가 설정되지 않았습니다.");
+      return;
+    }
 
     if (!formData.name.trim()) {
       setErrorField("name");
-    } else if (!formData.birthDate.trim()) {
-      setErrorField("birthDate");
+    } else if (formData.age <= 0) {
+      setErrorField("age");
     } else if (!formData.gender.trim()) {
       setErrorField("gender");
-    } else if (!formData.favoriteColor.trim()) {
-      setErrorField("favoriteColor");
+    } else if (!formData.favorite.trim()) {
+      setErrorField("favorite");
     } else {
       setErrorField("");
-      navigate("/home"); // TODO
+
+      try {
+        const genderCode = formData.gender === "남성" ? "M" : "F";
+
+        const response = await updateUserInfo({
+          userSeq,
+          ...formData,
+          gender: genderCode,
+        });
+
+        if (response) {
+          navigate("/home");
+        }
+      } catch (error) {
+        console.error("API 요청 중 오류 발생:", error);
+      }
     }
   };
 
@@ -42,7 +76,6 @@ const InfoPage: React.FC = () => {
         <h2 className="text-[35px] font-bold mb-6">우리 아이 정보 입력</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            {/* 이름 입력 */}
             <input
               type="text"
               name="name"
@@ -57,31 +90,24 @@ const InfoPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex space-x-4">
-            {/* 생년월일 입력 */}
-            <div className="flex-1">
-              <input
-                type="date"
-                name="birthDate"
-                value={formData.birthDate}
-                onChange={handleChange}
-                placeholder="생년월일"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF] placeholder-gray-400"
-                style={{
-                  boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)",
-                  color: "inherit",
-                }}
-              />
-              <style>
-                {`
-                  input[type="date"]::placeholder {
-                    color: #a0aec0; /* 회색 */
-                  }
-                `}
-              </style>
-            </div>
+          <div className="space-y-2">
+            <input
+              type="date"
+              name="age"
+              onChange={(e) => handleChange(e)}
+              placeholder="생년월일"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF] placeholder-gray-400"
+              style={{
+                boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)",
+                color: "inherit",
+              }}
+            />
+            <p className="text-red-500 text-xs text-left ml-2 h-1">
+              {errorField === "age" ? "생년월일을 입력해주세요." : ""}
+            </p>
+          </div>
 
-            {/* 성별 선택 */}
+          <div className="flex space-x-4">
             <div className="flex-1 flex space-x-2">
               <label className="flex items-center flex-1">
                 <input
@@ -116,36 +142,30 @@ const InfoPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 생년월일 및 성별 선택 에러 메시지 */}
           <p className="text-red-500 text-xs text-left ml-2 h-1">
-            {errorField === "birthDate" && "생년월일을 입력해주세요."}
             {errorField === "gender" && "성별을 선택해주세요."}
           </p>
 
           <div className="space-y-2">
-            {/* 좋아하는 색 입력 */}
             <input
               type="text"
-              name="favoriteColor"
-              value={formData.favoriteColor}
+              name="favorite"
+              value={formData.favorite}
               onChange={handleChange}
               placeholder="좋아하는 색"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
               style={{ boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)" }}
             />
             <p className="text-red-500 text-xs text-left ml-2 h-1">
-              {errorField === "favoriteColor"
-                ? "좋아하는 색을 입력해주세요."
-                : ""}
+              {errorField === "favorite" ? "좋아하는 색을 입력해주세요." : ""}
             </p>
           </div>
 
           <div className="space-y-2">
-            {/* 특이사항 입력 (필수 아님) */}
             <input
               type="text"
-              name="notes"
-              value={formData.notes}
+              name="remark"
+              value={formData.remark}
               onChange={handleChange}
               placeholder="특이사항"
               className="w-full px-4 py-2 mb-6 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
