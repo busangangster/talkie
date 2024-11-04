@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperClass } from "swiper";
 import "swiper/swiper-bundle.css";
 import { EffectCube } from "swiper/modules";
-import { GlobalStyle } from "../style";
+
 
 const WeekPage: React.FC = () => {
   const tabs = ["감정", "어휘력", "관심사", "대화 빈도"];
@@ -70,7 +70,7 @@ const WeekPage: React.FC = () => {
           setSelectedTab(tabs[swiper.activeIndex]);
         }}
         initialSlide={currentTabIndex}
-        className="mt-8 w-2/3 h-[650px] " 
+        className="mt-8 w-2/3 h-[650px] "
         onSwiper={(swiper) => (swiperRef.current = swiper)}
       >
         {tabs.map((tab) => (
@@ -79,15 +79,21 @@ const WeekPage: React.FC = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-      
+
       {/* 달력 모달 */}
       {showCalendar && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="relative bg-white rounded-lg shadow-lg p-6">
-            <GlobalStyle />
+        // inset - 0 되어있는 배경에 click 이벤트 줘서 배경 눌러도 닫히게 함 
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={toggleCalendar}
+        >
+          <div
+            className="relative bg-white rounded-lg shadow-lg p-6"
+            onClick={(e) => e.stopPropagation()} // 전파 방지로 안에 있는 요소는 영향 안받게 함 
+          >
             <Calendar />
           </div>
-          <div className="absolute" onClick={toggleCalendar}></div>
+          {/* <div className="absolute inset-0" onClick={toggleCalendar}></div> */}
         </div>
       )}
     </div>

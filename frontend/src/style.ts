@@ -1,19 +1,7 @@
 import Calendar from "react-calendar";
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 import "react-calendar/dist/Calendar.css";
 
-export const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: "MyCustomFont";
-    src: url("/fonts/MyCustomFont.woff2") format("woff2"),
-         url("/fonts/MyCustomFont.woff") format("woff");
-    font-weight: normal;
-    font-style: normal;
-  }
-  html,body {
-    font-family: "MyCustomFont", SuncheonR, sans-serif;
-  }
-`;
 
 export const StyledCalendarWrapper = styled.div`
   width: 100%;
