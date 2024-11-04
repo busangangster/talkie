@@ -6,13 +6,14 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class ConversationListResponse {
 
 
-    private List<ConversationList> conversationList;
+    private List<ConversationList> conversationList = new ArrayList<>();
 
     @Data
     public static class ConversationList {
