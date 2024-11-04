@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./router/AppRouter";
 import SnowfallBackground from "./components/SnowfallBackground";
 import QuestionButton from "./components/QuestionButton";
+import { GlobalStyle } from "./style";
 // import { useSnowfall } from "./hooks/useSnowfall";
 
 const App: React.FC = () => {
@@ -12,6 +13,7 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
+      <GlobalStyle />
       <div className="relative min-h-screen overflow-hidden">
         {/* 배경 이미지 */}
         <div
