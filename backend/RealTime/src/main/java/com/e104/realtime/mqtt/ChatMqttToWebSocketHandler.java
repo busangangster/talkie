@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -30,7 +32,6 @@ import java.util.*;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class ChatMqttToWebSocketHandler {
 
     public static final String MQTT_RECEIVED_TOPIC = "mqtt_receivedTopic";
@@ -48,6 +49,13 @@ public class ChatMqttToWebSocketHandler {
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
     private final OpenAISocketService openAISocketService;
+
+    public ChatMqttToWebSocketHandler(RepoUtil repoUtil, @Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel, UserService userService, OpenAISocketService openAISocketService) {
+        this.repoUtil = repoUtil;
+        this.mqttOutboundChannel = mqttOutboundChannel;
+        this.userService = userService;
+        this.openAISocketService = openAISocketService;
+    }
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
@@ -194,6 +202,7 @@ public class ChatMqttToWebSocketHandler {
             };
 
             webSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
+            webSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
             webSocketClient.connect();
             return webSocketClient;
 

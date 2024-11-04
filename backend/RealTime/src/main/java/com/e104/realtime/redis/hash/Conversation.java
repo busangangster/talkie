@@ -1,5 +1,7 @@
 package com.e104.realtime.redis.hash;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 @RedisHash("conversation")
 public class Conversation {
     @Id
-    private final long id;
+    private final String id;
     private final long userSeq;
     /**
      * 거짓이면 AI, 참이면 아이
