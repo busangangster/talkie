@@ -38,6 +38,9 @@ public class User {
     @Column
     private String favorite; // 사용자의 관심사
 
+    @Column
+    private String remark; // 사용자의 비고
+
     @Column(nullable = false)
     private boolean isNotFirstLogin;
 
@@ -60,12 +63,13 @@ public class User {
 
     // 사용자 정보 변경 메서드
     @Transactional
-    public void updateUserInfo(String newName, Integer newAge, String newGender, String newFavorite) {
+    public void updateUserInfo(String newName, Integer newAge, String newGender, String newFavorite, String remark) {
         try {
             this.name = newName;
             this.age = newAge;
             this.gender = newGender;
             this.favorite = newFavorite;
+            this.remark = remark;
             this.isNotFirstLogin = true;
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "사용자 정보 업데이트 중 오류가 발생했습니다.");
