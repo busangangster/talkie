@@ -2,8 +2,6 @@ package com.e104.realtime.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class FastApiSentimentResponse {
     private int happyScore;
