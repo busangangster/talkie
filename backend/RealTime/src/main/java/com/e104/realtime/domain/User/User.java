@@ -58,10 +58,6 @@ public class User {
     @Column
     private final List<WeekAnalytics> weekAnalytics = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
-    private final List<ConversationContent> conversationContents = new ArrayList<>();
-
     // 사용자 정보 변경 메서드
     @Transactional
     public void updateUserInfo(String newName, Integer newAge, String newGender, String newFavorite) {
@@ -146,17 +142,6 @@ public class User {
             this.weekAnalytics.add(weekAnalytics);
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주별 통계 추가 중 오류가 발생했습니다.");
-        }
-    }
-    
-    // 대화 내용 추가
-    @Transactional
-    public void addConversationContents(List<ConversationContent> conversationContents) {
-        try {
-            conversationContents.forEach(e -> e.setUser(this));
-            this.conversationContents.addAll(conversationContents);
-        } catch (Exception e) {
-            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 추가 중 오류가 발생했습니다.");
         }
     }
 }
