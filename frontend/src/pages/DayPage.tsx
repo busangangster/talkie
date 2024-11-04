@@ -108,7 +108,7 @@ const DayPage: React.FC = () => {
             <Calendar />
           </div>
           <div
-            className="absolute inset-0"
+            className="absolute"
             onClick={() => setShowCalendar(false)}
           />
         </div>

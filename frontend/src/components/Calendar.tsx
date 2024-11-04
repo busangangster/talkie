@@ -9,8 +9,7 @@ import {
   StyledWrapper,
   StyledLabel,
   StyledCheckbox,
-  StyledUnderline,
-  
+  StyledUnderline,  
 } from "../style";
 
 type ValuePiece = Date | null;
@@ -57,11 +56,6 @@ const Calendar: React.FC = () => {
     setSelectedWeek(weekDates); // 주의 날짜들 저장
   };
 
-  // const handleTodayClick = () => {
-  //   const today = new Date();
-  //   setActiveStartDate(today);
-  //   setDate(today);
-  // };
 
   return (
       <StyledCalendarWrapper>

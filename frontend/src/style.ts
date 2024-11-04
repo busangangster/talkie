@@ -2,6 +2,7 @@ import Calendar from "react-calendar";
 import styled from "styled-components";
 import "react-calendar/dist/Calendar.css";
 
+
 export const StyledCalendarWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -10,21 +11,36 @@ export const StyledCalendarWrapper = styled.div`
   align-items: center; /* 중앙 정렬 */
   position: relative;
   .react-calendar {
-    width: 700px;
+    width: 900px;
     border: none;
     border-radius: 0.5rem;
     box-shadow: 4px 2px 10px 0px rgba(0, 0, 0, 0.13);
-    padding: 3% 5%;
+    font-family: "MyCustomFont", SuncheonR, sans-serif;
+    padding: 8% 3%;
     background-color: white;
+  }
+
+
+  .react-calendar__navigation__arrow {
+    height: 30px;
+    border-radius: 30%;
+  }
+
+  .react-calendar__navigation__label {
+    width: 130px;
+    height: 30px;
   }
 
   .react-calendar__navigation__arrow:hover {
     color: white;
+    height: 30px;
     border-radius: 30%;
   }
 
   .react-calendar__navigation__label:hover {
     color: black;
+    height: 30px;
+    width: 130px;
     border-radius: 10px;
   }
 
@@ -50,17 +66,13 @@ export const StyledCalendarWrapper = styled.div`
   /* 네비게이션 가운데 정렬 */
   .react-calendar__navigation {
     justify-content: center;
+    margin-bottom: 40px;
   }
 
   /* 네비게이션 폰트 설정 */
   .react-calendar__navigation button {
     font-weight: 800;
-    font-size: 1rem;
-  }
-
-  /* 네비게이션 버튼 컬러 */
-  .react-calendar__navigation button:focus {
-    background-color: white;
+    font-size: 1.8rem;
   }
 
   /* 네비게이션 비활성화 됐을때 스타일 */
@@ -74,10 +86,11 @@ export const StyledCalendarWrapper = styled.div`
     flex-grow: 0 !important;
   }
 
-  /* 요일 밑줄 제거 */
+  /* 월~금 요일 css */
   .react-calendar__month-view__weekdays abbr {
     text-decoration: none;
     font-weight: 800;
+    font-size: 1.1rem;
   }
 
   .react-calendar__month-view__weekdays__weekday--weekend abbr[title="일요일"] {
@@ -97,6 +110,7 @@ export const StyledCalendarWrapper = styled.div`
 
   .react-calendar__tile {
     color: black; /* 기본 날짜 텍스트 검정색 */
+    font-size: 1.3rem;
   }
 
   /* 오늘 날짜 폰트 컬러 */
@@ -118,7 +132,7 @@ export const StyledCalendarWrapper = styled.div`
 
   /* 일 날짜 간격 */
   .react-calendar__tile {
-    padding: 5px 0px 18px;
+    padding: 18px 0px 18px;
     position: relative;
   }
 
@@ -129,7 +143,7 @@ export const StyledCalendarWrapper = styled.div`
     margin-inline-end: 5px !important;
     margin-block-end: 10px;
     padding: 20px 6.6667px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     color: gray;
   }
@@ -146,6 +160,7 @@ export const StyledCalendarWrapper = styled.div`
     border-radius: 0.3rem;
   }
 `;
+
 
 export const StyledCalendar = styled(Calendar)``;
 
@@ -169,24 +184,24 @@ export const StyledDate = styled.div`
 
 /* 오늘 날짜에 텍스트 삽입 스타일 */
 export const StyledToday = styled.div`
-  font-size: x-small;
+  font-size: 0.7rem;
   color: blue;
   font-weight: 600;
   position: absolute;
-  top: 50%;
+  top: 70%;
   left: 50%;
   transform: translateX(-50%);
 `;
 
 export const MoveNext = styled.div`
-  font-size: x-small;
+  font-size: 1.2rem;
   color: blue;
   font-weight: 600;
   position: absolute;
   top: 90%;
   left: 50%;
-  width: 70px;
-  height: 23px;
+  width: 120px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -197,16 +212,20 @@ export const MoveNext = styled.div`
   background-color: #d4ceff;
   transform: translateX(-50%);
   cursor: pointer;
+
+  &:hover {
+    background-color: #c3bbff;
+  }
 `;
 
-/* 출석한 날짜에 점 표시 스타일 */
+/* 점 표시 스타일 */
 export const StyledDot = styled.div`
   background-color: orange;
   border-radius: 50%;
   width: 0.3rem;
   height: 0.3rem;
   position: absolute;
-  top: 60%;
+  top: 80%;
   left: 50%;
   transform: translateX(-50%);
 `;
@@ -214,24 +233,25 @@ export const StyledDot = styled.div`
 export const StyledWrapper = styled.div`
   display: flex;
   position: absolute;
-  top: 20%;
-  left: 57.5%;
+  top: 17%;
+  right: 6%;
   flex-direction: column;
   align-items: center;
+  margin-top: 20px;
   color: #5e5e5e;
 `;
 
+// 주간 통계 보기
 export const StyledLabel = styled.label`
   display: flex;
   align-items: center;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 700;
   color: #6d6d6d; /* 텍스트 색상 */
 `;
 
-
 export const StyledCheckbox = styled.input`
-  appearance: none;
+  appearance: none; /* 브라우저의 기본 체크박스 제거 */
   width: 14px;
   height: 14px;
   border: 2px solid #a084ca; /* 체크박스 외곽선 */
@@ -243,13 +263,14 @@ export const StyledCheckbox = styled.input`
   cursor: pointer;
 
   &:checked {
-    background-color: #a084ca; /* 체크된 색상 */
+    background-color: #a084ca !important; /* 체크된 색상 */
     border: none;
 
     &::after {
       content: "✔";
-      color: white;
+      color: white !important;
       font-size: 0.7rem;
+      display: block;
     }
   }
 `;
@@ -258,6 +279,5 @@ export const StyledUnderline = styled.div`
   margin-top: 2px;
   width: 100%;
   max-width: 200px;
-  border-bottom: 1px solid #bdbdbd; /* 밑줄 색상 */
+  border-bottom: 1px solid #bdbdbd; 
 `;
-
