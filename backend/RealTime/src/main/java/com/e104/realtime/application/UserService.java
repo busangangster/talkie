@@ -51,8 +51,8 @@ public class UserService {
     private String fastApiUrl;
 
     // 로그인
-    public LoginResponse login(String userId) {
-        int userSeq = repoUtil.login(userId);
+    public LoginResponse login(LoginRequest request) {
+        int userSeq = repoUtil.login(request.getUserId());
         User user = repoUtil.findUser(userSeq);
         return new LoginResponse(user.getUserSeq(), user.isNotFirstLogin());
     }

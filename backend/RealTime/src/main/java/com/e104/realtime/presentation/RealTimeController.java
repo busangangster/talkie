@@ -21,8 +21,8 @@ public class RealTimeController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto> login(@RequestBody String userId) {
-        LoginResponse loginResponse = userService.login(userId);
+    public ResponseEntity<ResponseDto> login(@RequestBody LoginRequest request) {
+        LoginResponse loginResponse = userService.login(request);
         return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
     }
 
