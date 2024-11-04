@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperClass } from "swiper";
 import "swiper/swiper-bundle.css";
 import { EffectCube } from "swiper/modules";
-import { GlobalStyle } from "../style";
+
 
 const WeekPage: React.FC = () => {
   const tabs = ["감정", "어휘력", "관심사", "대화 빈도"];
@@ -84,7 +84,6 @@ const WeekPage: React.FC = () => {
       {showCalendar && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="relative bg-white rounded-lg shadow-lg p-6">
-            <GlobalStyle />
             <Calendar />
           </div>
           <div className="absolute" onClick={toggleCalendar}></div>
