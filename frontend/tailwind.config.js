@@ -6,6 +6,7 @@ export default {
       backgroundPosition: {
         "center-top": "center top",
       },
+
     },
   },
   plugins: [],

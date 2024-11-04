@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import Calendar from "../components/Calendar";
+import "../index.css";
 
 const DayPage: React.FC = () => {
   const navigate = useNavigate();
@@ -61,38 +62,29 @@ const DayPage: React.FC = () => {
 
       {/* 이야기 리스트 */}
       <div className="w-4/5 mt-24 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[450px] overflow-y-scroll py-16 px-10">
-        <style>{`
-        /* 위아래로 미세하게 움직이는 애니메이션 */
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-4px);
-          }
-        }
-      `}</style>
+
         <div className="grid grid-cols-2 gap-y-20 gap-x-10">
           {stories.map((story, index) => (
             <div key={story.id} className="relative">
               {/* 왼쪽 상단의 "첫번째 이야기" */}
-              <span className="absolute -top-8 left-0 text-neutral-800 font-bold text-xl ml-2">
+              <span className="absolute -top-10 left-0 text-neutral-800 font-bold text-xl ml-2 ">
                 {story.order} 이야기
               </span>
 
+              {/* 이야기에 관한 div */}
               <div
-                className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer"
+                className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer animate-float"
                 onClick={() => navigate("/talk")}
               >
                 {/* 동물 이미지 */}
                 <img
                   src={`/assets/animals/animal${(index % 3) + 1}.png`} // 동물 이미지를 랜덤으로 매칭
                   alt="animal"
-                  className="w-40 rounded-3xl px-10 py-3 bg-[#dadbe9] mr-4"
+                  className="w-40 rounded-3xl px-10 py-3 bg-[#dadbe9] mr-4 "
                 />
 
                 {/* 이야기 제목과 시간 */}
-                <div className="flex flex-col flex-1 ml-4 mb-3">
+                <div className="flex flex-col flex-1 ml-4 mb-3 ">
                   <span className="font-semibold text-2xl mb-3">
                     {story.title}
                   </span>
