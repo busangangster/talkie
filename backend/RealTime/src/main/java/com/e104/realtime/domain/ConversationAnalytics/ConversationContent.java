@@ -1,4 +1,4 @@
-package com.e104.realtime.domain.User;
+package com.e104.realtime.domain.ConversationAnalytics;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,8 +21,8 @@ public class ConversationContent {
 //    private ConversationAnalytics conversationAnalytics; // 다대일 관계로 연결된 Conversation 엔티티, 대화 내용은 한 대화에만 속할 수 있음
 
     @ManyToOne
-    @JoinColumn(name = "user_seq")
-    private User user;
+    @JoinColumn(name = "conversation_seq", nullable = false) // 외래키 설정, 대화와의 관계를 나타냄
+    private ConversationAnalytics conversationAnalytics; // 다대일 관계로 연결된 Conversation 엔티티, 대화 내용은 한 대화에만 속할 수 있음
 
     @Column(nullable = false)
     private String content; // 대화 내용

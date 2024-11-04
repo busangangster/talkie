@@ -5,7 +5,7 @@ import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.ConversationAnalytics.*;
 import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
 import com.e104.realtime.domain.User.Answer;
-import com.e104.realtime.domain.User.ConversationContent;
+import com.e104.realtime.domain.ConversationAnalytics.ConversationContent;
 import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
 import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
@@ -114,9 +114,8 @@ public class UserService {
     // 대화 상세 조회
     public ConversationDetailResponse getConversationDetail(int userSeq, int conversationSeq) {
         User user = repoUtil.findUser(userSeq);
-        List<ConversationContent> contents = user.getConversationContents();
         ConversationAnalytics analytics = user.getConversationAnalytics(conversationSeq);
-        return new ConversationDetailResponse(analytics, contents);
+        return new ConversationDetailResponse(analytics);
     }
 
     // 대화 내용 요약 조회
@@ -187,7 +186,6 @@ public class UserService {
         if(conversations.size() <= 1) {
             return;
         }
-        user.addConversationContents(conversationContents);
 
         // TODO: DTO 매핑
         List<String> conversationOfKid = conversationContents.stream().filter(ConversationContent::isAnswer).map(ConversationContent::getContent).toList();
@@ -234,6 +232,7 @@ public class UserService {
         conversationAnalytics.addSentiment(sentiment);
         conversationAnalytics.addVocabulary(vocabulary);
         conversationAnalytics.addWordCloud(wordClouds);
+        conversationAnalytics.addConversationContent(conversationContents);
         user.addConversationAnalytics(conversationAnalytics);
 
         // Redis 대화 삭제

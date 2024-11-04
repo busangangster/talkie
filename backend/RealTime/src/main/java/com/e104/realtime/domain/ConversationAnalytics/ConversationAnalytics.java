@@ -57,6 +57,10 @@ public class ConversationAnalytics {
     @JoinColumn
     private ConversationSummary conversationSummary;
 
+    @OneToMany(mappedBy = "conversationAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column
+    private final List<ConversationContent> conversationContents = new ArrayList<>();  // 대화 내용 리스트, 대화와 양방향 관계를 설정하며, 대화가 삭제되면 대화 내용도 함께 삭제됨 (CascadeType.ALL)
+
     // 양방향 관계 설정
     public void setUser(User user) {
         try {
@@ -109,6 +113,19 @@ public class ConversationAnalytics {
             this.conversationSummary = conversationSummary;  // 대화 요약 추가
         } catch (Exception e) {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 요약 추가 중 오류가 발생했습니다.");
+        }
+    }
+
+    // 대화 내용 추가
+    @Transactional
+    public void addConversationContent(List<ConversationContent> conversationContents) {
+        try {
+            for (ConversationContent cc : conversationContents) {
+                cc.setConversationAnalytics(this);  // 양방향 관계 설정 (ConversationContent 객체가 이 대화에 속해 있음을 명시)
+                this.conversationContents.add(cc);  // 대화 내용 리스트에 새로운 대화 내용 추가
+            }
+        } catch (Exception e) {
+            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 추가 중 오류가 발생했습니다.");
         }
     }
 }

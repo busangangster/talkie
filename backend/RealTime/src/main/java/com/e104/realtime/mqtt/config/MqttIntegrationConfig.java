@@ -31,7 +31,8 @@ import org.springframework.messaging.MessageHandler;
 public class MqttIntegrationConfig {
 
     private String brokerUrl;  // MQTT 브로커 URL
-    private String clientId;  // MQTT 클라이언트 ID
+    private String serverListenerClientId = "tokie-server-listener";  // MQTT 클라이언트 ID
+    private String serverSendClientId = "tokie-server-sender";  // MQTT 클라이언트 ID
     private String subscribeTopic = "tokie-server";  // MQTT 구독 토픽
     private String publishTopic = "tokie-client";  // MQTT 발행 토픽
 
@@ -52,7 +53,7 @@ public class MqttIntegrationConfig {
     @Qualifier("inboundAdapter")
     public MessageProducerSupport inboundAdapter() {
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(brokerUrl, clientId, subscribeTopic);
+                new MqttPahoMessageDrivenChannelAdapter(brokerUrl, serverListenerClientId, subscribeTopic);
         adapter.setCompletionTimeout(5000);  // 메시지 수신 시간 초과 설정 (5초)
         adapter.setConverter(new DefaultPahoMessageConverter());  // 기본 메시지 변환기 설정
         adapter.setOutputChannel(mqttInputChannel());  // 수신 메시지를 전송할 채널 설정
@@ -67,8 +68,8 @@ public class MqttIntegrationConfig {
     @Qualifier("outboundAdapter")
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
-        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory());
-        messageHandler.setAsync(true);  // 비동기 전송 설정
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(serverSendClientId, mqttClientFactory());
+//        messageHandler.setAsync(true);  // 비동기 전송 설정
         messageHandler.setDefaultTopic(publishTopic);  // 기본 발행 토픽 설정
         return messageHandler;
     }
