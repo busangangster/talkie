@@ -194,6 +194,7 @@ public class ChatMqttToWebSocketHandler {
             };
 
             webSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
+            webSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
             webSocketClient.connect();
             return webSocketClient;
 
