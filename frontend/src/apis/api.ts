@@ -79,3 +79,14 @@ export const deleteQuestion = async (userSeq: number) => {
     throw error;
   }
 };
+
+// 질문 가능 여부
+export const availableQuestion = async (userSeq: number) => {
+  try {
+    const response = await instance.get(`/api/question/available/${userSeq}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error as never);
+    throw error;
+  }
+};

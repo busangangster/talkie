@@ -7,12 +7,12 @@ import useUserStore from "../store/useUserStore";
 import { QuestionData } from "../type";
 
 interface QuestionProps {
-  isQuestionUsed: boolean; // 추가된 부분
+  isQuestionAvailable: boolean;
   onQuestionSubmit: (newQuestion: QuestionData) => void;
 }
 
 const Question: React.FC<QuestionProps> = ({
-  isQuestionUsed,
+  isQuestionAvailable,
   onQuestionSubmit,
 }) => {
   const [question, setQuestion] = useState("");
@@ -20,6 +20,7 @@ const Question: React.FC<QuestionProps> = ({
   const [modalMessage, setModalMessage] = useState("");
   const [modalIcon, setModalIcon] = useState("");
   const { userSeq } = useUserStore();
+
 
   const handleSubmit = async () => {
     if (!question.trim()) {
@@ -29,16 +30,19 @@ const Question: React.FC<QuestionProps> = ({
     } else if (userSeq !== null) {
       try {
         const response = await createQuestion(userSeq, question);
-
+        const currentDateTime = new Date();
         const newQuestion: QuestionData = {
           questionSeq: response.data.questionSeq,
           question,
           answer: "",
           questionIsActive: true,
           answerCreatedAt: [],
-          questionCreatedAt: response.data.questionCreatedAt,
+          questionCreatedAt: [
+            currentDateTime.getFullYear(),
+            currentDateTime.getMonth() + 1,
+            currentDateTime.getDate(),
+          ],
         };
-
         onQuestionSubmit(newQuestion);
         setQuestion("");
 
@@ -71,7 +75,13 @@ const Question: React.FC<QuestionProps> = ({
         </div>
       </div>
       <p className="text-gray-500">아이의 궁금한 속마음에 대해서 물어보세요.</p>
-      {!isQuestionUsed ? (
+      {!isQuestionAvailable ? (
+        <div className="w-full p-6 rounded-lg h-4/5 bg-[#EAEAEA] flex items-center justify-center text-center font-bold text-black text-lg">
+          오늘의 질문을 이미 사용해서, <br />
+          더이상 질문할 수 없어요! <br />
+          내일 다시 이용해주세요.
+        </div>
+      ) : (
         <textarea
           placeholder="아이에게 질문할 내용을 입력해주세요."
           className="w-full p-6 rounded-lg resize-none h-4/5 bg-white focus:outline-none focus:ring-1 focus:ring-[#a0a0a0]"
@@ -79,17 +89,11 @@ const Question: React.FC<QuestionProps> = ({
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
         />
-      ) : (
-        <div className="w-full p-6 rounded-lg h-4/5 bg-[#EAEAEA] flex items-center justify-center text-center font-bold text-black text-lg">
-          오늘의 질문을 이미 사용해서, <br />
-          더이상 질문할 수 없어요! <br />
-          내일 다시 이용해주세요.
-        </div>
       )}
       <button
         onClick={handleSubmit}
         className="w-2/5 p-3 mt-2 bg-[#869FD3] text-white rounded-lg ml-auto hover:bg-[#7286b0] disabled:opacity-50"
-        disabled={isQuestionUsed}
+        disabled={!isQuestionAvailable}
       >
         등록하기
       </button>
