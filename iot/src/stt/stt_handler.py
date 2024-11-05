@@ -21,7 +21,7 @@ headers = {
 
 def clova_stt(audio_data):
     """
-    네이버 클로바 STT API로 WAV 데이터를 텍스트로 변환하는 함수
+     네이버 클로바 STT API로 WAV 데이터를 텍스트로 변환하는 함수
     :param audio_data: WAV 포맷의 바이너리 데이터
     :return: STT 변환된 텍스트 또는 None
     """
