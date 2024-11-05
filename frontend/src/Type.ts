@@ -41,3 +41,17 @@ export interface UpdateQuestionParams {
   userSeq: number;
   content: string;
 }
+
+export interface ConversationItem {
+  conversationSeq: number;
+  title: string;
+  createdAt: number[];
+  order?: string;
+  formattedTime?: string; 
+}
+
+export interface ConversationListResponse {
+  data: {
+    conversationList: ConversationItem[];
+  };
+}
