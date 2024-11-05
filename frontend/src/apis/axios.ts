@@ -9,7 +9,7 @@ const instance = axios.create({
 });
 
 axiosRetry(instance, {
-  retries: 3, 
+  retries: 3,
   retryDelay: () => 500,
   retryCondition: (error) => {
     return (
@@ -21,4 +21,4 @@ axiosRetry(instance, {
   onRetry: () => {},
 });
 
-export default instance; 
+export default instance;

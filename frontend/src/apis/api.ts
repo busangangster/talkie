@@ -1,7 +1,7 @@
 import instance from "./axios";
 import { handleApiError } from "../utils/ErrorHandling";
 import useUserStore from "../store/useUserStore";
-import { UserInfo } from "../type"
+import { UpdateQuestionParams, UserInfo } from "../type";
 
 // 로그인
 export const login = async (params: { userId: string }) => {
@@ -26,6 +26,64 @@ export const login = async (params: { userId: string }) => {
 export const updateUserInfo = async (userInfo: UserInfo) => {
   try {
     const response = await instance.put("/api/user/update", userInfo);
+    return response.data;
+  } catch (error) {
+    handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 질문하기
+export const createQuestion = async (userSeq: number, content: string) => {
+  try {
+    const response = await instance.post("/api/question/create", {
+      userSeq,
+      content,
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 질문 목록
+export const getQuestionsAndAnswers = async (userSeq: number) => {
+  try {
+    const response = await instance.get(`/api/question/${userSeq}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 질문 수정
+export const updateQuestion = async (params: UpdateQuestionParams) => {
+  try {
+    const response = await instance.put("/api/question/update", params);
+    return response.data;
+  } catch (error) {
+    console.error("질문 수정 API 요청 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 질문 삭제
+export const deleteQuestion = async (userSeq: number) => {
+  try {
+    const response = await instance.delete(`/api/question/delete/${userSeq}`);
+    return response.data;
+  } catch (error) {
+    console.error("질문 삭제 중 오류가 발생했습니다:", error);
+    throw error;
+  }
+};
+
+// 질문 가능 여부
+export const availableQuestion = async (userSeq: number) => {
+  try {
+    const response = await instance.get(`/api/question/available/${userSeq}`);
     return response.data;
   } catch (error) {
     handleApiError(error as never);

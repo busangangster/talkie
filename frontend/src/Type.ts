@@ -22,3 +22,22 @@ export interface UserState {
   setUserSeq: (userSeq: number) => void;
   setIsNotFirstLogin: (isNotFirstLogin: boolean) => void;
 }
+
+export interface QuestionData {
+  questionSeq: number;
+  question: string;
+  questionCreatedAt: number[];
+  questionIsActive: boolean;
+  answer: string;
+  answerCreatedAt: number[];
+}
+
+export interface QnaProps {
+  data: QuestionData[];
+  itemsPerPage: number;
+}
+
+export interface UpdateQuestionParams {
+  userSeq: number;
+  content: string;
+}
