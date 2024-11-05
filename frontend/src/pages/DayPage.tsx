@@ -107,7 +107,9 @@ const DayPage: React.FC = () => {
               {/* 이야기에 관한 div */}
               <div
                 className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer animate-float"
-                onClick={() => navigate("/talk")}
+                onClick={() =>
+                  navigate(`/talk/${date}/${story.conversationSeq}`)
+                }
               >
                 {/* 동물 이미지 */}
                 <img
