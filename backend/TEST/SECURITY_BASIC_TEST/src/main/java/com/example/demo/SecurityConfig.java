@@ -18,18 +18,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(form -> form
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 보안 설정
+                .formLogin(form -> form // 로그인 설정
                         .loginPage("https://k11e104.p.ssafy.io/login")
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("userId")
                         .passwordParameter("password"))
-                .logout(Customizer.withDefaults())
+                .logout(Customizer.withDefaults()) // 로그아웃 설정
                 .authorizeHttpRequests(req -> req
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()) // 모든 요청에 대해 인증 필요
+                .sessionManagement(auth -> auth
+                        .sessionFixation().changeSessionId() // 세션 고정 공격 방지
+                        .maximumSessions(1).maxSessionsPreventsLogin(true)); // 세션 동시 사용 방지
         return http.build();
     }
 
+    // 사용자 정보 설정
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user = User.builder()
@@ -39,6 +43,7 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user);
     }
 
+    // 패스워드 암호화
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
