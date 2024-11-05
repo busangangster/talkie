@@ -70,6 +70,7 @@ public class ChatMqttToWebSocketHandler {
         String topic = dto.header();
 
         if(Objects.isNull(topic)) throw new NullPointerException("토픽이 입력되지 않았습니다.");
+        log.info("토픽 입력됨! 데이터: {}", dto);
 
         try {
             switch (topic) {
@@ -245,12 +246,6 @@ public class ChatMqttToWebSocketHandler {
                 // 오디오 델타를 병합하고 Base64로 인코딩
                 byte[] combinedAudio = mergeAudioDeltas(audioDeltas);
                 String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
-                // 클라이언트에게 오디오 응답 전송
-                // userSeq별 고유한 토픽으로 메시지 전송
-                String userSpecificTopic = "response/audio/" + userSeq;
-                mqttOutboundChannel.send(new GenericMessage<>(finalAudioBase64, Map.of("mqtt_topic", userSpecificTopic)));
-                // 초기화
-                audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
                 // JSON 응답에서 transcript를 추출
                 JsonNode contentArray = jsonResponse.path("item").path("content");
@@ -259,6 +254,13 @@ public class ChatMqttToWebSocketHandler {
                     if (contentArray.get(0).path("type").asText().equals("audio")) {
                         String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
                         log.info("Transcript: " + transcript);
+
+                        var mqttData = Map.of("audio", finalAudioBase64, "transcript", transcript);
+                        log.info("데이터 전송 완료!");
+                        // 클라이언트에게 오디오 응답 전송
+                        mqttOutboundChannel.send(new GenericMessage<>(mqttData.toString()));
+                        // 초기화
+                        audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
                         // 대화 항목 생성 요청 전송
                         String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));

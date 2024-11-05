@@ -2,6 +2,7 @@ package com.e104.realtime.mqtt.config;
 
 import com.e104.realtime.mqtt.ChatMqttToWebSocketHandler;
 import lombok.Setter;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,8 +32,8 @@ import org.springframework.messaging.MessageHandler;
 public class MqttIntegrationConfig {
 
     private String brokerUrl;  // MQTT 브로커 URL
-    private String serverListenerClientId = "tokie-server-listener";  // MQTT 클라이언트 ID
-    private String serverSendClientId = "tokie-server-sender";  // MQTT 클라이언트 ID
+    private String serverListenerClientId = "tokie-server-listener" + MqttAsyncClient.generateClientId();  // MQTT 클라이언트 ID
+    private String serverSendClientId = "tokie-server-sender" + MqttAsyncClient.generateClientId();  // MQTT 클라이언트 ID
     private String subscribeTopic = "tokie-server";  // MQTT 구독 토픽
     private String publishTopic = "tokie-client";  // MQTT 발행 토픽
 
