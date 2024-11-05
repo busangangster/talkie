@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import Calendar from "../components/Calendar";
+import moment from "moment";
 import "../index.css";
 import { getConversationListByDate } from "../apis/api";
 import { ConversationItem } from "../type";
@@ -76,6 +77,9 @@ const DayPage: React.FC = () => {
     return "";
   };
 
+  // 날짜를 "yyyy년 mm월 dd일" 형식으로 포맷
+  const formattedDate = date ? moment(date).format("YYYY년 MM월 DD일") : "";
+
   return (
     <div className="relative flex flex-col items-center min-h-screen">
       {/* 구름과 날짜 */}
@@ -86,7 +90,7 @@ const DayPage: React.FC = () => {
           className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-700 mt-3 cursor-pointer"
         >
           <FaRegCalendarAlt className="cursor-pointer mr-2" />
-          <span>{date?.replace(/-/g, ".")}</span>
+          <span>{formattedDate}</span>
         </div>
       </div>
 
