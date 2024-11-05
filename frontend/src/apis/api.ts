@@ -1,7 +1,11 @@
 import instance from "./axios";
 import { handleApiError } from "../utils/ErrorHandling";
 import useUserStore from "../store/useUserStore";
-import { UpdateQuestionParams, UserInfo } from "../type";
+import {
+  UpdateQuestionParams,
+  UserInfo,
+  ConversationListResponse,
+} from "../type";
 
 // 로그인
 export const login = async (params: { userId: string }) => {
@@ -87,6 +91,25 @@ export const availableQuestion = async (userSeq: number) => {
     return response.data;
   } catch (error) {
     handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 일별 대화 목록 조회
+export const getConversationListByDate = async (
+  userSeq: number,
+  day: string
+): Promise<ConversationListResponse> => {
+  try {
+    const response = await instance.get<ConversationListResponse>(
+      `/api/conversation/list/${userSeq}`,
+      {
+        params: { day },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("일자별 대화 목록 조회 중 오류 발생:", error);
     throw error;
   }
 };
