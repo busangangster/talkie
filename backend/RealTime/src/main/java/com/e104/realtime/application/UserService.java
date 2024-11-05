@@ -78,6 +78,13 @@ public class UserService {
         Question question = builderUtil.buildQuestion(request.getContent());
         user.addQuestion(question);
     }
+    
+    
+    // 질문 등록 가능한지 여부
+    public boolean isQuestionAvailable(int userSeq) {
+        User user = repoUtil.findUser(userSeq);
+        return user.isQuestionAvailable();
+    }
 
     // 질문 삭제
     @Transactional
@@ -257,5 +264,4 @@ public class UserService {
         // 응답 값
         return responseEntity.getBody();
     }
-
 }

@@ -47,6 +47,13 @@ public class RealTimeController {
         return ResponseDto.response(StatusCode.SUCCESS, "부모 질문 등록 성공");
     }
 
+    // 부모 질문 등록 가능한지
+    @GetMapping("/question/available/{userSeq}")
+    public ResponseEntity<ResponseDto> isQuestionAvailable(@PathVariable int userSeq) {
+        boolean isAvailable = userService.isQuestionAvailable(userSeq);
+        return ResponseDto.response(StatusCode.SUCCESS, isAvailable);
+    }
+
     // 부모 질문 삭제
     @DeleteMapping("/question/delete/{userSeq}")
     public ResponseEntity<ResponseDto> deleteQuestion(@PathVariable int userSeq) {
