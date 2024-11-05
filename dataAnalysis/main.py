@@ -46,12 +46,17 @@ class KOTEtagger(pl.LightningModule):
 
 # 모델 초기화 및 로드
 trained_model = KOTEtagger()
-trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
+trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
+# trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Desktop\kote_pytorch_lightning.bin"), strict=False)
 trained_model.eval()
 
 # FastAPI 초기화
 app = FastAPI()
 
+
+# 요청 데이터 모델
+class TextRequest(BaseModel):
+    text: str
 
 # 요청 데이터 모델
 class TextListRequest(BaseModel):
@@ -174,4 +179,3 @@ async def wordcloud(request: TextRequest):
     word_counts_list = list(word_counts.items())
 
     return WordCloudResponse(word_cloud=word_counts_list)
-
