@@ -196,9 +196,9 @@ public class UserService {
 
         // TODO: DTO 매핑
         List<String> conversationOfKid = conversationContents.stream().filter(ConversationContent::isAnswer).map(ConversationContent::getContent).toList();
-        FastApiWordCloudResponse fastApiWordCloudResponse = fetchPostRequest(conversationOfKid, FastApiWordCloudResponse.class);
-        FastApiSentimentResponse fastApiSentimentResponse = fetchPostRequest(conversationOfKid, FastApiSentimentResponse.class);
-        FastApiVocabularyResponse fastApiVocabularyResponse = fetchPostRequest(conversationOfKid, FastApiVocabularyResponse.class);
+        FastApiWordCloudResponse fastApiWordCloudResponse = fetchPostRequest(conversationOfKid, FastApiWordCloudResponse.class, "/wordcloud");
+        FastApiSentimentResponse fastApiSentimentResponse = fetchPostRequest(conversationOfKid, FastApiSentimentResponse.class, "/emotion");
+        FastApiVocabularyResponse fastApiVocabularyResponse = fetchPostRequest(conversationOfKid, FastApiVocabularyResponse.class, "/vocabulary");
         List<WordCloud> wordClouds = new ArrayList<>();
         for (FastApiWordCloudResponse.wordCloud wordCloud : fastApiWordCloudResponse.getWordCloud()) {
             wordClouds.add(WordCloud.builder().word(wordCloud.getWord()).count(wordCloud.getCount()).build());
@@ -246,7 +246,7 @@ public class UserService {
         conversationRedisRepository.deleteAllByUserSeq(userSeq);
     }
 
-    private <T> T fetchPostRequest(List<String> conversationOfKid, Class<T> responseType) {
+    private <T> T fetchPostRequest(List<String> conversationOfKid, Class<T> responseType, String path) {
         // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -259,7 +259,8 @@ public class UserService {
         HttpEntity<MultiValueMap<String, List<String>>> requestEntity = new HttpEntity<>(requestData, headers);
 
         // HTTP POST 요청 보내기
-        ResponseEntity<T> responseEntity = restTemplate.postForEntity(fastApiUrl, requestEntity, responseType);
+        String url = fastApiUrl + path;
+        ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
 
         // 응답 값
         return responseEntity.getBody();
