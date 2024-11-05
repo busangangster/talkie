@@ -1,7 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
-const TalkVoca: React.FC = () => {
+interface TalkVocaProps {
+  vocabularyScore: number | undefined;
+}
+
+const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -10,32 +14,36 @@ const TalkVoca: React.FC = () => {
 
       const option: echarts.EChartsOption = {
         tooltip: {
-          trigger: "axis", // 축 위에 있는 모든 데이터 표시
+          trigger: "axis",
           axisPointer: {
-            type: "none", // 축을 따라 그어지는 선 비활성화
+            type: "none",
           },
           formatter: (params) => {
             const param = Array.isArray(params) ? params[0] : params;
-            const name = param?.name ?? "Unknown"; // name이 null/undefined인 경우 처리
+            const name = param?.name ?? "Unknown";
             const value = Array.isArray(param?.value)
               ? param.value[0]
-              : param?.value; // value가 배열인지 검사
+              : param?.value;
 
-            return `${name}: ${value ?? "N/A"}점`; // value가 null/undefined일 경우 "N/A" 표시
+            return `${name}: ${value ?? "N/A"}점`;
           },
         },
         dataset: {
           source: [
             ["word", "person"],
-            [4.5, "재찬"],
-            [6.7, "평균"],
+            [vocabularyScore || 0, "재찬"],
+            [4, "평균"], // 예시 평균 값, 필요에 따라 변경 가능
           ],
         },
-
         grid: { containLabel: true },
-        xAxis: { name: "word", min: 0, max: 10 },
+        xAxis: {
+          name: "word",
+          nameLocation: "middle",
+          nameGap: 30,
+          min: 0,
+          max: 10,
+        },
         yAxis: { type: "category", inverse: true },
-
         series: [
           {
             type: "bar",
@@ -47,17 +55,15 @@ const TalkVoca: React.FC = () => {
         ],
       };
 
-      // 옵션 설정
       chartInstance.setOption(option);
 
-      // 컴포넌트 언마운트 시 인스턴스 해제
       return () => {
         chartInstance.dispose();
       };
     }
-  }, []); // 빈 배열을 두어 한 번만 실행되도록 설정
+  }, [vocabularyScore]);
 
-  return <div ref={chartRef} style={{ width: "450px", height: "400px" }} />;
+  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
 
 export default TalkVoca;

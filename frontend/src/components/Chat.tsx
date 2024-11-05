@@ -1,13 +1,5 @@
 import React from "react";
-
-interface Message {
-  user_Seq: number;
-  content: string;
-}
-
-interface ChatProps {
-  messages: Message[];
-}
+import { ChatProps } from "../type";
 
 const Chat: React.FC<ChatProps> = ({ messages }) => {
   return (

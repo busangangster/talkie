@@ -55,3 +55,58 @@ export interface ConversationListResponse {
     conversationList: ConversationItem[];
   };
 }
+
+export interface WordCloud {
+  word: string;
+  count: number;
+}
+
+export interface WordCloudComponentProps {
+  words: WordCloud[]; 
+}
+
+export interface ConversationContent {
+  content: string;
+  answer: boolean;
+  createdAt: string;
+}
+
+export interface ConversationDetailResponse {
+  conversationSeq: number;
+  emotionSummary: string;
+  vocabularySummary: string;
+  wordCloudSummary: string;
+  happyScore: number;
+  loveScore: number;
+  sadScore: number;
+  scaryScore: number;
+  angryScore: number;
+  amazingScore: number;
+  vocabularyScore: number;
+  wordClouds: WordCloud[];
+  conversationContents: ConversationContent[];
+}
+
+export interface DataItem {
+  subject: string;
+  score: number;
+  fullMark: number;
+}
+
+export interface TalkEmotionProps {
+  happyScore: number;
+  loveScore: number;
+  sadScore: number;
+  scaryScore: number;
+  angryScore: number;
+  amazingScore: number;
+}
+
+export interface Message {
+  user_Seq: number;
+  content: string;
+}
+
+export interface ChatProps {
+  messages: Message[];
+}

@@ -1,25 +1,18 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import WordCloud from "react-d3-cloud";
+import { WordCloudComponentProps } from "../type"; // 타입 import
 
-const WordCloudComponent: React.FC = () => {
-  const [words, setWords] = useState<{ text: string; value: number }[]>([]);
 
-  useEffect(() => {
-    // 목업 데이터 설정
-    const mockData = [
-      { text: "엄마", value: 130 },
-      { text: "고구마", value: 180 },
-      { text: "토끼인형", value: 200 },
-      { text: "겨울", value: 60 },
-      { text: "티니핑", value: 100 },
-    ];
-    setWords(mockData);
-  }, []);
+const WordCloudComponent: React.FC<WordCloudComponentProps> = ({ words }) => {
+  const formattedWords = words.map((word) => ({
+    text: word.word,
+    value: word.count,
+  }));
 
   const fontSize = (word: { value: number }) => {
-    const minSize = 30;
-    const maxSize = 100;
-    return Math.min(Math.max(word.value * 0.3, minSize), maxSize);
+    const minSize = 50;
+    const maxSize = 150;
+    return Math.min((Math.pow(word.value * 0.5, 1.5), minSize), maxSize);
   };
 
   const rotate = () => 0;
@@ -28,7 +21,7 @@ const WordCloudComponent: React.FC = () => {
     const colors = ["#507ECE", "#5054CE", "#9254C2", "#8E77D9", "#507ECE"];
     return (
       <WordCloud
-        data={words}
+        data={formattedWords}
         font={() => "NanumGothic"}
         fontSize={fontSize}
         rotate={rotate}
@@ -38,7 +31,7 @@ const WordCloudComponent: React.FC = () => {
         height={350}
       />
     );
-  }, [words]);
+  }, [formattedWords]);
 
   return (
     <div className="mt-4">

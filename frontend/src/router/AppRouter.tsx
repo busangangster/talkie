@@ -16,7 +16,7 @@ const AppRouter: React.FC = () => {
       <Route path="/day/:date" element={<DayPage />} />{" "}
       <Route path="/info" element={<InfoPage />} />
       <Route path="/question" element={<QuestionPage />} />
-      <Route path="/talk" element={<TalkPage />} />
+      <Route path="/talk/:date/:conversationSeq" element={<TalkPage />} />
       <Route path="/week" element={<WeekPage />} />
     </Routes>
   );
