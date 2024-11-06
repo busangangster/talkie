@@ -36,6 +36,7 @@ class KOTEtagger(pl.LightningModule):
             padding="max_length",
             return_attention_mask=True,
             return_tensors='pt'
+
         ).to(device)
         output = self.electra(encoding["input_ids"], attention_mask=encoding["attention_mask"])
         output = output.last_hidden_state[:, 0, :]
@@ -47,6 +48,7 @@ class KOTEtagger(pl.LightningModule):
 # 모델 초기화 및 로드
 trained_model = KOTEtagger()
 trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
+#trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
 trained_model.eval()
 
 # FastAPI 초기화
@@ -119,15 +121,20 @@ async def predict_emotion(request: TextListRequest):
     }
 
     # 배치 사이즈 설정
-    batch_size = 10
+    batch_size = 50
 
     # 텍스트를 배치로 나누기
     for i in range(0, len(texts), batch_size):
         batch_texts = texts[i:i + batch_size]  # 현재 배치 텍스트
 
+        input_text = ''
+
+        for text in batch_texts:
+            input_text += text
+
         # 각 텍스트에 대한 감정 예측 수행
         with torch.no_grad():
-            preds = trained_model(batch_texts)  # 배치 전체를 모델에 전달
+            preds = trained_model(input_text)  # 배치 전체를 모델에 전달
             for pred in preds:
                 emotion_preds = {label: float(pred_val) for label, pred_val in zip(LABELS, pred)}
 
@@ -148,6 +155,7 @@ async def predict_emotion(request: TextListRequest):
     # 정규화 후 다시 합산하여 정확히 100이 되도록 조정
     total_after_rounding = sum(mapped_scores.values())
     difference = 100 - total_after_rounding
+
     if difference != 0:
         # 가장 큰 값에 남은 차이를 더하거나 빼서 100으로 맞춤
         max_key = max(mapped_scores, key=mapped_scores.get)
