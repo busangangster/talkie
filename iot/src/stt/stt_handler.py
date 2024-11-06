@@ -106,4 +106,4 @@ def start_conversation():
 
 
 # 실행
-# start_conversation()
+start_conversation()

@@ -1,26 +1,22 @@
 import grpc
 import json
 import pyaudio
-import threading
+import audioop
 import nest_pb2
 import nest_pb2_grpc
 from src.config.api_key import STREAMING_KEY
 
 # 오디오 설정
 RATE = 16000
-CHUNK = 32000  # 장문 인식에 맞춰 청크 크기를 설정
-CLIENT_SECRET = STREAMING_KEY  # 네이버 클라우드에서 발급받은 Secret Key를 입력하세요
+CHUNK = 32000
+CLIENT_SECRET = STREAMING_KEY
+
+# 침묵 감지 설정
+SILENCE_THRESHOLD = 100  # 소음 감지 임계값
+SILENCE_DURATION = 2  # 침묵으로 간주할 지속 시간 (초)
 
 # 종료 플래그
 stop_recording = False
-
-
-def listen_for_exit():
-    """사용자가 'q'를 입력하면 녹음을 종료하는 함수"""
-    global stop_recording
-    input("종료하려면 'q'를 입력하고 Enter 키를 누르세요.\n")
-    stop_recording = True  # 종료 플래그 설정
-
 
 def generate_requests():
     """마이크에서 오디오 데이터를 읽어 gRPC 요청 생성"""
@@ -37,79 +33,71 @@ def generate_requests():
         )
     )
 
+    silent_chunks = 0
+    max_silent_chunks = int(RATE / CHUNK * SILENCE_DURATION)
+    seq_id = 0
+
     try:
-        seq_id = 0
         while not stop_recording:
-            # 마이크 입력에서 CHUNK 크기만큼 읽음
             data = stream.read(CHUNK)
-            # gRPC 요청 생성 및 전송
+            rms = audioop.rms(data, 2)
+
+            # 침묵인지 확인하고 카운트 증가
+            if rms < SILENCE_THRESHOLD:
+                silent_chunks += 1
+                if silent_chunks >= max_silent_chunks:
+                    # print("지속적인 침묵이 감지되어 녹음을 종료합니다.")
+                    stop_recording = True
+                    break
+            else:
+                silent_chunks = 0  # 유효한 음성이 감지되면 침묵 카운트 초기화
+
             yield nest_pb2.NestRequest(
                 type=nest_pb2.RequestType.DATA,
                 data=nest_pb2.NestData(
                     chunk=data,
-                    extra_contents=json.dumps({"seqId": seq_id, "epFlag": stop_recording})
+                    extra_contents=json.dumps({"seqId": seq_id})
                 )
             )
             seq_id += 1
-    except KeyboardInterrupt:
-        print("마이크 입력을 종료합니다.")
     finally:
         stream.stop_stream()
         stream.close()
         audio.terminate()
-        print("오디오 스트림이 종료되었습니다.")
-
+        # print("오디오 스트림이 종료되었습니다.")
 
 def main():
-    # Clova Speech 서버에 대한 보안 gRPC 채널을 설정
     channel = grpc.secure_channel(
         "clovaspeech-gw.ncloud.com:50051",
         grpc.ssl_channel_credentials()
     )
-    stub = nest_pb2_grpc.NestServiceStub(channel)  # NestService에 대한 stub 생성
-    metadata = (("authorization", f"Bearer {CLIENT_SECRET}"),)  # 인증 토큰과 함께 메타데이터 설정
-    responses = stub.recognize(generate_requests(), metadata=metadata)  # 생성된 요청으로 인식(recognize) 메서드 호출
+    stub = nest_pb2_grpc.NestServiceStub(channel)
+    metadata = (("authorization", f"Bearer {CLIENT_SECRET}"),)
+    responses = stub.recognize(generate_requests(), metadata=metadata)
 
     # 최종 텍스트 결과를 저장할 변수
-    final_sentence = ""
-    completed_text = []
-
-    # 사용자 입력을 기다리는 스레드 시작
-    exit_thread = threading.Thread(target=listen_for_exit)
-    exit_thread.start()
+    all_text = ""
 
     try:
-        # 서버로부터 응답을 반복 처리
         for response in responses:
-            response_data = json.loads(response.contents)  # JSON으로 변환
-            transcription_text = response_data.get("transcription", {}).get("text", "").strip()
-            print("Parsed text:", transcription_text)  # 파싱된 텍스트 출력
-
-            # 빈 텍스트가 아닌 경우에만 추가
-            if transcription_text:
-                final_sentence += transcription_text  # 받은 텍스트를 문장에 추가
-
-                # 문장의 끝을 감지 (예: 마침표, 느낌표 등으로 문장 종료)
-                if any(final_sentence.endswith(p) for p in ['.', '!', '?']):
-                    completed_text.append(final_sentence.strip())  # 완성된 문장을 리스트에 추가
-                    print("완성된 문장:", final_sentence.strip())  # 즉시 출력
-                    final_sentence = ""  # 새로운 문장 시작을 위해 초기화
-
             if stop_recording:
-                if final_sentence:  # 남아 있는 텍스트가 있으면 추가
-                    completed_text.append(final_sentence.strip())
-                break  # 종료 플래그가 설정되면 응답 수신 중단
+                break
+
+            response_data = json.loads(response.contents)
+            transcription_text = response_data.get("transcription", {}).get("text", "").strip()
+
+            # 실시간으로 변환된 텍스트를 즉시 출력
+            if transcription_text:
+                # print("변환된 텍스트:", transcription_text)
+                all_text += transcription_text + ""  # 변환된 텍스트를 전체 텍스트에 추가
     except grpc.RpcError as e:
-        # gRPC 오류 처리
         print(f"gRPC 오류: {e.details()}")
     finally:
-        channel.close()  # 작업이 끝나면 채널 닫기
-        print("gRPC 채널이 종료되었습니다.")
-
-        # 전체 완성된 텍스트 출력
-        print("최종 완성된 텍스트:")
-        print(" ".join(completed_text))  # 모든 문장을 하나의 텍스트로 출력
-
+        # 채널을 닫고, 전체 텍스트를 최종 출력
+        channel.close()
+        # print("gRPC 채널이 종료되었습니다.")
+        # print("최종 완성된 텍스트:")
+        print(all_text.strip())  # 최종 완성된 텍스트 출력
 
 if __name__ == "__main__":
     main()
