@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class AudioDeltaService {
 
-    private Map<Integer, List<String>> audioDeltasMap = new ConcurrentHashMap<>();
+    private final Map<Integer, List<String>> audioDeltasMap = new ConcurrentHashMap<>();
 
     /**
      * 입력받은 audioDelta 를 저장한다.
