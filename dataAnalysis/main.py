@@ -46,7 +46,7 @@ class KOTEtagger(pl.LightningModule):
 
 # 모델 초기화 및 로드
 trained_model = KOTEtagger()
-trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
+trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
 trained_model.eval()
 
 # FastAPI 초기화
