@@ -23,7 +23,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "talkie";
+        // "talkie"를 bcrypt 시킨 내용.
+        return "$2a$12$U6/Hx5cNrdqyYm7cOcukyezbxFsg1vJoyYg2ubgdmXZIHA/Q.esfC";
     }
 
     @Override

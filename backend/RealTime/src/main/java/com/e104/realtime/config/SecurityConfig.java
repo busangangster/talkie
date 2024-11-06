@@ -5,12 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -24,7 +20,8 @@ public class SecurityConfig {
                         .loginPage("https://k11e104.p.ssafy.io/login")
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("userId")
-                        .passwordParameter("password"))
+                        .passwordParameter("password")
+                        .successHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io"))))
                 .logout(Customizer.withDefaults()) // 로그아웃 설정
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/login").permitAll() // 로그인 API는 인증 없이 접근 가능
