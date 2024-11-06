@@ -2,7 +2,6 @@ package com.e104.realtime.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +23,7 @@ public class SecurityConfig {
                         .successHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io"))))
                 .logout(logout -> logout // 로그아웃 설정
                         .logoutUrl("/api/logout") // 로그아웃 경로 설정
-                        .logoutSuccessUrl("https://k11e104.p.ssafy.io/login") // 로그아웃 성공 후 리다이렉트할 URL
+                        .logoutSuccessHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io/login"))) // 로그아웃 성공 후 리다이렉트할 URL
                         .invalidateHttpSession(true) // 세션 무효화
                         .clearAuthentication(true) // 인증 정보 제거
                 )

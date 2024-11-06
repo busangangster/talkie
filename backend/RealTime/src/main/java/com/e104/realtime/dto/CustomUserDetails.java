@@ -1,13 +1,11 @@
 package com.e104.realtime.dto;
 
 import com.e104.realtime.domain.User.User;
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 
 public class CustomUserDetails implements UserDetails {
