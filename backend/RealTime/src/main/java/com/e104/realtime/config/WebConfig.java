@@ -11,7 +11,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("*")
-                .allowedMethods("POST", "PUT", "GET", "DELETE");
+                .allowedOrigins("https://k11e104.p.ssafy.io", "http://k11e104.p.ssafy.io") // 여러 도메인 허용
+                .allowedMethods("POST", "PUT", "GET", "DELETE")
+                .allowCredentials(true); // 자격 증명 허용
     }
 }
