@@ -12,6 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.endpoint.MessageProducerSupport;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
@@ -43,7 +44,7 @@ public class MqttIntegrationConfig {
      */
     @Bean
     public MessageChannel mqttInputChannel() {
-        return new DirectChannel();
+        return new QueueChannel();
     }
 
     /**
@@ -82,7 +83,7 @@ public class MqttIntegrationConfig {
     @Bean
     @Qualifier("mqttOutboundChannel")
     public MessageChannel mqttOutboundChannel() {
-        return new DirectChannel();
+        return new QueueChannel();
     }
 
     /**
