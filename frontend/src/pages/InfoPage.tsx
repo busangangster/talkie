@@ -152,7 +152,7 @@ const InfoPage: React.FC = () => {
               name="favorite"
               value={formData.favorite}
               onChange={handleChange}
-              placeholder="좋아하는 색"
+              placeholder="좋아하는 것"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
               style={{ boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)" }}
             />
