@@ -27,10 +27,11 @@ public class BuilderUtil {
                 .build();
     }
 
-    public DayAnalytics buildDayAnalytics(double vocabularyScore, int happyScore, int sadScore, int angryScore, int amazingScore, int scaryScore, int conversationCount) {
+    public DayAnalytics buildDayAnalytics(double vocabularyScore, int happyScore,int loveScore,  int sadScore, int angryScore, int amazingScore, int scaryScore, int conversationCount) {
         return DayAnalytics.builder()
                 .vocabularyScore(vocabularyScore)
                 .happyScore(happyScore)
+                .loveScore(loveScore)
                 .sadScore(sadScore)
                 .angryScore(angryScore)
                 .amazingScore(amazingScore)
