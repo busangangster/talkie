@@ -9,15 +9,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { WeeklyConversation } from "../type";
+import { WeekProps } from "../type";
 
 type LineKeys = "기쁨" | "놀람" | "사랑스러움" | "화남" | "슬픔" | "두려움";
 
-interface WeekEmotionProps {
-  data: WeeklyConversation[];
-}
-
-const WeekEmotion: React.FC<WeekEmotionProps> = ({ data }) => {
+const WeekEmotion: React.FC<WeekProps> = ({ data }) => {
   const [lines, setLines] = useState<Record<LineKeys, boolean>>({
     기쁨: true,
     놀람: false,

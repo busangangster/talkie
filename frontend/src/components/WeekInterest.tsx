@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
-import { WordCloudResponse } from "../type";
+import { WeekInterestProps } from "../type";
 
-interface WeekInterestProps {
-  data: WordCloudResponse[];
-}
 
 const WeekInterest: React.FC<WeekInterestProps> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);

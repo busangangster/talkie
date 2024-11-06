@@ -147,3 +147,16 @@ export interface WeeklyConversationResponse {
   vocabularySummary: string;
   countSummary: string;
 }
+
+export interface WeekFrameProps {
+  selectedTab: string;
+  weeklyData: WeeklyConversationResponse | null;
+}
+
+export interface WeekProps {
+  data: WeeklyConversation[];
+}
+
+export interface WeekInterestProps {
+  data: WordCloudResponse[];
+}

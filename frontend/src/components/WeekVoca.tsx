@@ -9,13 +9,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { WeeklyConversation } from "../type";
+import { WeekProps } from "../type";
 
-interface WeekVocaProps {
-  data: WeeklyConversation[];
-}
-
-const WeekVoca: React.FC<WeekVocaProps> = ({ data }) => {
+const WeekVoca: React.FC<WeekProps> = ({ data }) => {
   const weekDays = ["Sun", "Mon", "Tue", "Wen", "Thr", "Fri", "Sat"];
 
   const formattedData = weekDays.map((day, index) => {

@@ -3,12 +3,8 @@ import WeekEmotion from "../components/WeekEmotion";
 import WeekVoca from "../components/WeekVoca";
 import WeekInterest from "../components/WeekInterest";
 import TalkCnt from "../components/TalkCnt";
-import { WeeklyConversationResponse } from "../type";
+import { WeekFrameProps } from "../type";
 
-interface WeekFrameProps {
-  selectedTab: string;
-  weeklyData: WeeklyConversationResponse | null;
-}
 
 const WeekFrame: React.FC<WeekFrameProps> = ({ selectedTab, weeklyData }) => {
   const renderGraphComponent = () => {

@@ -1,12 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
-import { WeeklyConversation } from "../type";
+import { WeekProps } from "../type";
 
-interface TalkCntProps {
-  data: WeeklyConversation[];
-}
-
-const TalkCnt: React.FC<TalkCntProps> = ({ data }) => {
+const TalkCnt: React.FC<WeekProps> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -24,7 +20,7 @@ const TalkCnt: React.FC<TalkCntProps> = ({ data }) => {
           type: "category",
           data: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
           axisLabel: {
-            fontSize: 16, 
+            fontSize: 16,
           },
         },
         yAxis: { type: "value" },
