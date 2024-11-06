@@ -19,12 +19,12 @@ public class RealTimeController {
 
     private final UserService userService;
 
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<ResponseDto> login(@RequestBody LoginRequest request) {
-        LoginResponse loginResponse = userService.login(request);
-        return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
-    }
+//    // 로그인
+//    @PostMapping("/login")
+//    public ResponseEntity<ResponseDto> login(@RequestBody LoginRequest request) {
+//        LoginResponse loginResponse = userService.login(request);
+//        return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
+//    }
 
     // 유저 정보 조회
     @GetMapping("/user/{userSeq}")

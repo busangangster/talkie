@@ -3,6 +3,7 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.util.TimeChecker;
 import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
@@ -143,7 +144,13 @@ public class ChatMqttToWebSocketHandler {
         }
 
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
-        User user = repoUtil.findUser(dto.userSeq());
+        User user = null;
+        try {
+            user = repoUtil.findUser(dto.userSeq());
+        } catch (RestApiException e) {
+            log.error("사용자 조회 중 문제가 발생했습니다.", e);
+            return;
+        }
         List<Question> questions = user.getQuestions();
         Question question = questions.get(questions.size() - 1);
         if (question.isActive()) {
