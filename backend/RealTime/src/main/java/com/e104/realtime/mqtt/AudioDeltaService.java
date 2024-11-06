@@ -26,7 +26,7 @@ public class AudioDeltaService {
     }
 
     /**
-     * 입력받은 audioDelta 를 합쳐서 반환한다.
+     * 입력받은 audioDelta 를 합쳐서 반환한다. 이후 저장된 오디오델타를 모두 제거한다.
      *
      * @param userSeq 사용자 시퀀스.
      * @return 합쳐진 오디오 데이터. 암호화되지 않음.
