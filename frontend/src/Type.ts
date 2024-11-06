@@ -121,3 +121,42 @@ export interface Message {
 export interface ChatProps {
   messages: Message[];
 }
+
+export interface WeeklyConversation {
+  vocabularyScore: number;
+  happyScore: number;
+  loveScore: number;
+  sadScore: number;
+  scaryScore: number;
+  angryScore: number;
+  amazingScore: number;
+  conversationCount: number;
+  createdAt: string;
+}
+
+export interface WordCloudResponse {
+  word: string;
+  count: number;
+}
+
+export interface WeeklyConversationResponse {
+  weeklyConversations: WeeklyConversation[];
+  wordCloudResponses: WordCloudResponse[];
+  wordCloudSummary: string;
+  emotionSummary: string;
+  vocabularySummary: string;
+  countSummary: string;
+}
+
+export interface WeekFrameProps {
+  selectedTab: string;
+  weeklyData: WeeklyConversationResponse | null;
+}
+
+export interface WeekProps {
+  data: WeeklyConversation[];
+}
+
+export interface WeekInterestProps {
+  data: WordCloudResponse[];
+}

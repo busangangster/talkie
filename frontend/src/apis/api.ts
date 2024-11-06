@@ -7,6 +7,7 @@ import {
   ConversationListResponse,
   ConversationDetailResponse,
   UserResponse,
+  WeeklyConversationResponse,
 } from "../type";
 
 
@@ -156,6 +157,23 @@ export const getConversationSummary = async (
     return response.data;
   } catch (error) {
     console.error("대화 내용 요약 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 주별 대화 통계 조회
+export const getWeeklyConversationStats = async (
+  userSeq: number,
+  startDay: string,
+  endDay: string
+): Promise<WeeklyConversationResponse> => {
+  try {
+    const response = await instance.get(`/api/conversation/week/${userSeq}`, {
+      params: { startDay, endDay },
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error("주별 대화 통계를 가져오는 중 오류 발생:", error);
     throw error;
   }
 };

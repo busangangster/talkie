@@ -1,54 +1,40 @@
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
+import { WeekProps } from "../type";
 
-// 대화빈도
-const TalkCnt: React.FC = () => {
-const chartRef = useRef<HTMLDivElement | null>(null);
+const TalkCnt: React.FC<WeekProps> = ({ data }) => {
+  const chartRef = useRef<HTMLDivElement | null>(null);
 
-useEffect(() => {
-  if (chartRef.current) {
-    // 차트 인스턴스가 없을 때만 초기화
-    const chartInstance = echarts.init(chartRef.current);
+  useEffect(() => {
+    if (chartRef.current) {
+      const chartInstance = echarts.init(chartRef.current);
+      const formattedData = data.map((day) => day.conversationCount);
 
-    const option = {
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "line",
+      const option = {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: { type: "line" },
+          formatter: "{b}: {c}",
         },
-        formatter: "{b}: {c}",
-      },
-      xAxis: {
-        type: "category",
-        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      },
-      yAxis: {
-        type: "value",
-      },
-      series: [
-        {
-          data: [150, 230, 224, 218, 135, 147, 260],
-          type: "line",
+        xAxis: {
+          type: "category",
+          data: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          axisLabel: {
+            fontSize: 16,
+          },
         },
-      ],
-    };
+        yAxis: { type: "value" },
+        series: [{ data: formattedData, type: "line" }],
+      };
 
-    chartInstance.setOption(option);
+      chartInstance.setOption(option);
+      return () => {
+        chartInstance.dispose();
+      };
+    }
+  }, [data]);
 
-    return () => {
-      chartInstance.dispose();
-    };
-  }
-}, []);
-
-return (
-  <div
-    ref={chartRef}
-    style={{
-      width: "700px",
-      height: "500px",
-    }}
-  />
-);};
+  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
+};
 
 export default TalkCnt;
