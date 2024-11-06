@@ -23,10 +23,11 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -41,24 +42,25 @@ public class ChatMqttToWebSocketHandler {
     private String openAiWebSocketUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final List<String> audioDeltas = Collections.synchronizedList(new ArrayList<>()); // 오디오 델타 문자열을 저장할 리스트 // TODO: 얘도 사용자별로 따로 관리해줘야 할 것 같음.
 
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
     private final OpenAISocketService openAISocketService;
+    private final AudioDeltaService audioDeltaService;
 
-    public ChatMqttToWebSocketHandler(RepoUtil repoUtil, @Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel, UserService userService, OpenAISocketService openAISocketService) {
+    public ChatMqttToWebSocketHandler(RepoUtil repoUtil, @Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel, UserService userService, OpenAISocketService openAISocketService, AudioDeltaService audioDeltaService) {
         this.repoUtil = repoUtil;
         this.mqttOutboundChannel = mqttOutboundChannel;
         this.userService = userService;
         this.openAISocketService = openAISocketService;
+        this.audioDeltaService = audioDeltaService;
     }
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
 
-        MqttBaseDto dto = null;
+        MqttBaseDto dto;
         try {
             dto = objectMapper.readValue(payload, MqttBaseDto.class);
         } catch (JsonProcessingException e) {
@@ -234,12 +236,12 @@ public class ChatMqttToWebSocketHandler {
             if ("response.audio.delta".equals(eventType)) {
                 // delta에서 오디오 데이터를 가져오기
                 String audioDelta = jsonResponse.path("delta").asText();
-                audioDeltas.add(audioDelta); // 오디오 델타를 리스트에 추가
+                audioDeltaService.add(userSeq, audioDelta);
             }
 
             if ("response.output_item.done".equals(eventType)) {
                 // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = mergeAudioDeltas(audioDeltas);
+                byte[] combinedAudio = audioDeltaService.squash(userSeq);
                 String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
 
                 // JSON 응답에서 transcript를 추출
@@ -250,12 +252,10 @@ public class ChatMqttToWebSocketHandler {
                         String transcript = contentArray.get(0).path("transcript").asText(); // 텍스트 응답
                         log.info("Transcript: {}", transcript);
 
-                        var mqttData = Map.of("audio", finalAudioBase64, "transcript", transcript);
+                        Map<String, String> mqttData = Map.of("audio", finalAudioBase64, "transcript", transcript);
                         // 클라이언트에게 오디오 응답 전송
                         mqttOutboundChannel.send(new GenericMessage<>(mqttData.toString()));
                         log.info("데이터 전송 완료!");
-                        // 초기화
-                        audioDeltas.clear(); // 오디오 델타 리스트 초기화
 
                         // 대화 항목 생성 요청 전송
                         String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));
@@ -273,18 +273,6 @@ public class ChatMqttToWebSocketHandler {
         } catch (Exception e) {
             log.error("음성 메시지를 처리하는 중 문제가 발생했습니다.", e);
         }
-    }
-
-    // 오디오 델타를 디코딩하고 합치는 메서드
-    private byte[] mergeAudioDeltas(List<String> audioDeltas) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        for (String delta : audioDeltas) {
-            byte[] audioBytes = Base64.getDecoder().decode(delta);
-            outputStream.write(audioBytes);
-        }
-
-        return outputStream.toByteArray(); // 합쳐진 오디오 데이터를 반환
     }
 
 }
