@@ -6,6 +6,7 @@ import {
   UserInfo,
   ConversationListResponse,
   ConversationDetailResponse,
+  UserResponse,
 } from "../type";
 
 
@@ -35,6 +36,17 @@ export const updateUserInfo = async (userInfo: UserInfo) => {
     return response.data;
   } catch (error) {
     handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 아이 정보 조회
+export const getUserInfo = async (userSeq: number): Promise<UserResponse> => {
+  try {
+    const response = await instance.get(`/api/user/${userSeq}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("유저 정보를 가져오는 중 오류 발생:", error);
     throw error;
   }
 };

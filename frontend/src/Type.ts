@@ -23,6 +23,17 @@ export interface UserState {
   setIsNotFirstLogin: (isNotFirstLogin: boolean) => void;
 }
 
+export interface UserResponse {
+  userSeq: number;
+  userId: string;
+  name: string;
+  age: number;
+  gender: string;
+  favorite: string;
+  remark: string;
+  notFirstLogin: boolean;
+}
+
 export interface QuestionData {
   questionSeq: number;
   question: string;

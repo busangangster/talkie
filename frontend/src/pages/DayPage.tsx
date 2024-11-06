@@ -108,7 +108,9 @@ const DayPage: React.FC = () => {
               <div
                 className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer animate-float"
                 onClick={() =>
-                  navigate(`/talk/${date}/${story.conversationSeq}`)
+                  navigate(`/talk/${date}/${story.conversationSeq}`, {
+                    state: { title: story.title },
+                  })
                 }
               >
                 {/* 동물 이미지 */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import Calendar from "../components/Calendar";
 import WordCloud from "../components/WordCloud";
@@ -24,6 +24,8 @@ const TalkPage: React.FC = () => {
   const [summaryContent, setSummaryContent] = useState<string | null>(null);
   const [conversationDetail, setConversationDetail] =
     useState<ConversationDetailResponse | null>(null);
+  const location = useLocation();
+  const { title } = location.state || {};
 
   const toggleCalendar = () => setShowCalendar(!showCalendar);
 
@@ -124,7 +126,7 @@ const TalkPage: React.FC = () => {
       {/* 이야기 제목 */}
       <div className="flex items-center mt-10 text-3xl font-bold self-start z-20">
         <div className="bg-[#F3E651] w-2 h-10 mr-4" />
-        <span>토끼 인형 이야기</span>
+        <span>{title}</span>
       </div>
 
       {/* 그래프 및 분석 결과 영역 */}
@@ -227,7 +229,7 @@ const TalkPage: React.FC = () => {
       {/* 요약 모달 */}
       {showSummary && summaryContent && (
         <ChatSummary
-          title="놀이터 이야기"
+          title={title}
           content={summaryContent}
           onClose={closeSummary}
         />
