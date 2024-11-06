@@ -76,13 +76,13 @@ public class ChatService {
         message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
         double avgScore;
         if (age == 5) {
-            avgScore = 4.5;
+            avgScore = 4.0;
         } else if (age == 6) {
-            avgScore = 5;
+            avgScore = 5.0;
         } else if (age == 7) {
-            avgScore = 5.5;
-        } else {
             avgScore = 6.0;
+        } else {
+            avgScore = 7.0;
         }
         message.append("동나이 어린이의 어휘력 평균 점수: ").append(avgScore).append("\n");
         return message.toString();
@@ -222,13 +222,13 @@ public class ChatService {
     private String getConversationVocabularyMessage(Vocabulary vocabulary, int age) {
         double avgScore;
         if (age == 5) {
-            avgScore = 4.5;
+            avgScore = 4.0;
         } else if (age == 6) {
-            avgScore = 5;
+            avgScore = 5.0;
         } else if (age == 7) {
-            avgScore = 5.5;
-        } else {
             avgScore = 6.0;
+        } else {
+            avgScore = 7.0;
         }
         return "어휘 점수: " + vocabulary.getVocabularyScore() + "\n" +
                 "동나이대 평균 어휘 점수: " + avgScore + "\n";
