@@ -5,7 +5,10 @@ import {
   UpdateQuestionParams,
   UserInfo,
   ConversationListResponse,
+  ConversationDetailResponse,
+  UserResponse,
 } from "../type";
+
 
 // 로그인
 export const login = async (params: { userId: string }) => {
@@ -33,6 +36,17 @@ export const updateUserInfo = async (userInfo: UserInfo) => {
     return response.data;
   } catch (error) {
     handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 아이 정보 조회
+export const getUserInfo = async (userSeq: number): Promise<UserResponse> => {
+  try {
+    const response = await instance.get(`/api/user/${userSeq}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("유저 정보를 가져오는 중 오류 발생:", error);
     throw error;
   }
 };
@@ -110,6 +124,38 @@ export const getConversationListByDate = async (
     return response.data;
   } catch (error) {
     console.error("일자별 대화 목록 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 대화 상세 조회 
+export const getConversationDetail = async (
+  userSeq: number,
+  conversationSeq: number
+): Promise<ConversationDetailResponse> => {
+  try {
+    const response = await instance.get(
+      `/api/conversation/${userSeq}/${conversationSeq}`
+    );
+    return response.data.data; 
+  } catch (error) {
+    handleApiError(error as never);
+    throw error;
+  }
+};
+
+// 대화 내용 요약 조회
+export const getConversationSummary = async (
+  userSeq: number,
+  conversationSeq: number
+) => {
+  try {
+    const response = await instance.get(
+      `/api/conversation/summary/${userSeq}/${conversationSeq}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("대화 내용 요약 조회 중 오류 발생:", error);
     throw error;
   }
 };
