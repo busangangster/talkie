@@ -22,7 +22,12 @@ public class SecurityConfig {
                         .usernameParameter("userId")
                         .passwordParameter("password")
                         .successHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io"))))
-                .logout(Customizer.withDefaults()) // 로그아웃 설정
+                .logout(logout -> logout // 로그아웃 설정
+                        .logoutUrl("/api/logout") // 로그아웃 경로 설정
+                        .logoutSuccessUrl("https://k11e104.p.ssafy.io/login") // 로그아웃 성공 후 리다이렉트할 URL
+                        .invalidateHttpSession(true) // 세션 무효화
+                        .clearAuthentication(true) // 인증 정보 제거
+                )
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/login").permitAll() // 로그인 API는 인증 없이 접근 가능
                         .anyRequest().authenticated()) // 모든 요청에 대해 인증 필요
