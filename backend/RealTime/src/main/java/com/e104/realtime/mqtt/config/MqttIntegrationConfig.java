@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.endpoint.MessageProducerSupport;
@@ -41,6 +40,7 @@ public class MqttIntegrationConfig {
     /**
      * MQTT 메시지 수신 채널<br>
      * MQTT 구독 어댑터에서 수신한 메시지가 전달되는 채널
+     * @return
      */
     @Bean
     public MessageChannel mqttInputChannel() {
@@ -50,6 +50,7 @@ public class MqttIntegrationConfig {
     /**
      * MQTT 메시지 구독 어댑터<br>
      * 지정된 토픽으로부터 MQTT 메시지를 수신하여 mqttInputChannel에 전달
+     * @return
      */
     @Bean
     @Qualifier("inboundAdapter")
@@ -65,6 +66,7 @@ public class MqttIntegrationConfig {
     /**
      * MQTT 메시지 발행 핸들러<br>
      * 지정된 MQTT 브로커와 발행 토픽으로 메시지를 송신하는 핸들러
+     * @return
      */
     @Bean
     @Qualifier("outboundAdapter")
@@ -89,6 +91,7 @@ public class MqttIntegrationConfig {
     /**
      * MQTT 클라이언트 팩토리<br>
      * MQTT 클라이언트의 연결 옵션을 설정하고 관리하는 팩토리
+     * @return
      */
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
@@ -101,6 +104,8 @@ public class MqttIntegrationConfig {
 
     /**
      * InboundAdapter로 들어온 데이터를 처리.
+     * @param handler
+     * @return
      */
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
