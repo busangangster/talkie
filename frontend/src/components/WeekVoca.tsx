@@ -8,85 +8,37 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  TooltipProps,
 } from "recharts";
-// 어휘력
+import { WeeklyConversation } from "../type";
 
-type ValueType = number | string | Array<number | string>;
-type NameType = string;
+interface WeekVocaProps {
+  data: WeeklyConversation[];
+}
 
-const data = [
-  {
-    name: "Mon",
-    단어수: 4,
-  },
-  {
-    name: "Tue",
-    단어수: 1,
-  },
-  {
-    name: "Wen",
-    단어수: 7,
-  },
-  {
-    name: "Thu",
-    단어수: 6,
-  },
-  {
-    name: "Fri",
-    단어수: 2,
-  },
-  {
-    name: "Sat",
-    단어수: 10,
-  },
-  {
-    name: "Sun",
-    단어수: 3,
-  },
-];
+const WeekVoca: React.FC<WeekVocaProps> = ({ data }) => {
+  const weekDays = ["Sun", "Mon", "Tue", "Wen", "Thr", "Fri", "Sat"];
 
-const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({
-  active,
-  payload,
-  label,
-}) => {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        style={{
-          backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          padding: "10px",
-          borderRadius: "8px",
-        }}
-      >
-        <p style={{ margin: 0, fontWeight: "bold", color: "#000" }}>{label}</p>
-        <p
-          style={{
-            margin: 0,
-            color: "blue",
-            fontWeight: 500,
-          }}
-        >{`단어수: ${payload[0].value}`}</p>
-      </div>
+  const formattedData = weekDays.map((day, index) => {
+    const dailyData = data.find(
+      (entry) => new Date(entry.createdAt).getDay() === index
     );
-  }
-  return null;
-};
+    return {
+      name: day,
+      단어수: dailyData ? dailyData.vocabularyScore : 0,
+    };
+  });
 
-const WeekVoca: React.FC = () => {
   return (
     <div style={{ width: "800px", height: "480px", paddingTop: "30px" }}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
-          data={data}
+          data={formattedData}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
-          <YAxis domain={[0, 10]} />
-          <Tooltip content={<CustomTooltip />} />
+          <YAxis domain={[0, 8]} />
+          <Tooltip />
           <Bar dataKey="단어수" barSize={20} fill="#82ca9d" />
           <Line
             type="monotone"
