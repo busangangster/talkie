@@ -50,12 +50,12 @@ public class UserService {
     @Value("${fastapi.url}")
     private String fastApiUrl;
 
-    // 로그인
-    public LoginResponse login(LoginRequest request) {
-        int userSeq = repoUtil.login(request.getUserId());
-        User user = repoUtil.findUser(userSeq);
-        return new LoginResponse(user.getUserSeq(), user.isNotFirstLogin());
-    }
+//    // 로그인
+//    public LoginResponse login(LoginRequest request) {
+//        int userSeq = repoUtil.login(request.getUserId());
+//        User user = repoUtil.findUser(userSeq);
+//        return new LoginResponse(user.getUserSeq(), user.isNotFirstLogin());
+//    }
 
     // 유저정보 조회
     public UserResponse getUser(int userSeq) {
