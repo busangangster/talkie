@@ -103,14 +103,14 @@ const Qna: React.FC<QnaPropsExtended> = ({
                   {item.question}
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-4">
                 {!item.answer && userSeq !== null && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete(item.questionSeq);
                     }}
-                    className="text-red-500"
+                    className="bg-[#dadada] px-1.5 py-0.5 rounded-md text-sm hover:bg-[#bfbfbf] px-"
                   >
                     삭제
                   </button>
@@ -163,8 +163,7 @@ const Qna: React.FC<QnaPropsExtended> = ({
           disabled={activePage === totalPages}
           className={`text-lg ${
             activePage === totalPages ? "text-gray-300" : "text-neutral-600"
-            }`}
-          
+          }`}
         >
           &gt;
         </button>
