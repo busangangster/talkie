@@ -1,8 +1,8 @@
 package com.e104.realtime.mqtt;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +14,6 @@ public class AudioDeltaService {
 
     /**
      * 입력받은 audioDelta 를 저장한다.
-     *
      * @param userSeq 사용자 시퀀스.
      * @param delta   base64로 인코딩된 오디오 데이터.
      */
@@ -27,7 +26,6 @@ public class AudioDeltaService {
 
     /**
      * 입력받은 audioDelta 를 합쳐서 반환한다. 이후 저장된 오디오델타를 모두 제거한다.
-     *
      * @param userSeq 사용자 시퀀스.
      * @return 합쳐진 오디오 데이터. 암호화되지 않음.
      */
