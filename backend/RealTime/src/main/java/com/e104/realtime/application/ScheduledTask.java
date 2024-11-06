@@ -50,7 +50,7 @@ public class ScheduledTask {
                         .toList();
 
                 double vocabularyScore = 0.0;
-                int happyScore = 0, sadScore = 0, angryScore = 0, amazingScore = 0, scaryScore = 0, conversationCount = 0;
+                int happyScore = 0, sadScore = 0, angryScore = 0, amazingScore = 0, scaryScore = 0, loveScore = 0 ,conversationCount = 0;
                 for (ConversationAnalytics ca : filteredAnalytics) {
                     vocabularyScore += ca.getVocabulary().getVocabularyScore();
                     happyScore += ca.getSentiment().getHappyScore();
@@ -58,6 +58,7 @@ public class ScheduledTask {
                     angryScore += ca.getSentiment().getAngryScore();
                     amazingScore += ca.getSentiment().getAmazingScore();
                     scaryScore += ca.getSentiment().getScaryScore();
+                    loveScore += ca.getSentiment().getLoveScore();
                     conversationCount++;
 
                     List<WordCloud> wordClouds = ca.getWordClouds();
@@ -72,7 +73,14 @@ public class ScheduledTask {
                         }
                     }
                 }
-                DayAnalytics dayAnalytics = builderUtil.buildDayAnalytics(vocabularyScore, happyScore, sadScore, angryScore, amazingScore, scaryScore, conversationCount);
+                happyScore /= conversationCount;
+                loveScore /= conversationCount;
+                sadScore /= conversationCount;
+                angryScore /= conversationCount;
+                amazingScore /= conversationCount;
+                scaryScore /= conversationCount;
+                vocabularyScore /= conversationCount;
+                DayAnalytics dayAnalytics = builderUtil.buildDayAnalytics(vocabularyScore, happyScore, loveScore, sadScore, angryScore, amazingScore, scaryScore, conversationCount);
                 // 해시맵을 이용하여 Day 워드 클라우드 리스트 생성
                 for (String word : wordCloudMap.keySet()) {
                     DayWordCloud dayWordCloud = builderUtil.buildDayWordCloud(word, wordCloudMap.get(word));
@@ -134,12 +142,14 @@ public class ScheduledTask {
             String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics, user.getAge());
             // 워드 클라우드 요약
             String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
+            // 대화 횟수 요약
+            String countSummary = chatService.summarizeConversationCount(filteredDayAnalytics);
             // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
             if (weekAnalytics == null) {
-                weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, year, month, week);
+                weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, countSummary, year, month, week);
                 user.addWeekAnalytics(weekAnalytics);
             } else {
-                weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary);
+                weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary, countSummary);
                 weekAnalytics.clearWordClouds();
             }
             weekAnalytics.addWordClouds(newWeekWordClouds);

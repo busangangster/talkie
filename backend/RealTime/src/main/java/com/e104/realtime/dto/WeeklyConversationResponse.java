@@ -23,6 +23,8 @@ public class WeeklyConversationResponse {
     private String emotionSummary; // 대화 감정 요약
 
     private String vocabularySummary; // 대화 어휘 요약
+    
+    private String countSummary; // 대화 횟수 요약
 
     @Data
     public static class WeeklyConversation {
@@ -58,6 +60,7 @@ public class WeeklyConversationResponse {
         this.wordCloudSummary = weekAnalytics.getWordCloudSummary();
         this.emotionSummary = weekAnalytics.getEmotionSummary();
         this.vocabularySummary = weekAnalytics.getVocabularySummary();
+        this.countSummary = weekAnalytics.getCountSummary();
 
         for (DayAnalytics dayAnalytics : filteredAnalytics) {
             WeeklyConversation weeklyConversation = getWeeklyConversation(dayAnalytics);

@@ -27,10 +27,11 @@ public class BuilderUtil {
                 .build();
     }
 
-    public DayAnalytics buildDayAnalytics(double vocabularyScore, int happyScore, int sadScore, int angryScore, int amazingScore, int scaryScore, int conversationCount) {
+    public DayAnalytics buildDayAnalytics(double vocabularyScore, int happyScore,int loveScore,  int sadScore, int angryScore, int amazingScore, int scaryScore, int conversationCount) {
         return DayAnalytics.builder()
                 .vocabularyScore(vocabularyScore)
                 .happyScore(happyScore)
+                .loveScore(loveScore)
                 .sadScore(sadScore)
                 .angryScore(angryScore)
                 .amazingScore(amazingScore)
@@ -53,11 +54,12 @@ public class BuilderUtil {
                 .build();
     }
 
-    public WeekAnalytics buildWeekAnalytics(String emotionSummary, String vocabularySummary, String wordCloudSummary, int year, int month, int week) {
+    public WeekAnalytics buildWeekAnalytics(String emotionSummary, String vocabularySummary, String wordCloudSummary, String countSummary, int year, int month, int week) {
         return WeekAnalytics.builder()
                 .emotionSummary(emotionSummary)
                 .vocabularySummary(vocabularySummary)
                 .wordCloudSummary(wordCloudSummary)
+                .countSummary(countSummary)
                 .year(year)
                 .month(month)
                 .week(week)

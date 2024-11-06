@@ -76,13 +76,13 @@ public class ChatService {
         message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
         double avgScore;
         if (age == 5) {
-            avgScore = 4.5;
+            avgScore = 4.0;
         } else if (age == 6) {
-            avgScore = 5;
+            avgScore = 5.0;
         } else if (age == 7) {
-            avgScore = 5.5;
-        } else {
             avgScore = 6.0;
+        } else {
+            avgScore = 7.0;
         }
         message.append("동나이 어린이의 어휘력 평균 점수: ").append(avgScore).append("\n");
         return message.toString();
@@ -222,16 +222,48 @@ public class ChatService {
     private String getConversationVocabularyMessage(Vocabulary vocabulary, int age) {
         double avgScore;
         if (age == 5) {
-            avgScore = 4.5;
+            avgScore = 4.0;
         } else if (age == 6) {
-            avgScore = 5;
+            avgScore = 5.0;
         } else if (age == 7) {
-            avgScore = 5.5;
-        } else {
             avgScore = 6.0;
+        } else {
+            avgScore = 7.0;
         }
         return "어휘 점수: " + vocabulary.getVocabularyScore() + "\n" +
                 "동나이대 평균 어휘 점수: " + avgScore + "\n";
 
+    }
+
+    public String summarizeConversationCount(List<DayAnalytics> filteredDayAnalytics) {
+        String message = getConversationCountMessage(filteredDayAnalytics);
+        List<MultiChatMessage> messages = Arrays.asList(
+                new MultiChatMessage("system", """
+                        아이가 이번 주에 몇 번의 대화를 나눴는지, 대화 횟수의 이번주 변동 추이가 어떻게 되는지 부모님께 알려주세요. 대화 횟수를 쉽게 이해할 수 있도록 요약해 주세요. 1이 일요일, 2가 월요일..7이 토요일이야. 예를 들어:
+                        
+                        '아이가 이번 주에 총 20번의 대화를 나누었어요. 하루 평균 대화 횟수는 3번이었어요. 대화 횟수는 월요일부터 금요일까지 점차 증가하는 추세를 보였어요. 가장 많은 대화를 나눈 날은 목요일이었어요.'
+                        
+                        이와 같이 대화 횟수를 요약해주세요.
+                        """
+                ),
+                new MultiChatMessage("user", message)
+        );
+        // multiChat 메서드를 통해 OpenAI API에 연속 메시지를 전달하고 응답을 받습니다.
+        return chatgptService.multiChat(messages);
+    }
+
+    private String getConversationCountMessage(List<DayAnalytics> filteredDayAnalytics) {
+
+        // 메시지의 총 대화 횟수, 평균 대화횟수, 1주일간의 각각의 대화횟수가 포함
+        StringBuilder message = new StringBuilder();
+        int totalConversationCount = 0;
+        for (int i = 1; i <= filteredDayAnalytics.size(); i++) {
+            DayAnalytics dayAnalytics = filteredDayAnalytics.get(i - 1);
+            message.append("Day ").append(i).append(":\n").append("대화 횟수: ").append(dayAnalytics.getConversationCount()).append("\n");
+            totalConversationCount += dayAnalytics.getConversationCount();
+        }
+        message.append("이번 주 총 대화 횟수: ").append(totalConversationCount).append("\n");
+        message.append("하루 평균 대화 횟수: ").append((double) totalConversationCount / filteredDayAnalytics.size()).append("\n");
+        return message.toString();
     }
 }

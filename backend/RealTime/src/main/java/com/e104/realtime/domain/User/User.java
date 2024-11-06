@@ -90,6 +90,14 @@ public class User {
         }
     }
 
+    // 질문 등록 가능 여부 확인
+    public boolean isQuestionAvailable() {
+        if(this.questions.isEmpty()) {
+            return true;
+        }
+        return !this.questions.get(this.questions.size()-1).isActive();
+    }
+
     // 질문 삭제
     @Transactional
     public void removeQuestion() {
@@ -148,4 +156,5 @@ public class User {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주별 통계 추가 중 오류가 발생했습니다.");
         }
     }
+
 }
