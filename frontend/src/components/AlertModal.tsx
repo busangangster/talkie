@@ -24,14 +24,14 @@ const AlertModal: React.FC<AlertModalProps> = ({
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
       >
- <div className="mb-4 w-20">{icon}</div> {/* 아이콘 표시 */}
+        <div className="mb-4 w-20">{icon}</div> {/* 아이콘 표시 */}
         <p className="text-center text-gray-800 text-2xl mb-6 font-bold">
           {message}
         </p>{" "}
         {/* 메시지 */}
         <button
           onClick={onConfirm}
-          className="bg-[#BBB4ED] text-white py-2 px-6 rounded-xl text-lg hover:bg-[#BBB4ED]"
+          className="bg-[#BBB4ED] text-white py-2 px-6 rounded-xl text-lg hover:bg-[#a09bcd]"
         >
           확인
         </button>

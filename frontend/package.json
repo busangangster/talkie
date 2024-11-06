@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/moment": "^2.13.0",
     "axios": "^1.7.7",
+    "axios-retry": "^4.5.0",
     "d3-cloud": "^1.2.7",
     "d3-scale": "^4.0.2",
     "echarts": "^5.5.1",

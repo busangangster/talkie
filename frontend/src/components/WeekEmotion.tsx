@@ -1,76 +1,19 @@
-import React, { useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-
+import React, { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { WeekProps } from "../type";
 
 type LineKeys = "기쁨" | "놀람" | "사랑스러움" | "화남" | "슬픔" | "두려움";
 
-const data = [
-  {
-    name: "Mon",
-    기쁨: 11,
-    놀람: 19,
-    사랑스러움: 73,
-    화남: 95,
-    슬픔: 8,
-    두려움: 95,
-  },
-  {
-    name: "Tue",
-    기쁨: 33,
-    놀람: 4,
-    사랑스러움: 82,
-    화남: 16,
-    슬픔: 79,
-    두려움: 97,
-  },
-  {
-    name: "Wen",
-    기쁨: 38,
-    놀람: 54,
-    사랑스러움: 61,
-    화남: 67,
-    슬픔: 0,
-    두려움: 44,
-  },
-  {
-    name: "Thu",
-    기쁨: 46,
-    놀람: 49,
-    사랑스러움: 6,
-    화남: 21,
-    슬픔: 20,
-    두려움: 31,
-  },
-  {
-    name: "Fri",
-    기쁨: 93,
-    놀람: 65,
-    사랑스러움: 72,
-    화남: 60,
-    슬픔: 54,
-    두려움: 48,
-  },
-  {
-    name: "Sat",
-    기쁨: 6,
-    놀람: 53,
-    사랑스러움: 12,
-    화남: 89,
-    슬픔: 25,
-    두려움: 97,
-  },
-  {
-    name: "Sun",
-    기쁨: 89,
-    놀람: 37,
-    사랑스러움: 8,
-    화남: 85,
-    슬픔: 72,
-    두려움: 33,
-  },
-];
-
-const WeekEmotion: React.FC = () => {
+const WeekEmotion: React.FC<WeekProps> = ({ data }) => {
   const [lines, setLines] = useState<Record<LineKeys, boolean>>({
     기쁨: true,
     놀람: false,
@@ -80,74 +23,88 @@ const WeekEmotion: React.FC = () => {
     두려움: false,
   });
 
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const handleToggleAll = () => {
+    const newSelection = !isAllSelected;
+    const newLines = Object.keys(lines).reduce((acc, key) => {
+      acc[key as LineKeys] = newSelection;
+      return acc;
+    }, {} as Record<LineKeys, boolean>);
+    setLines(newLines);
+    setIsAllSelected(newSelection);
+  };
+
   const handleToggle = (lineKey: LineKeys) => {
-    setLines((prevLines) => ({
-      ...prevLines,
-      [lineKey]: !prevLines[lineKey],
-    }));
-  }
+    const updatedLines = { ...lines, [lineKey]: !lines[lineKey] };
+    setLines(updatedLines);
+    setIsAllSelected(Object.values(updatedLines).every(Boolean));
+  };
+
+  const weekDays = ["Sun", "Mon", "Tue", "Wen", "Thr", "Fri", "Sat"];
+
+  const formattedData = weekDays.map((day, index) => ({
+    name: day,
+    기쁨: data[index]?.happyScore || 0,
+    놀람: data[index]?.amazingScore || 0,
+    사랑스러움: data[index]?.loveScore || 0,
+    화남: data[index]?.angryScore || 0,
+    슬픔: data[index]?.sadScore || 0,
+    두려움: data[index]?.scaryScore || 0,
+  }));
+
+  const maxEmotionValue = Math.max(
+    ...formattedData.flatMap((day) => [
+      day.기쁨,
+      day.놀람,
+      day.사랑스러움,
+      day.화남,
+      day.슬픔,
+      day.두려움,
+    ])
+  );
 
   return (
-    <div style={{ width: "800px", height: "410px", paddingTop: "0px" }}>
-      <div className="flex gap-2 mb-2">
-        <label>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        paddingTop: "0px",
+        paddingBottom: "20px",
+      }}
+    >
+      <div className="flex gap-2 mb-4 items-center justify-between px-8">
+        <div className="flex gap-2">
+          {Object.keys(lines).map((key) => (
+            <label key={key}>
+              <input
+                type="checkbox"
+                checked={lines[key as LineKeys]}
+                onChange={() => handleToggle(key as LineKeys)}
+              />
+              {key}
+            </label>
+          ))}
+        </div>
+
+        <label className="flex items-center gap-1 font-semibold">
           <input
             type="checkbox"
-            checked={lines.기쁨}
-            onChange={() => handleToggle("기쁨")}
+            checked={isAllSelected}
+            onChange={handleToggleAll}
           />
-          기쁨
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={lines.놀람}
-            onChange={() => handleToggle("놀람")}
-          />
-          놀람
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={lines.사랑스러움}
-            onChange={() => handleToggle("사랑스러움")}
-          />
-          사랑스러움
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={lines.화남}
-            onChange={() => handleToggle("화남")}
-          />
-          화남
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={lines.슬픔}
-            onChange={() => handleToggle("슬픔")}
-          />
-          슬픔
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={lines.두려움}
-            onChange={() => handleToggle("두려움")}
-          />
-          두려움
+          전체
         </label>
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={data}
+          data={formattedData}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
-          <YAxis domain={[0, 100]} />
+          <YAxis domain={[0, maxEmotionValue]} />
           <Tooltip />
           <Legend />
           {lines.기쁨 && (
@@ -156,7 +113,6 @@ const WeekEmotion: React.FC = () => {
               dataKey="기쁨"
               strokeWidth={3}
               stroke="#82ca9d"
-              //   activeDot={{ r: 8 }}
             />
           )}
           {lines.놀람 && (
@@ -172,7 +128,7 @@ const WeekEmotion: React.FC = () => {
               type="monotone"
               dataKey="사랑스러움"
               strokeWidth={3}
-              stroke="#ffc658"
+              stroke="#FF9054"
             />
           )}
           {lines.화남 && (
@@ -188,7 +144,7 @@ const WeekEmotion: React.FC = () => {
               type="monotone"
               dataKey="슬픔"
               strokeWidth={3}
-              stroke="#65F0FF"
+              stroke="#80CCFF"
             />
           )}
           {lines.두려움 && (
@@ -196,7 +152,7 @@ const WeekEmotion: React.FC = () => {
               type="monotone"
               dataKey="두려움"
               strokeWidth={3}
-              stroke="#FEAE24"
+              stroke="#ffc658"
             />
           )}
         </LineChart>
