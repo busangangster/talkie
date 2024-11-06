@@ -15,6 +15,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보안 설정
+                .cors(AbstractHttpConfigurer::disable) // CORS 설정
                 .formLogin(form -> form // 로그인 설정
                         .loginPage("https://k11e104.p.ssafy.io/login")
                         .loginProcessingUrl("/api/login")
