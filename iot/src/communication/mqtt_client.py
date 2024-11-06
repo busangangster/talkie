@@ -2,6 +2,8 @@ import paho.mqtt.client as mqtt
 import json
 import sys
 import os
+from gtts import gTTS
+from playsound import playsound
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
@@ -9,7 +11,20 @@ from src.stt.stt_handler import start_conversation
 
 # 서버에서 메시지를 수신할 때 호출됩니다.
 def on_message(client, userdata, message):
-    print("B: " + message.payload.decode())
+    # 메시지를 텍스트로 디코딩하여 출력
+    text = message.payload.decode()
+    print("B: " + text)
+    
+    # 텍스트를 음성으로 변환
+    tts = gTTS(text=text, lang='ko')  # 한국어 설정
+    audio_file = "response.mp3"
+    tts.save(audio_file)
+
+    # 음성을 재생
+    playsound(audio_file)
+    
+    # 파일 삭제하여 중복 방지
+    os.remove(audio_file)
 
 # MQTT 클라이언트 설정
 # client_id는 각 클라이언트를 고유하게 식별하는 데 사용됩니다.
@@ -35,8 +50,10 @@ def publish_message(header, data=None):
         "userSeq": user_seq,
         "header": header
     }
-    if data is not None:
+    if data:
         msg["data"] = data
+    else:
+        print("데이터가 비어 있어 전송되지 않음")
     client.publish(TOPIC_PUB, json.dumps(msg), qos=0)
 
 
@@ -45,8 +62,13 @@ def publish_message(header, data=None):
 # publish_message("topic/websocket/connect")
 
 # 메시지 전송 요청
-publish_message("topic/message/send", data={"content": start_conversation()})
 
+text = start_conversation()
+
+if text:  # 변환된 텍스트가 있을 때만 메시지 발행
+    publish_message("topic/message/send", data={"content": text})
+else:
+    print("텍스트 변환 결과가 비어 있어 전송하지 않음")
 # 대화 종료 요청
 # publish_message("topic/conversation/end")
 
