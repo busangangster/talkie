@@ -54,11 +54,12 @@ public class BuilderUtil {
                 .build();
     }
 
-    public WeekAnalytics buildWeekAnalytics(String emotionSummary, String vocabularySummary, String wordCloudSummary, int year, int month, int week) {
+    public WeekAnalytics buildWeekAnalytics(String emotionSummary, String vocabularySummary, String wordCloudSummary, String countSummary, int year, int month, int week) {
         return WeekAnalytics.builder()
                 .emotionSummary(emotionSummary)
                 .vocabularySummary(vocabularySummary)
                 .wordCloudSummary(wordCloudSummary)
+                .countSummary(countSummary)
                 .year(year)
                 .month(month)
                 .week(week)

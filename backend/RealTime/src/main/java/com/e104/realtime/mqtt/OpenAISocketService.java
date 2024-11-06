@@ -10,6 +10,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -22,6 +23,10 @@ public class OpenAISocketService {
     private final ObjectMapper objectMapper;
 
     public void addSocket(int userSeq, WebSocketClient socketClient) {
+        if(Objects.isNull(socketClient)) {
+            log.warn("입력받은 소켓이 null입니다. 저장 과정을 건너뜁니다.");
+            return;
+        }
         userWebSocketClients.put(userSeq, socketClient);
     }
 
@@ -33,7 +38,7 @@ public class OpenAISocketService {
             webSocketClient.send(sessionUpdateJson);
             log.info("Session update sent.");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("업데이트된 세션을 전송하는 중 문제가 발생했습니다.", e);
         }
     }
 

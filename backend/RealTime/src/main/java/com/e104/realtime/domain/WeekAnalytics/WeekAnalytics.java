@@ -32,6 +32,9 @@ public class WeekAnalytics {
     @Column(nullable = false)
     private String wordCloudSummary;
 
+    @Column(nullable = false)
+    private String countSummary;
+
     @OneToMany(mappedBy = "weekAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column
     private final List<WeekWordCloud> weekWordClouds = new ArrayList<>();
@@ -53,10 +56,11 @@ public class WeekAnalytics {
 
     // 요약 업데이트
     @Transactional
-    public void updateSummary(String emotionSummary, String vocabularySummary, String wordCloudSummary) {
+    public void updateSummary(String emotionSummary, String vocabularySummary, String wordCloudSummary, String countSummary) {
         this.emotionSummary = emotionSummary;
         this.vocabularySummary = vocabularySummary;
         this.wordCloudSummary = wordCloudSummary;
+        this.countSummary = countSummary;
     }
 
     // 주간 워드 클라우드 추가

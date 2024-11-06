@@ -142,12 +142,14 @@ public class ScheduledTask {
             String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics, user.getAge());
             // 워드 클라우드 요약
             String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
+            // 대화 횟수 요약
+            String countSummary = chatService.summarizeConversationCount(filteredDayAnalytics);
             // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
             if (weekAnalytics == null) {
-                weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, year, month, week);
+                weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, countSummary, year, month, week);
                 user.addWeekAnalytics(weekAnalytics);
             } else {
-                weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary);
+                weekAnalytics.updateSummary(emotionSummary, vocabularySummary, wordCloudSummary, countSummary);
                 weekAnalytics.clearWordClouds();
             }
             weekAnalytics.addWordClouds(newWeekWordClouds);
