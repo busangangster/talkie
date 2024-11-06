@@ -17,10 +17,9 @@ public class RepoUtil {
     private final UserRepository userRepository;
 
     // 로그인
-    public int login(String userId) {
-        User user = userRepository.findByUserId(userId)
+    public User login(String userId) {
+        return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RestApiException(StatusCode.NO_CONTENT, "User not found"));
-        return user.getUserSeq();
     }
 
     // 해당 유저 찾기
