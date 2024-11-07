@@ -145,7 +145,7 @@ public class ChatMqttToWebSocketHandler {
         }
 
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
-        User user = null;
+        User user;
         try {
             user = repoUtil.findUser(dto.userSeq());
         } catch (RestApiException e) {

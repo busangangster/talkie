@@ -10,10 +10,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.springframework.stereotype.Component;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -74,7 +72,7 @@ public class OpenAISocketService implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         userWebSocketClients.forEach((key, value) -> value.close());
     }
 }
