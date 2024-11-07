@@ -4,15 +4,21 @@ import lombok.Data;
 
 @Data
 public class FastApiSentimentResponse {
-    private int happyScore;
 
-    private int loveScore;
+    private Predictions predictions;
 
-    private int sadScore;
+    @Data
+    public static class Predictions {
+        private int happyScore;
 
-    private int scaryScore;
+        private int loveScore;
 
-    private int angryScore;
+        private int sadScore;
 
-    private int amazingScore;
+        private int scaryScore;
+
+        private int angryScore;
+
+        private int amazingScore;
+    }
 }
