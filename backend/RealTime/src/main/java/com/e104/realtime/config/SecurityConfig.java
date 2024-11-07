@@ -27,12 +27,15 @@ public class SecurityConfig {
                         .loginProcessingUrl("/api/login")
                         .usernameParameter("userId")
                         .passwordParameter("password")
-                        .successHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io"))))
+                        .defaultSuccessUrl("/api/loginOK")
+//                        .successHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io")))
+                )
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
-                        .logoutSuccessHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io/login")))
+//                        .logoutSuccessHandler(((request, response, authentication) -> response.sendRedirect("https://k11e104.p.ssafy.io/login")))
+                        .logoutSuccessUrl("/api/logoutOK")
                         .invalidateHttpSession(true)
-                        .clearAuthentication(true)
+                        .clearAuthentication(true).deleteCookies("JSESSIONID")
                 )
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/login").permitAll()
@@ -46,6 +49,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://k11e104.p.ssafy.io", "http://k11e104.p.ssafy.io"));
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://k11e104.p.ssafy.io", "http://k11e104.p.ssafy.io")); // 허용할 도메인 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

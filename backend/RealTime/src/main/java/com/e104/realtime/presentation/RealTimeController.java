@@ -27,11 +27,17 @@ public class RealTimeController {
 //    }
 
 
-    // 사용자 로그인 정보 조회
-    @GetMapping("/user/loginInfo")
+    // 사용자 로그인 성공
+    @GetMapping("/loginOK")
     public ResponseEntity<ResponseDto> loginInfo() {
         LoginResponse loginResponse = userService.getLoginInfo();
         return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
+    }
+
+    // 사용자 로그아웃 성공
+    @GetMapping("/logoutOK")
+    public ResponseEntity<ResponseDto> logoutInfo() {
+        return ResponseDto.response(StatusCode.SUCCESS, "로그아웃 성공");
     }
 
     // 유저 정보 조회
