@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.springframework.stereotype.Component;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class OpenAISocketService {
+public class OpenAISocketService implements Closeable {
 
     private final Map<Integer, WebSocketClient> userWebSocketClients = new ConcurrentHashMap<>(); // userSeq 타입을 Integer로 변경
 
@@ -61,5 +63,10 @@ public class OpenAISocketService {
         WebSocketClient socketClient = userWebSocketClients.get(userSeq);
         socketClient.close();
         userWebSocketClients.remove(userSeq);
+    }
+
+    @Override
+    public void close() throws IOException {
+        userWebSocketClients.forEach((key, value) -> value.close());
     }
 }
