@@ -23,7 +23,7 @@ public class Question {
     @JoinColumn(name = "user_seq", nullable = false) // 외래키 설정, 영화와의 관계를 나타냄
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String content;  // 질문 내용
 
     @Column(nullable = false)

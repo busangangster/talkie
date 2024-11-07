@@ -23,16 +23,16 @@ public class WeekAnalytics {
     @JoinColumn(name = "user_seq", nullable = false) // 외래키 설정
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String emotionSummary;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String vocabularySummary;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String wordCloudSummary;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String countSummary;
 
     @OneToMany(mappedBy = "weekAnalytics", cascade = CascadeType.ALL, orphanRemoval = true)

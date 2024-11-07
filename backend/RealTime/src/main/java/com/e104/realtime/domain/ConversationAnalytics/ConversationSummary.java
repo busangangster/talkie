@@ -20,7 +20,7 @@ public class ConversationSummary {
     @JoinColumn(name = "conversation_seq", nullable = false) // 외래키 설정, 대화와의 관계를 나타냄
     private ConversationAnalytics conversationAnalytics;  // 대화 요약이 속한 대화
 
-    @Column
+    @Column(length = 3000)
     private String content; // 대화 요약 내용
 
     // 양방향 관계 설정
