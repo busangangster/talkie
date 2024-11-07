@@ -57,16 +57,6 @@ public class DayAnalytics {
     @Column
     private final List<DayWordCloud> dayWordClouds = new ArrayList<>(); // 일별 워드 클라우드 리스트, 일별 분석과 양방향 관계를 설정하며, 일별 분석이 삭제되면 워드 클라우드도 함께 삭제됨 (CascadeType.ALL)
 
-    // 날짜 생성
-    @PrePersist
-    public void prePersist() {
-        try {
-            this.createdAt = LocalDate.now(); // 현재 시간으로 날짜 생성
-        } catch (Exception e) {
-            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "날짜 생성 중 오류가 발생했습니다.");
-        }
-    }
-
     // 양방향 관계 설정
     public void setUser(User user) {
         try {
