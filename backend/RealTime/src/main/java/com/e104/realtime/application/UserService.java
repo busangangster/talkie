@@ -5,7 +5,6 @@ import com.e104.realtime.common.status.StatusCode;
 import com.e104.realtime.domain.ConversationAnalytics.*;
 import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
 import com.e104.realtime.domain.User.Answer;
-import com.e104.realtime.domain.ConversationAnalytics.ConversationContent;
 import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
 import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
@@ -22,8 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -78,8 +75,8 @@ public class UserService {
         Question question = builderUtil.buildQuestion(request.getContent());
         user.addQuestion(question);
     }
-    
-    
+
+
     // 질문 등록 가능한지 여부
     public boolean isQuestionAvailable(int userSeq) {
         User user = repoUtil.findUser(userSeq);
@@ -145,7 +142,7 @@ public class UserService {
         WeekFields weekFields = WeekFields.of(Locale.KOREA);
         int startWeek = startDay.get(weekFields.weekOfMonth());
         int endWeek = endDay.get(weekFields.weekOfMonth());
-        if(startYear != endYear || startMonth != endMonth || startWeek != endWeek) {
+        if (startYear != endYear || startMonth != endMonth || startWeek != endWeek) {
             throw new RestApiException(StatusCode.BAD_REQUEST, "시작 날짜와 끝 날짜가 같은 년도,월,주차에 있어야 합니다.");
         }
 
@@ -164,10 +161,11 @@ public class UserService {
         return new WeeklyConversationResponse(weekAnalytics, filteredDayAnalytics);
     }
 
-
+    @Transactional
     public void bufferConversation(Conversation conversation) {
         conversationRedisRepository.save(conversation);
     }
+
 
     @Transactional
     public void saveConversation(int userSeq) {
@@ -182,7 +180,7 @@ public class UserService {
         boolean isActive = question.isActive();
         boolean isAnswered = question.isAnswered();
         if (isActive && isAnswered) {
-            if(conversations.size() <= 1) {
+            if (conversations.size() <= 1) {
                 question.updateAnswerd(false);
                 return;
             }
@@ -190,11 +188,10 @@ public class UserService {
             Answer answer = builderUtil.buildAnswer(content);
             question.addAnswer(answer);
         }
-        if(conversations.size() <= 1) {
+        if (conversations.size() <= 1) {
             return;
         }
 
-        // TODO: DTO 매핑
         List<String> conversationOfKid = conversationContents.stream().filter(ConversationContent::isAnswer).map(ConversationContent::getContent).toList();
         FastApiWordCloudResponse fastApiWordCloudResponse = fetchPostRequest(conversationOfKid, FastApiWordCloudResponse.class, "/wordcloud");
         FastApiSentimentResponse fastApiSentimentResponse = fetchPostRequest(conversationOfKid, FastApiSentimentResponse.class, "/emotion");
@@ -205,12 +202,12 @@ public class UserService {
         }
         Vocabulary vocabulary = Vocabulary.builder().vocabularyScore(fastApiVocabularyResponse.getMorph_analyze()).build();
         Sentiment sentiment = Sentiment.builder()
-                .happyScore(fastApiSentimentResponse.getHappyScore())
-                .loveScore(fastApiSentimentResponse.getLoveScore())
-                .sadScore(fastApiSentimentResponse.getSadScore())
-                .scaryScore(fastApiSentimentResponse.getScaryScore())
-                .angryScore(fastApiSentimentResponse.getAngryScore())
-                .amazingScore(fastApiSentimentResponse.getAmazingScore())
+                .happyScore(fastApiSentimentResponse.getPredictions().getHappyScore())
+                .loveScore(fastApiSentimentResponse.getPredictions().getLoveScore())
+                .sadScore(fastApiSentimentResponse.getPredictions().getSadScore())
+                .scaryScore(fastApiSentimentResponse.getPredictions().getScaryScore())
+                .angryScore(fastApiSentimentResponse.getPredictions().getAngryScore())
+                .amazingScore(fastApiSentimentResponse.getPredictions().getAmazingScore())
                 .build();
 
         // 대화제목, 대화 내용 요약 가져오기
@@ -247,22 +244,24 @@ public class UserService {
     }
 
     private <T> T fetchPostRequest(List<String> conversationOfKid, Class<T> responseType, String path) {
-        // HTTP 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        try {
+            FastApiRequest request = new FastApiRequest(conversationOfKid);
 
-        // 요청 데이터 생성
-        MultiValueMap<String, List<String>> requestData = new LinkedMultiValueMap<>();
-        requestData.add("Conversation", conversationOfKid);
+            // HTTP 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // HTTP 엔티티 생성 (헤더와 데이터를 함께 설정)
-        HttpEntity<MultiValueMap<String, List<String>>> requestEntity = new HttpEntity<>(requestData, headers);
+            // HTTP 엔티티 생성 (헤더와 요청 데이터 설정)
+            HttpEntity<FastApiRequest> requestEntity = new HttpEntity<>(request, headers);
 
-        // HTTP POST 요청 보내기
-        String url = fastApiUrl + path;
-        ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
+            // HTTP POST 요청 보내기
+            String url = fastApiUrl + path;
+            ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
 
-        // 응답 값
-        return responseEntity.getBody();
+            // 응답 값
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "FastAPI 연결 실패");
+        }
     }
 }
