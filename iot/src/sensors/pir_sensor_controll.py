@@ -12,7 +12,7 @@ from src.logger.logger import get_logger
 logger = get_logger()
 
 # C 라이브러리 불러오기
-pir_sensor_lib = ctypes.CDLL('./libpir_detect.so')
+pir_sensor_lib = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'libpir_detect.so'))
 
 # 아이 접근 감지 함수
 def detect_child_approach():

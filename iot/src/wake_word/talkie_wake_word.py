@@ -18,7 +18,7 @@ def initialize_wake_word():
     try:
         porcupine = pvporcupine.create(
             access_key=WAKEWORD_KEY,
-            keyword_paths=[os.path.join(os.path.dirname(__file__), "talkie_ko_windows_v3_0_0.ppn")],
+            keyword_paths=[os.path.join(os.path.dirname(__file__), "빅스비_jetson.ppn")],
             model_path=os.path.join(os.path.dirname(__file__), "porcupine_params_ko.pv")
         )
 
@@ -26,7 +26,7 @@ def initialize_wake_word():
         stream = p.open(
             rate=porcupine.sample_rate,
             channels=1,
-            format=pyaudio.paInt16,
+            format=pyaudio.paInt16,                                                           
             input=True,
             frames_per_buffer=porcupine.frame_length
         )
