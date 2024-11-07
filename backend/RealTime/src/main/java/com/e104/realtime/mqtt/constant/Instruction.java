@@ -32,4 +32,16 @@ public final class Instruction {
                                 
             10. 아이에게 무섭지 않게, 귀엽고 다정하고 감정이 들어있고 억양이 느껴지도록 말해줘.
             """;
+    public static final String ASK_QUESTION = """
+                    ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
+                    질문: %s
+                    """;
+
+    public static final String GREETING = """
+                    ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
+                    """;
+
+    public static final String START_CONVERSATION = """
+                ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
+                """;
 }
