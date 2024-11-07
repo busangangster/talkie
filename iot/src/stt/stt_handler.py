@@ -4,6 +4,10 @@ import requests
 import io
 import numpy as np
 from src.config.api_key import CLIENT_ID, CLIENT_SECRET, URL
+from src.logger.logger import get_logger
+
+# 로거 설정
+logger = get_logger()
 
 # 오디오 설정
 RATE = 16000  # 샘플링 속도
@@ -29,12 +33,13 @@ def clova_stt(audio_data):
         response = requests.post(URL, headers=headers, data=audio_data)
         if response.status_code == 200:
             result = response.json().get("text", "")
+            logger.info("STT 변환 성공: %s", result)
             return result
         else:
-            print("STT 변환 오류:", response.status_code, response.text)
+            logger.error("STT 변환 오류: %s %s", response.status_code, response.text)
             return None
     except requests.exceptions.RequestException as e:
-        print("STT 요청 실패:", e)
+        logger.error("STT 요청 실패: %s", e)
         return None
 
 
@@ -66,7 +71,7 @@ def record_until_silence():
     audio = pyaudio.PyAudio()
     stream = audio.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
-    print("녹음을 시작합니다. 침묵이 감지되면 녹음이 종료됩니다.")
+    logger.info("녹음을 시작합니다. 침묵이 감지되면 녹음이 종료됩니다.")
     frames = []
     silence_frames = 0
     max_silence_frames = int(SILENCE_DURATION * RATE / CHUNK)
@@ -80,6 +85,7 @@ def record_until_silence():
         stream.stop_stream()
         stream.close()
         audio.terminate()
+        logger.info("녹음이 종료되었습니다.")
 
     # 메모리 내에서 WAV 포맷으로 저장
     wav_data = io.BytesIO()
@@ -101,9 +107,10 @@ def start_conversation():
     audio_data = record_until_silence()  # 음성 수집 및 침묵 감지 종료
     text_result = clova_stt(audio_data)  # STT 변환 요청
     if text_result:
-        print("변환된 텍스트:", text_result)
+        logger.info("변환된 텍스트: %s", text_result)
+        # print("변환된 텍스트: %s", text_result)
     return text_result
 
 
 # 실행
-start_conversation()
+print(start_conversation())
