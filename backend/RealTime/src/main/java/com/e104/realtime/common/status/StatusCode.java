@@ -30,7 +30,8 @@ public enum StatusCode {
     SERVICE_STOP(HttpStatus.INTERNAL_SERVER_ERROR, 501, "현재 서버가 이용 불가능 상태입니다."),
     KAFKA_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 502, "카프카 서버 에러입니다."),
 
-    NO_CONTENT(HttpStatus.OK, 412, "요청한 정보가 없습니다.");
+    NO_CONTENT(HttpStatus.OK, 412, "요청한 정보가 없습니다."),
+    UNAUTHORIZED(HttpStatus.BAD_REQUEST, 413, "인증되지 않습니다." );
 
 
 

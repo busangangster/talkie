@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
-public class CustomUserDetails implements UserDetails {
-
-    private final User user;
+public record CustomUserDetails(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -27,10 +25,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUserId();
+        return this.user.getUserId();
     }
 
-    public CustomUserDetails(User user) {
-        this.user = user;
+    public User getUser() {
+        return this.user;
     }
 }
