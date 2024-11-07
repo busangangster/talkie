@@ -25,10 +25,7 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -127,7 +124,7 @@ public class ChatMqttToWebSocketHandler {
                 .build();
         userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
 
-        handleClientMessage(dto.userSeq(), content);  // WebSocket으로 메시지 전송
+        sendClientMessageToOpenaiWebsocket(dto.userSeq(), content);  // WebSocket으로 메시지 전송
     }
 
     // 대화 종료 알림을 처리하는 기능
@@ -154,7 +151,7 @@ public class ChatMqttToWebSocketHandler {
         List<Question> questions = user.getQuestions();
         Question question = questions.get(questions.size() - 1);
         if (question.isActive()) {
-            handleClientMessage(dto.userSeq(), """
+            sendClientMessageToOpenaiWebsocket(dto.userSeq(), """
                     ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
                     질문: %s
                     """.formatted(question.getContent()));
@@ -163,7 +160,7 @@ public class ChatMqttToWebSocketHandler {
             // 현재 시간 추출
             String clock = TimeChecker.now();
             // 각 시간에 맞는 인사를 해달라고 하기
-            handleClientMessage(dto.userSeq(), """
+            sendClientMessageToOpenaiWebsocket(dto.userSeq(), """
                     ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
                     """.formatted(clock));
         }
@@ -173,7 +170,7 @@ public class ChatMqttToWebSocketHandler {
     // 대화 시작 신호를 처리하는 기능
     private void handleVoiceRecognition(MqttBaseDto dto) throws JsonProcessingException {
         // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
-        handleClientMessage(dto.userSeq(), """
+        sendClientMessageToOpenaiWebsocket(dto.userSeq(), """
                 ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
                 """);
         log.info("Voice recognition event received: {}", dto);
@@ -191,7 +188,7 @@ public class ChatMqttToWebSocketHandler {
 
                 @Override
                 public void onMessage(String message) {
-                    handleOpenAiResponse(userSeq, message);
+                    sendOpenAiResponseToMqttClient(userSeq, message);
                 }
 
                 @Override
@@ -218,15 +215,16 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // userSeq에 따라 WebSocket을 통해 사용자 메시지를 전송하는 메서드
-    private void handleClientMessage(Integer userSeq, String userMessage) {
+    private void sendClientMessageToOpenaiWebsocket(Integer userSeq, String userMessage) {
         try {
             WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
             if(Objects.isNull(webSocketClient)) {
                 log.warn("웹소켓이 존재하지 않습니다! 소켓 연결을 시도합니다.");
-                openAISocketService.addSocket(userSeq, createWebSocketClient(userSeq));
+                webSocketClient = createWebSocketClient(userSeq);
+                openAISocketService.addSocket(userSeq, webSocketClient);
                 log.warn("웹소켓을 연결했습니다. 최초 대화 시작 시, 웹소켓 연결 요청을 먼저 시도해주세요. 현재 대화는 정상적으로 기록되지 않을 수 있습니다.");
             }
-            if (webSocketClient != null && webSocketClient.isOpen()) {
+            if (webSocketClient.isOpen()) {
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 webSocketClient.send(jsonMessage);
                 // 응답 생성 요청 전송
@@ -239,7 +237,7 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // OpenAI로부터 받은 메시지를 클라이언트로 MQTT를 통해 전송하는 메서드
-    private void handleOpenAiResponse(Integer userSeq, String message) {
+    private void sendOpenAiResponseToMqttClient(Integer userSeq, String message) {
         try {
             WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
             JsonNode jsonResponse = objectMapper.readTree(message);

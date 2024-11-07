@@ -13,6 +13,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -25,9 +26,13 @@ public class OpenAISocketService implements Closeable {
     private final ObjectMapper objectMapper;
 
     public void addSocket(int userSeq, WebSocketClient socketClient) {
-        if(Objects.isNull(socketClient)) {
+        if (Objects.isNull(socketClient)) {
             log.warn("입력받은 소켓이 null입니다. 저장 과정을 건너뜁니다.");
             return;
+        }
+        if (userWebSocketClients.containsKey(userSeq) && Objects.nonNull(userWebSocketClients.get(userSeq))) {
+            log.warn("기존 소켓 연결이 존재합니다. 기존 소켓을 종료합니다.");
+            removeSocket(userSeq);
         }
         userWebSocketClients.put(userSeq, socketClient);
     }
@@ -56,12 +61,15 @@ public class OpenAISocketService implements Closeable {
     }
 
     public WebSocketClient getWebSocketClient(int userSeq) {
+        if (!userWebSocketClients.containsKey(userSeq)) return null;
         return userWebSocketClients.get(userSeq);
     }
 
     public void removeSocket(int userSeq) {
         WebSocketClient socketClient = userWebSocketClients.get(userSeq);
-        socketClient.close();
+        if (Objects.nonNull(socketClient)) {
+            socketClient.close();
+        }
         userWebSocketClients.remove(userSeq);
     }
 
