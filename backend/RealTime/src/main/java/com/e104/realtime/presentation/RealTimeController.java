@@ -26,6 +26,14 @@ public class RealTimeController {
 //        return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
 //    }
 
+
+    // 사용자 로그인 정보 조회
+    @GetMapping("/user/loginInfo")
+    public ResponseEntity<ResponseDto> loginInfo() {
+        LoginResponse loginResponse = userService.getLoginInfo();
+        return ResponseDto.response(StatusCode.SUCCESS, loginResponse);
+    }
+
     // 유저 정보 조회
     @GetMapping("/user/{userSeq}")
     public ResponseEntity<ResponseDto> getUser(@PathVariable int userSeq) {
