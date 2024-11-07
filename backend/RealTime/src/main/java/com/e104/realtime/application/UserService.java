@@ -65,7 +65,6 @@ public class UserService {
     public void updateUser(UserUpdateRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
         user.updateUserInfo(request.getName(), request.getAge(), request.getGender(), request.getFavorite(), request.getRemark());
-        openAISocketService.sendSessionUpdate(user);
     }
 
     // 질문 등록
