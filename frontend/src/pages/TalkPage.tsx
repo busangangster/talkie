@@ -75,7 +75,7 @@ const TalkPage: React.FC = () => {
 
   return (
     <div
-      className="relative flex flex-col items-center px-[260px] py-12 min-h-screen overflow-y-scroll bg-cover bg-center -z-10"
+      className="relative flex flex-col items-center px-[260px] py-12 min-h-screen overflow-y-scroll bg-cover bg-center"
       style={{ backgroundImage: "url('/assets/background.jpg')" }}
     >
       <style>{`

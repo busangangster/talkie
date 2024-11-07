@@ -96,43 +96,51 @@ const DayPage: React.FC = () => {
 
       {/* 이야기 리스트 */}
       <div className="w-4/5 mt-24 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[450px] overflow-y-scroll py-16 px-10">
-        <div className="grid grid-cols-2 gap-y-20 gap-x-10">
-          {stories.map((story) => (
-            <div key={story.conversationSeq} className="relative">
-              {/* 왼쪽 상단의 순서 */}
-              <span className="absolute -top-10 left-0 text-neutral-800 font-bold text-xl ml-2">
-                {story.order} 이야기
-              </span>
+        {stories.length > 0 ? (
+          <div className="grid grid-cols-2 gap-y-20 gap-x-10">
+            {stories.map((story) => (
+              <div key={story.conversationSeq} className="relative">
+                {/* 왼쪽 상단의 순서 */}
+                <span className="absolute -top-10 left-0 text-neutral-800 font-bold text-xl ml-2">
+                  {story.order} 이야기
+                </span>
 
-              {/* 이야기에 관한 div */}
-              <div
-                className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer animate-float"
-                onClick={() =>
-                  navigate(`/talk/${date}/${story.conversationSeq}`, {
-                    state: { title: story.title },
-                  })
-                }
-              >
-                {/* 동물 이미지 */}
-                <img
-                  src={`/assets/animals/animal${
-                    (story.conversationSeq % 3) + 1
-                  }.png`}
-                  alt="animal"
-                  className="w-40 rounded-3xl px-10 py-3 bg-[#dadbe9] mr-4"
-                />
+                {/* 이야기에 관한 div */}
+                <div
+                  className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer animate-float"
+                  onClick={() =>
+                    navigate(`/talk/${date}/${story.conversationSeq}`, {
+                      state: { title: story.title },
+                    })
+                  }
+                >
+                  {/* 동물 이미지 */}
+                  <img
+                    src={`/assets/animals/animal${
+                      (story.conversationSeq % 3) + 1
+                    }.png`}
+                    alt="animal"
+                    className="w-40 rounded-3xl px-10 py-3 bg-[#dadbe9] mr-4"
+                  />
 
-                {/* 이야기 제목과 시간 */}
-                <div className="flex flex-col flex-1 ml-4 mb-3">
-                  <span className="font-semibold text-2xl mb-3">
-                    {story.title}
-                  </span>
-                  <span className="text-[#707070]">{story.formattedTime}</span>
+                  {/* 이야기 제목과 시간 */}
+                  <div className="flex flex-col flex-1 ml-4 mb-3">
+                    <span className="font-semibold text-2xl mb-3">
+                      {story.title}
+                    </span>
+                    <span className="text-[#707070]">
+                      {story.formattedTime}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-700 text-2xl font-semibold py-16">
+            이 날은 대화 목록이 없어요!
+          </div>
+        )}
       </div>
 
       {/* 달력 모달 */}
