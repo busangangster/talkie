@@ -29,10 +29,6 @@ public class OpenAISocketService implements Closeable {
             log.warn("입력받은 소켓이 null입니다. 저장 과정을 건너뜁니다.");
             return;
         }
-        if(userWebSocketClients.containsKey(userSeq)) {
-            log.warn("기존 소켓 연결이 존재합니다. 기존 소켓을 종료하고, 새 소켓을 저장합니다.");
-            userWebSocketClients.get(userSeq).close();
-        }
         userWebSocketClients.put(userSeq, socketClient);
     }
 
