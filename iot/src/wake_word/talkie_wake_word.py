@@ -1,7 +1,14 @@
 import os
+import sys
 import pvporcupine
 import pyaudio
 import struct
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_path = os.path.join(current_dir, '..', 'src')
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
 from src.config.api_key import WAKEWORD_KEY
 from src.logger.logger import get_logger
 

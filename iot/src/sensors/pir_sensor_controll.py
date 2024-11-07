@@ -1,6 +1,13 @@
 # sensor.py
 # -*- coding: utf-8 -*-
 import ctypes
+import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_path = os.path.join(current_dir, '..', 'src')
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
 from src.logger.logger import get_logger
 
 # 로거 가져오기
