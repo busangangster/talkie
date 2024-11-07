@@ -13,15 +13,26 @@ import {
 
 // 로그인
 export const login = async (params: { userId: string }) => {
-  const { setUserSeq, setIsNotFirstLogin } = useUserStore.getState();
+  const { setUserSeq, setNotFirstLogin } = useUserStore.getState();
+
+  // FormData 객체 생성 및 데이터 추가
+  const formData = new FormData();
+  formData.append("userId", params.userId); 
+  formData.append("password", "talkie"); // password를 "talkie"로 고정
 
   try {
-    const response = await instance.post("/api/login", params);
+    // FormData를 이용해 API 요청
+    const response = await instance.post("/api/login", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // 요청 헤더에 Content-Type 설정
+      },
+      withCredentials: true,
+    });
 
-    // API 응답에서 userSeq와 isNotFirstLogin을 추출하여 zustand 상태 업데이트
-    const { userSeq, isNotFirstLogin } = response.data.data;
+    // API 응답에서 userSeq와 notFirstLogin을 추출하여 zustand 상태 업데이트
+    const { userSeq, notFirstLogin } = response.data.data;
     setUserSeq(userSeq);
-    setIsNotFirstLogin(isNotFirstLogin);
+    setNotFirstLogin(notFirstLogin);
 
     return response.data;
   } catch (error) {
@@ -43,9 +54,12 @@ export const updateUserInfo = async (userInfo: UserInfo) => {
 
 // 아이 정보 조회
 export const getUserInfo = async (userSeq: number): Promise<UserResponse> => {
+  const { setUserInfo } = useUserStore.getState();
   try {
     const response = await instance.get(`/api/user/${userSeq}`);
-    return response.data.data;
+    const userData = response.data.data;
+    setUserInfo(userData); // zustand에 사용자 정보 저장
+    return userData;
   } catch (error) {
     console.error("유저 정보를 가져오는 중 오류 발생:", error);
     throw error;

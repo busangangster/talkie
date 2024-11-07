@@ -2,7 +2,6 @@ import Calendar from "react-calendar";
 import styled from "styled-components";
 import "react-calendar/dist/Calendar.css";
 
-
 export const StyledCalendarWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -19,7 +18,6 @@ export const StyledCalendarWrapper = styled.div`
     padding: 8% 3%;
     background-color: white;
   }
-
 
   .react-calendar__navigation__arrow {
     height: 30px;
@@ -47,13 +45,6 @@ export const StyledCalendarWrapper = styled.div`
   .react-calendar__navigation__label {
     color: black;
     border-radius: 10px;
-  }
-
-  /* 선택된 주 강조 스타일 */
-  .highlight-week {
-    background-color: rgba(255, 215, 0, 0.3); /* 연한 노란색 배경 */
-    font-weight: bold;
-    color: black;
   }
 
   /* 전체 폰트 컬러 */
@@ -121,12 +112,35 @@ export const StyledCalendarWrapper = styled.div`
     }
   }
 
+  /* 선택된 주 강조 스타일 */
+  .highlight-week {
+    background-color: #dfe9ff; /* 연한 노란색 배경 */
+    font-weight: bold;
+    color: black;
+  }
+
+  /* 오늘 날짜에 호버했을 때 배경색 */
+  .react-calendar__tile--now:hover {
+    background-color: #e6e6e6;
+    border-radius: 0.3rem;
+  }
+
   /* 네비게이션 현재 월 스타일 적용 */
   .react-calendar__tile--hasActive {
-    background-color: #76baff;
+    background-color: #b6cdff;
     border-radius: 0.3rem;
     abbr {
       color: white;
+    }
+  }
+
+  /* 네비게이션 현재 월에 호버했을 때 스타일 적용 */
+  .react-calendar__tile--hasActive:hover {
+    background-color: #8db1ff;
+    border-radius: 0.3rem;
+
+    abbr {
+      color: #fff;
     }
   }
 
@@ -145,7 +159,7 @@ export const StyledCalendarWrapper = styled.div`
     padding: 20px 6.6667px;
     font-size: 1rem;
     font-weight: 600;
-    color: gray;
+    color: #242424;
   }
 
   .react-calendar__tile:enabled:hover {
@@ -156,11 +170,14 @@ export const StyledCalendarWrapper = styled.div`
   /* 선택한 날짜 스타일 적용 */
   .react-calendar__tile:enabled:focus,
   .react-calendar__tile--active {
-    background-color: #76baff;
+    background-color: #b6cdff;
+    border-radius: 0.3rem;
+  }
+  .react-calendar__tile--active:hover {
+    background-color: #8db1ff;
     border-radius: 0.3rem;
   }
 `;
-
 
 export const StyledCalendar = styled(Calendar)``;
 
@@ -247,7 +264,7 @@ export const StyledLabel = styled.label`
   align-items: center;
   font-size: 15px;
   font-weight: 700;
-  color: #6d6d6d; /* 텍스트 색상 */
+  color: #242424; /* 텍스트 색상 */
 `;
 
 export const StyledCheckbox = styled.input`
@@ -279,5 +296,5 @@ export const StyledUnderline = styled.div`
   margin-top: 2px;
   width: 100%;
   max-width: 200px;
-  border-bottom: 1px solid #bdbdbd; 
+  border-bottom: 1px solid #bdbdbd;
 `;
