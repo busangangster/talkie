@@ -9,7 +9,7 @@ const LoginPage: React.FC = () => {
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setUserSeq } = useUserStore();
+  // const { setUserSeq, setNotFirstLogin } = useUserStore();
 
   // 입력값이 변경될 때 formData 업데이트
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,16 +24,13 @@ const LoginPage: React.FC = () => {
     } else {
       setError("");
       try {
-        // 로그인 API 호출
-        const response = await login({ userId: formData.userId });
+        // 로그인 API 호출 (userId만 전달)
+        await login({ userId: formData.userId });
 
-        // userSeq를 store와 localStorage에 저장
-        const userSeq = response.data.userSeq;
-        setUserSeq(userSeq);
-        localStorage.setItem("userSeq", JSON.stringify(userSeq));
+        // useUserStore에서 userSeq와 notFirstLogin 값을 가져와서 페이지 이동 결정
+        const notFirstLogin = useUserStore.getState().notFirstLogin;
 
-        // 상태가 업데이트된 후 navigate를 호출하여 이동
-        if (response.data.isNotFirstLogin) {
+        if (notFirstLogin) {
           navigate("/home");
         } else {
           navigate("/info");

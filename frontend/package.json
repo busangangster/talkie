@@ -16,6 +16,7 @@
     "d3-cloud": "^1.2.7",
     "d3-scale": "^4.0.2",
     "echarts": "^5.5.1",
+    "framer-motion": "^11.11.11",
     "react": "^18.3.1",
     "react-calendar": "^5.1.0",
     "react-d3-cloud": "^1.0.6",
