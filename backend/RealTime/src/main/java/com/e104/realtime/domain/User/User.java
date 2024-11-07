@@ -23,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userSeq;  // 사용자의 고유 식별자, 자동으로 생성됨
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String userId;  // 사용자 ID
 
     @Column
