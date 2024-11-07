@@ -29,5 +29,6 @@ public class UserResponse {
         this.gender = user.getGender();
         this.favorite = user.getFavorite();
         this.remark = user.getRemark();
+        this.isNotFirstLogin = user.isNotFirstLogin();
     }
 }
