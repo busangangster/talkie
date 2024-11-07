@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                                 .requestMatchers("/api/login", "/api/logoutOK").permitAll()
 //                        .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+                                .anyRequest().permitAll() // TODO: 임시 권한 허용
                 )
                 .sessionManagement(auth -> auth
                         .sessionFixation().changeSessionId()
