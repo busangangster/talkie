@@ -7,10 +7,8 @@ import nest_pb2_grpc
 
 import os
 import sys
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_path = os.path.join(current_dir, '..', 'src')
-if src_path not in sys.path:
-    sys.path.append(src_path)
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from src.config.api_key import STREAMING_KEY
 
