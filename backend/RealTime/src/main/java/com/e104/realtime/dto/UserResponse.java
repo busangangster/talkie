@@ -30,5 +30,6 @@ public class UserResponse {
         this.favorite = user.getFavorite();
         this.remark = user.getRemark();
         this.isNotFirstLogin = user.isNotFirstLogin();
+
     }
 }
