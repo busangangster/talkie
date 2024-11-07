@@ -1,5 +1,7 @@
 package com.e104.realtime.mqtt.constant;
 
+import com.e104.realtime.domain.User.User;
+
 public final class Instruction {
     public static final String INSTRUCTION = """ 
             너의 이름은 '토키'야.
@@ -23,15 +25,28 @@ public final class Instruction {
             10. 아이에게 무섭지 않게, 귀엽고 다정하고 감정이 들어있고 억양이 느껴지도록 말해줘.
             """;
     public static final String ASK_QUESTION = """
-                    ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
-                    질문: %s
-                    """;
+            ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
+            질문: %s
+            """;
 
     public static final String GREETING = """
-                    ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
-                    """;
+            ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
+            """;
 
     public static final String START_CONVERSATION = """
-                ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
-                """;
+            ''안녕! 난 관리자야. 지금 아이가 대화를 원하고 있으니, 아이에게 무슨 일이냐고 물어봐줄래?''
+            """;
+
+    public static String getInstructions(User user) {
+
+
+        String gender = user.getGender().equals("M") ? "남자" : "여자";
+        return Instruction.INSTRUCTION +
+               "아이의 이름은: " + user.getName() +
+               ", 아이의 나이는: " + user.getAge() +
+               ", 아이의 성별은 : " + gender +
+               ", 아이가 좋아하는 건: " + user.getFavorite() +
+               ",아이의 특이사항은: " + user.getRemark() +
+               ". 아이의 인적사항에 알맞게 대화해야해. \n";
+    }
 }

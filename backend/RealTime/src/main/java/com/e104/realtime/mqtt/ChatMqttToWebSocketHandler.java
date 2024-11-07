@@ -35,8 +35,6 @@ import java.util.Objects;
 @Component
 public class ChatMqttToWebSocketHandler {
 
-    private final RepoUtil repoUtil;
-
     @Value("${openai.api.key}")
     private String openAiApiKey;
 
@@ -45,6 +43,7 @@ public class ChatMqttToWebSocketHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final RepoUtil repoUtil;
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
     private final OpenAISocketService openAISocketService;

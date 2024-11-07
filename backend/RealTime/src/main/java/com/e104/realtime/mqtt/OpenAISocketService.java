@@ -35,29 +35,6 @@ public class OpenAISocketService implements Closeable {
         userWebSocketClients.put(userSeq, socketClient);
     }
 
-    // OpenAI와 연결된 WebSocket 세션 설정을 전송하는 메서드
-    public void sendSessionUpdate(User user) {
-        try {
-            WebSocketClient webSocketClient = userWebSocketClients.get(user.getUserSeq());
-            String sessionUpdateJson = objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(getInstructions(user)));
-            webSocketClient.send(sessionUpdateJson);
-            log.info("Session update sent.");
-        } catch (Exception e) {
-            log.error("업데이트된 세션을 전송하는 중 문제가 발생했습니다.", e);
-        }
-    }
-
-    private static String getInstructions(User user) {
-        String gender = user.getGender().equals("M") ? "남자" : "여자";
-        return Instruction.INSTRUCTION +
-                "아이의 이름은: " + user.getName() +
-                ", 아이의 나이는: " + user.getAge() +
-                ", 아이의 성별은 : " + gender +
-                ", 아이가 좋아하는 건: " + user.getFavorite() +
-                ",아이의 특이사항은: " + user.getRemark() +
-                ". 아이의 인적사항에 알맞게 대화해야해. \n";
-    }
-
     public WebSocketClient getWebSocketClient(int userSeq) {
         if (!userWebSocketClients.containsKey(userSeq)) return null;
         return userWebSocketClients.get(userSeq);
