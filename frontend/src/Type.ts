@@ -7,6 +7,17 @@ export interface LoginType {
   userId: string;
 }
 
+export interface LoginInfoResponse {
+  data: {
+    userSeq: number;
+    notFirstLogin: boolean;
+  };
+  message: string;
+  timestamp: string;
+  status: number;
+}
+
+
 export interface UserInfo {
   userSeq: number;
   name: string;
@@ -18,9 +29,15 @@ export interface UserInfo {
 
 export interface UserState {
   userSeq: number | null;
-  isNotFirstLogin: boolean;
+  notFirstLogin: boolean;
+  name: string;
+  age: number;
+  gender: string;
+  favorite: string;
+  remark?: string;
   setUserSeq: (userSeq: number) => void;
-  setIsNotFirstLogin: (isNotFirstLogin: boolean) => void;
+  setNotFirstLogin: (notFirstLogin: boolean) => void;
+  setUserInfo: (userInfo: UserResponse) => void;
 }
 
 export interface UserResponse {
