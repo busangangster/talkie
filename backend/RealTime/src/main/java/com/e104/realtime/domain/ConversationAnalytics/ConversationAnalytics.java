@@ -29,13 +29,13 @@ public class ConversationAnalytics {
     @Column(nullable = false)
     private String title; // 대화 제목
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String emotionSummary; // 대화 감정 요약
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String vocabularySummary; // 대화 어휘 요약
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String wordCloudSummary; // 대화 워드 클라우드 요약
 
     @Column(nullable = false)

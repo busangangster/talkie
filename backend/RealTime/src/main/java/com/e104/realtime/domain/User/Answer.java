@@ -21,7 +21,7 @@ public class Answer {
     @JoinColumn(name = "question_seq", nullable = false) // 외래키 설정, 영화와의 관계를 나타냄
     private Question question;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String content;  // 답변 내용
 
     @Column(nullable = false)

@@ -35,10 +35,10 @@ public class User {
     @Column
     private String gender; // 사용자 성별 ( M / F )
 
-    @Column
+    @Column(length = 3000)
     private String favorite; // 사용자의 관심사
 
-    @Column
+    @Column(length = 3000)
     private String remark; // 사용자의 비고
 
     @Column(nullable = false)

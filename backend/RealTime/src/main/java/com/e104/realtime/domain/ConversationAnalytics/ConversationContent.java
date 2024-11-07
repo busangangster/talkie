@@ -24,7 +24,7 @@ public class ConversationContent {
     @JoinColumn(name = "conversation_seq", nullable = false) // 외래키 설정, 대화와의 관계를 나타냄
     private ConversationAnalytics conversationAnalytics; // 다대일 관계로 연결된 Conversation 엔티티, 대화 내용은 한 대화에만 속할 수 있음
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3000)
     private String content; // 대화 내용
 
     @Column(nullable = false)
