@@ -29,7 +29,6 @@ public class SecurityConfig {
                                 .loginProcessingUrl("/api/login")
                                 .usernameParameter("userId")
                                 .passwordParameter("password")
-//                                .defaultSuccessUrl("/api/loginOK")
                                 .successHandler(customLoginSuccessHandler)
                 )
                 .logout(logout -> logout
@@ -37,7 +36,6 @@ public class SecurityConfig {
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
                                 .deleteCookies("JSESSIONID")
-//                        .logoutSuccessUrl("/api/logoutOK") // 리디렉션 URL 설정
                                 .logoutSuccessHandler(customLogoutSuccessHandler)
                 )
                 .authorizeHttpRequests(req -> req

@@ -50,18 +50,6 @@ public class UserService {
     @Value("${fastapi.url}")
     private String fastApiUrl;
 
-    // 현재 인증된 사용자 정보 가져오기
-//    public LoginResponse getLoginInfo() {
-//        // 현재 인증된 사용자 정보 가져오기
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            throw new RestApiException(StatusCode.UNAUTHORIZED, "사용자가 인증되지 않았습니다.");
-//        }
-//        // CustomUserDetails에서 사용자 정보 가져오기
-//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-//        User user = userDetails.getUser();
-//        return new LoginResponse(user.getUserSeq(), user.isNotFirstLogin());
-//    }
 
 //    // 로그인
 //    public LoginResponse login(LoginRequest request) {
