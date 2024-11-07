@@ -221,6 +221,11 @@ public class ChatMqttToWebSocketHandler {
     private void handleClientMessage(Integer userSeq, String userMessage) {
         try {
             WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
+            if(Objects.isNull(webSocketClient)) {
+                log.warn("웹소켓이 존재하지 않습니다! 소켓 연결을 시도합니다.");
+                openAISocketService.addSocket(userSeq, createWebSocketClient(userSeq));
+                log.warn("웹소켓을 연결했습니다. 최초 대화 시작 시, 웹소켓 연결 요청을 먼저 시도해주세요. 현재 대화는 정상적으로 기록되지 않을 수 있습니다.");
+            }
             if (webSocketClient != null && webSocketClient.isOpen()) {
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
                 webSocketClient.send(jsonMessage);
@@ -261,7 +266,7 @@ public class ChatMqttToWebSocketHandler {
 
                         Map<String, String> mqttData = Map.of("audio", finalAudioBase64, "transcript", transcript);
                         // 클라이언트에게 오디오 응답 전송
-                        mqttOutboundChannel.send(new GenericMessage<>(mqttData.toString()));
+                        mqttOutboundChannel.send(new GenericMessage<>(objectMapper.writeValueAsString(mqttData)));
                         log.info("데이터 전송 완료!");
 
                         // 대화 항목 생성 요청 전송
