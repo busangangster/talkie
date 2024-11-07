@@ -33,7 +33,7 @@ public class ScheduledTask {
 
     // 매일 밤 11시에 실행되도록 설정 (24시간 기준)
     @Transactional
-    @Scheduled(cron = "0 0 23 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "00 00 23 * * ?", zone = "Asia/Seoul")
     public void runTask() {
         try {
             List<User> users = repoUtil.findAllUsers();
@@ -43,14 +43,14 @@ public class ScheduledTask {
 
             for (User user : users) {
                 List<ConversationAnalytics> conversationAnalytics = user.getConversationAnalytics();
+
                 // 현재 날짜의 해당하는 대화별 대화통계만 가져오기
                 List<ConversationAnalytics> filteredAnalytics = conversationAnalytics.stream()
-                        // LocalDataTime을 LocalDate로 변환
                         .filter(ca -> ca.getCreatedAt().toLocalDate().equals(now))
                         .toList();
 
                 double vocabularyScore = 0.0;
-                int happyScore = 0, sadScore = 0, angryScore = 0, amazingScore = 0, scaryScore = 0, loveScore = 0 ,conversationCount = 0;
+                int happyScore = 0, sadScore = 0, angryScore = 0, amazingScore = 0, scaryScore = 0, loveScore = 0, conversationCount = 0;
                 for (ConversationAnalytics ca : filteredAnalytics) {
                     vocabularyScore += ca.getVocabulary().getVocabularyScore();
                     happyScore += ca.getSentiment().getHappyScore();
@@ -73,14 +73,18 @@ public class ScheduledTask {
                         }
                     }
                 }
-                happyScore /= conversationCount;
-                loveScore /= conversationCount;
-                sadScore /= conversationCount;
-                angryScore /= conversationCount;
-                amazingScore /= conversationCount;
-                scaryScore /= conversationCount;
-                vocabularyScore /= conversationCount;
+                if (conversationCount > 0) {
+                    happyScore /= conversationCount;
+                    loveScore /= conversationCount;
+                    sadScore /= conversationCount;
+                    angryScore /= conversationCount;
+                    amazingScore /= conversationCount;
+                    scaryScore /= conversationCount;
+                    vocabularyScore /= conversationCount;
+                }
+
                 DayAnalytics dayAnalytics = builderUtil.buildDayAnalytics(vocabularyScore, happyScore, loveScore, sadScore, angryScore, amazingScore, scaryScore, conversationCount);
+
                 // 해시맵을 이용하여 Day 워드 클라우드 리스트 생성
                 for (String word : wordCloudMap.keySet()) {
                     DayWordCloud dayWordCloud = builderUtil.buildDayWordCloud(word, wordCloudMap.get(word));
@@ -113,7 +117,6 @@ public class ScheduledTask {
                     .filter(d -> d.getCreatedAt().getYear() == year && d.getCreatedAt().getMonthValue() == month && d.getCreatedAt().get(weekFields.weekOfMonth()) == week)
                     .toList();
 
-
             HashMap<String, Integer> hashMap = new HashMap<>();
             if (weekAnalytics != null) {
                 List<WeekWordCloud> weekWordClouds = weekAnalytics.getWeekWordClouds();
@@ -121,6 +124,7 @@ public class ScheduledTask {
                     hashMap.put(weekWordCloud.getWord(), weekWordCloud.getCount());
                 }
             }
+
             List<DayWordCloud> dayWordClouds = dayAnalytics.getDayWordClouds();
             for (DayWordCloud dayWordCloud : dayWordClouds) {
                 String word = dayWordCloud.getWord();
@@ -131,11 +135,13 @@ public class ScheduledTask {
                     hashMap.put(word, count);
                 }
             }
+
             List<WeekWordCloud> newWeekWordClouds = new ArrayList<>();
             for (String word : hashMap.keySet()) {
                 WeekWordCloud weekWordCloud = builderUtil.buildWeekWordCloud(word, hashMap.get(word));
                 newWeekWordClouds.add(weekWordCloud);
             }
+
             // 감정 요약
             String emotionSummary = chatService.summarizeEmotions(filteredDayAnalytics);
             // 어휘 요약
@@ -144,6 +150,7 @@ public class ScheduledTask {
             String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
             // 대화 횟수 요약
             String countSummary = chatService.summarizeConversationCount(filteredDayAnalytics);
+
             // 타겟주의 주간 통계가 없을 경우 생성, 있으면 업데이트
             if (weekAnalytics == null) {
                 weekAnalytics = builderUtil.buildWeekAnalytics(emotionSummary, vocabularySummary, wordCloudSummary, countSummary, year, month, week);
@@ -157,4 +164,5 @@ public class ScheduledTask {
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주간 통계 업데이트 중 오류가 발생했습니다.");
         }
     }
+
 }

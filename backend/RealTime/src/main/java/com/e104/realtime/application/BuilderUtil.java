@@ -11,6 +11,8 @@ import com.e104.realtime.domain.WeekAnalytics.WeekWordCloud;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @RequiredArgsConstructor
 public class BuilderUtil {
@@ -37,6 +39,7 @@ public class BuilderUtil {
                 .amazingScore(amazingScore)
                 .scaryScore(scaryScore)
                 .conversationCount(conversationCount)
+                .createdAt(LocalDate.now())
                 .build();
     }
 
