@@ -266,7 +266,7 @@ public class ChatMqttToWebSocketHandler {
 
                         Map<String, String> mqttData = Map.of("audio", finalAudioBase64, "transcript", transcript);
                         // 클라이언트에게 오디오 응답 전송
-                        mqttOutboundChannel.send(new GenericMessage<>(mqttData.toString()));
+                        mqttOutboundChannel.send(new GenericMessage<>(objectMapper.writeValueAsString(mqttData)));
                         log.info("데이터 전송 완료!");
 
                         // 대화 항목 생성 요청 전송
