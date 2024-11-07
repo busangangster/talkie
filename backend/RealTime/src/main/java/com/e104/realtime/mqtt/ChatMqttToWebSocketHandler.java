@@ -202,7 +202,7 @@ public class ChatMqttToWebSocketHandler {
 
             webSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
             webSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
-            webSocketClient.connect();
+            webSocketClient.connectBlocking();
             return webSocketClient;
 
         } catch (Exception e) {
@@ -279,13 +279,6 @@ public class ChatMqttToWebSocketHandler {
     private static final class JsonParser {
         private static String extractTranscriptFromResponseItemDone(JsonNode jsonResponse) {
             JsonNode contentArray = jsonResponse.path("item").path("content");
-//            if (!contentArray.isArray() || contentArray.isEmpty()) {
-//                return null;
-//            }
-//            // 첫 번째 content에서 type이 audio인 경우에만 transcript 추출
-//            if (!contentArray.get(0).path("type").asText().equals("audio")) {
-//                return null;
-//            }
             return contentArray.get(0).path("transcript").asText();
         }
 
