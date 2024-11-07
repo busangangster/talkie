@@ -25,25 +25,28 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 활성화
                 .formLogin(form -> form
-                                .loginPage("https://k11e104.p.ssafy.io/login")
-                                .loginProcessingUrl("/api/login")
-                                .usernameParameter("userId")
-                                .passwordParameter("password")
-                                .successHandler(customLoginSuccessHandler)
+                        .loginPage("https://k11e104.p.ssafy.io/login")
+                        .loginProcessingUrl("/api/login")
+                        .usernameParameter("userId")
+                        .passwordParameter("password")
+                        .successHandler(customLoginSuccessHandler)
                 )
                 .logout(logout -> logout
-                                .logoutUrl("/api/logout")
-                                .invalidateHttpSession(true)
-                                .clearAuthentication(true)
-                                .deleteCookies("JSESSIONID")
-                                .logoutSuccessHandler(customLogoutSuccessHandler)
+                        .logoutUrl("/api/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
                 )
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/login", "/api/logoutOK").permitAll()
-                        .anyRequest().authenticated())
+                                .requestMatchers("/api/login", "/api/logoutOK").permitAll()
+//                        .anyRequest().authenticated()
+                                .anyRequest().permitAll()
+                )
                 .sessionManagement(auth -> auth
                         .sessionFixation().changeSessionId()
-                        .maximumSessions(1).maxSessionsPreventsLogin(true));
+                        .maximumSessions(1).maxSessionsPreventsLogin(true)
+                );
         return http.build();
     }
 
