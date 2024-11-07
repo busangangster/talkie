@@ -1,5 +1,7 @@
 package com.e104.realtime.config;
 
+import com.e104.realtime.application.CustomLoginSuccessHandler;
+import com.e104.realtime.application.CustomLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +20,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomLoginSuccessHandler customLoginSuccessHandler, CustomLogoutSuccessHandler customLogoutSuccessHandler) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 활성화
@@ -27,14 +29,16 @@ public class SecurityConfig {
                                 .loginProcessingUrl("/api/login")
                                 .usernameParameter("userId")
                                 .passwordParameter("password")
-                                .defaultSuccessUrl("/api/loginOK")
+//                                .defaultSuccessUrl("/api/loginOK")
+                                .successHandler(customLoginSuccessHandler)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/logout")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/api/logoutOK") // 리디렉션 URL 설정
+                                .logoutUrl("/api/logout")
+                                .invalidateHttpSession(true)
+                                .clearAuthentication(true)
+                                .deleteCookies("JSESSIONID")
+//                        .logoutSuccessUrl("/api/logoutOK") // 리디렉션 URL 설정
+                                .logoutSuccessHandler(customLogoutSuccessHandler)
                 )
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/login", "/api/logoutOK").permitAll()
