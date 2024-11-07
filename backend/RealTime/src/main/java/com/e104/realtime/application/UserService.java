@@ -50,7 +50,6 @@ public class UserService {
     @Value("${fastapi.url}")
     private String fastApiUrl;
 
-
 //    // 로그인
 //    public LoginResponse login(LoginRequest request) {
 //        int userSeq = repoUtil.login(request.getUserId());
