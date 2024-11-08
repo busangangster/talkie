@@ -156,6 +156,9 @@ public class UserService {
         conversationRedisRepository.save(conversation);
     }
 
+    public boolean isTalkingNow(int userSeq) {
+        return !conversationRedisRepository.findAllByUserSeq(userSeq).isEmpty();
+    }
 
     @Transactional
     public void saveConversation(int userSeq) {

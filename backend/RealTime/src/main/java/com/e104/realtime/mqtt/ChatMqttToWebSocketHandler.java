@@ -89,14 +89,15 @@ public class ChatMqttToWebSocketHandler {
     // 대화 종료 알림을 처리하는 기능
     private void handleConversationEnd(MqttBaseDto dto) {
         userService.saveConversation(dto.userSeq());
-        openAISocketService.removeSocket(dto.userSeq());
+//        openAISocketService.removeSocket(dto.userSeq());
     }
 
     // 사용자 감지 알림을 처리하는 기능
     private void handleUserDetection(MqttBaseDto dto) {
 
         // 이미 대화중이라면 발동하지 말 것.
-        if (openAISocketService.isConnected(dto.userSeq())) return;
+//        if (openAISocketService.isConnected(dto.userSeq())) return;
+        if (userService.isTalkingNow(dto.userSeq())) return;
 
         // 현재 시각이 밤중이라면 발동하지 않게 하기.
         if (TimeChecker.isNight()) {
