@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+// AlertModal.tsx
+import React from "react";
+import ReactDOM from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AlertModalProps {
-  icon: React.ReactNode; // 아이콘 이미지 컴포넌트
-  message: string; // 알림 메시지
-  onConfirm: () => void; // 확인 버튼 클릭 핸들러
+  icon: React.ReactNode;
+  message: string;
+  onConfirm: () => void;
 }
 
 const AlertModal: React.FC<AlertModalProps> = ({
@@ -11,32 +14,32 @@ const AlertModal: React.FC<AlertModalProps> = ({
   message,
   onConfirm,
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-out">
-      <div
-        className={`bg-white rounded-2xl shadow-lg py-8 px-24 flex flex-col items-center transform transition-transform duration-300 ${
-          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-        }`}
+  const modalContent = (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <motion.div
+        className="bg-white rounded-2xl shadow-lg py-8 px-24 flex flex-col items-center"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.2 }}
       >
-        <div className="mb-4 w-20">{icon}</div> {/* 아이콘 표시 */}
+        <div className="mb-4 w-20">{icon}</div>
         <p className="text-center text-gray-800 text-2xl mb-6 font-bold">
           {message}
-        </p>{" "}
-        {/* 메시지 */}
+        </p>
         <button
           onClick={onConfirm}
           className="bg-[#BBB4ED] text-white py-2 px-6 rounded-xl text-lg hover:bg-[#a09bcd]"
         >
           확인
         </button>
-      </div>
+      </motion.div>
     </div>
+  );
+
+  return ReactDOM.createPortal(
+    <AnimatePresence>{modalContent}</AnimatePresence>,
+    document.getElementById("modal-root") as HTMLElement
   );
 };
 

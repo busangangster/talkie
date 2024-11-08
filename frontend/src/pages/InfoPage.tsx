@@ -1,19 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { updateUserInfo } from "../apis/api";
+import { updateUserInfo, getUserInfo } from "../apis/api";
 import useUserStore from "../store/useUserStore";
 
 const InfoPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     age: 0,
+    birthDate: "", // 생년월일 추가
     gender: "",
     favorite: "",
     remark: "",
   });
   const [errorField, setErrorField] = useState("");
   const navigate = useNavigate();
-  const { userSeq } = useUserStore();
+  const { userSeq, setUserInfo } = useUserStore();
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (userSeq) {
+        try {
+          const userInfo = await getUserInfo(userSeq);
+          const birthDate = `${new Date().getFullYear() - userInfo.age + 1}-01-01`; // 나이를 이용해 생년월일을 추정
+          setFormData({
+            name: userInfo.name,
+            age: userInfo.age,
+            birthDate, // 생년월일 설정
+            gender: userInfo.gender === "M" ? "남성" : "여성", // 성별 변환
+            favorite: userInfo.favorite,
+            remark: userInfo.remark,
+          });
+          setUserInfo(userInfo);
+        } catch (error) {
+          console.error("유저 정보를 불러오는 중 오류 발생:", error);
+        }
+      }
+    };
+    fetchUserInfo();
+  }, [userSeq, setUserInfo]);
 
   const calculateKoreanAge = (birthDate: string) => {
     const birthYear = new Date(birthDate).getFullYear();
@@ -24,9 +48,9 @@ const InfoPage: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    if (name === "age") {
+    if (name === "birthDate") {
       const age = calculateKoreanAge(value);
-      setFormData((prevData) => ({ ...prevData, age }));
+      setFormData((prevData) => ({ ...prevData, age, birthDate: value }));
     } else {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
@@ -93,8 +117,9 @@ const InfoPage: React.FC = () => {
           <div className="space-y-2">
             <input
               type="date"
-              name="age"
-              onChange={(e) => handleChange(e)}
+              name="birthDate"
+              value={formData.birthDate}
+              onChange={handleChange}
               placeholder="생년월일"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF] placeholder-gray-400"
               style={{
@@ -119,7 +144,7 @@ const InfoPage: React.FC = () => {
                   className="hidden peer"
                 />
                 <span
-                  className={`peer-checked:bg-[#869FD3] peer-checked:text-white bg-[#D7E5EF] w-full text-gray-700 py-2 px-4 rounded-lg cursor-pointer text-center shadow-md`}
+                  className={`peer-checked:bg-[#869FD3] peer-checked:text-white bg-[#D7E5EF] w-full hover:bg-[#B9DCF8] text-gray-700 py-2 px-4 rounded-lg cursor-pointer text-center shadow-md`}
                 >
                   남성
                 </span>
@@ -134,7 +159,7 @@ const InfoPage: React.FC = () => {
                   className="hidden peer"
                 />
                 <span
-                  className={`peer-checked:bg-[#869FD3] peer-checked:text-white bg-[#D7E5EF] w-full text-gray-700 py-2 px-4 rounded-lg cursor-pointer text-center shadow-md`}
+                  className={`peer-checked:bg-[#869FD3] peer-checked:text-white bg-[#D7E5EF] w-full hover:bg-[#B9DCF8] text-gray-700 py-2 px-4 rounded-lg cursor-pointer text-center shadow-md`}
                 >
                   여성
                 </span>

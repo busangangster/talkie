@@ -35,9 +35,11 @@ export interface UserState {
   gender: string;
   favorite: string;
   remark?: string;
+  birthDate?: string;
   setUserSeq: (userSeq: number) => void;
   setNotFirstLogin: (notFirstLogin: boolean) => void;
   setUserInfo: (userInfo: UserResponse) => void;
+  resetUser: () => void;
 }
 
 export interface UserResponse {
@@ -48,6 +50,7 @@ export interface UserResponse {
   gender: string;
   favorite: string;
   remark: string;
+  birthDate?: string;
   notFirstLogin: boolean;
 }
 

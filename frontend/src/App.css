@@ -12,7 +12,7 @@ body {
 
 /* 스크롤바 너비 및 높이 설정 */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
   height: 8px;
 }
 
@@ -29,5 +29,5 @@ body {
 
 /* 스크롤바에 마우스를 올렸을 때 색상 */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #3b3b3b; /* 어두운 회색 */
+  background-color: #696969; /* 어두운 회색 */
 }
