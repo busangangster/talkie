@@ -41,6 +41,24 @@ export const login = async (params: { userId: string }) => {
   }
 };
 
+// 로그아웃
+export const logout = async () => {
+  const { resetUser } = useUserStore.getState(); // zustand의 resetUser 메서드 가져오기
+
+  try {
+    await instance.post("/api/logout", null, {
+      withCredentials: true, // 세션 관리에 필요한 쿠키 포함
+    });
+    resetUser(); // zustand 상태 초기화
+    console.log("성공적으로 로그아웃되었습니다.");
+  } catch (error) {
+    handleApiError(error as never);
+    console.error("로그아웃 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+
 // 아이 정보 입력 및 수정
 export const updateUserInfo = async (userInfo: UserInfo) => {
   try {

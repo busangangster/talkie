@@ -1,5 +1,6 @@
+// Calendar.tsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 라우터로 이동하기 위해 import
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import {
   StyledCalendar,
@@ -12,43 +13,43 @@ import {
   StyledCheckbox,
   StyledUnderline,
 } from "../style";
+import { motion } from "framer-motion"; // **Framer Motion import 추가**
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
+
 interface CalendarProps {
-  onClose: () => void; // onClose 콜백 함수 추가
+  onClose: () => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
   const today = new Date();
-  const navigate = useNavigate(); // 라우터 navigate
+  const navigate = useNavigate();
   const [date, setDate] = useState<Value>(today);
   const [activeStartDate, setActiveStartDate] = useState<Date | null>(today);
-  const [selectedWeek, setSelectedWeek] = useState<Date[]>([]); // 선택된 주의 날짜 목록
-  const [checked, setChecked] = useState(false); // 체크박스 상태 관리
+  const [selectedWeek, setSelectedWeek] = useState<Date[]>([]);
+  const [checked, setChecked] = useState(false);
 
-  const attendDay = ["2024-10-25", "2024-10-10"]; // 출석한 날짜 예시
+  const attendDay = ["2024-10-25", "2024-10-10"];
 
   const handleDateChange = (newDate: Value) => {
     setDate(newDate);
-    setSelectedWeek([]); // 날짜만 클릭 시 주 초기화
+    setSelectedWeek([]);
   };
 
   const handleCheckboxChange = () => {
     setChecked(!checked);
 
     if (!checked && date && !Array.isArray(date)) {
-      // 체크박스가 활성화될 때 선택한 날짜의 주를 계산하여 하이라이트
       selectWeek(date);
     } else {
-      // 체크박스가 해제되면 주 선택 해제
       setSelectedWeek([]);
     }
   };
 
   const selectWeek = (clickedDate: Date) => {
-    const startOfWeek = moment(clickedDate).startOf("week").toDate(); // 주의 시작일 (일요일)
-    const endOfWeek = moment(clickedDate).endOf("week").toDate(); // 주의 마지막일 (토요일)
+    const startOfWeek = moment(clickedDate).startOf("week").toDate();
+    const endOfWeek = moment(clickedDate).endOf("week").toDate();
 
     const weekDates: Date[] = [];
     const currentDate = new Date(startOfWeek);
@@ -58,7 +59,7 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    setSelectedWeek(weekDates); // 주의 날짜들 저장
+    setSelectedWeek(weekDates);
   };
 
   const handleMoveNext = () => {
@@ -72,13 +73,25 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
       navigate(`/day/${selectedDate}`);
     }
 
-    // 페이지 이동 후 모달 닫기
     onClose();
   };
 
   return (
-    <StyledCalendarWrapper>
-      <StyledCalendar
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+      {/* 배경을 클릭하면 모달이 닫히도록 설정 */}
+      <div className="absolute inset-0" onClick={onClose}></div>
+
+      {/* 애니메이션이 적용된 달력 컴포넌트 */}
+      <motion.div
+        className="relative rounded-lg shadow-lg p-4 z-[101]"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.2 }}
+      >
+        <StyledCalendarWrapper>
+          {/* 기존 달력 내용 */}
+          <StyledCalendar
             value={date}
             onChange={handleDateChange}
             formatDay={(_, date) => moment(date).format("D")}
@@ -96,7 +109,6 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
             tileContent={({ date, view }) => {
               const html = [];
 
-              // 오늘 날짜 표시
               if (
                 view === "month" &&
                 date.getMonth() === today.getMonth() &&
@@ -105,7 +117,6 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
                 html.push(<StyledToday key={"today"}>오늘</StyledToday>);
               }
 
-              // 출석한 날짜에 점 표시
               if (attendDay.includes(moment(date).format("YYYY-MM-DD"))) {
                 html.push(
                   <StyledDot key={moment(date).format("YYYY-MM-DD")} />
@@ -114,28 +125,26 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
 
               return <>{html}</>;
             }}
-            // 선택된 주의 날짜에 클래스 부여
             tileClassName={({ date, view }) => {
               if (view === "month") {
-                const currentMonth = activeStartDate?.getMonth(); // 현재 렌더링 중인 달
-                const currentYear = activeStartDate?.getFullYear(); // 현재 렌더링 중인 연도
+                const currentMonth = activeStartDate?.getMonth();
+                const currentYear = activeStartDate?.getFullYear();
 
                 if (selectedWeek.some((d) => moment(d).isSame(date, "day"))) {
-                  return "highlight-week"; // 선택된 주 강조
+                  return "highlight-week";
                 }
 
-                // 현재 렌더링 중인 달에 속하지 않는 날짜만 회색 처리
                 if (
                   date.getMonth() !== currentMonth ||
                   date.getFullYear() !== currentYear
                 ) {
-                  return "neighboring-month"; // 이웃한 달의 날짜들만 회색 처리
+                  return "neighboring-month";
                 }
                 if (date.getDay() === 0) {
-                  return "sunday"; // 일요일 강조
+                  return "sunday";
                 }
               }
-              return ""; // 조건에 맞지 않으면 클래스 없음
+              return "";
             }}
           />
           <MoveNext onClick={handleMoveNext}>이동하기</MoveNext>
@@ -151,6 +160,9 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
             <StyledUnderline />
           </StyledWrapper>
         </StyledCalendarWrapper>
-      )}
+      </motion.div>
+    </div>
+  );
+};
 
 export default Calendar;

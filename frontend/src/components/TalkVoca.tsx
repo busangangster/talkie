@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
-import { getUserInfo } from "../apis/api";
 import useUserStore from "../store/useUserStore";
 
 interface TalkVocaProps {
@@ -9,11 +8,16 @@ interface TalkVocaProps {
 
 const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
-  const { userSeq } = useUserStore();
-  const [userInfo, setUserInfo] = useState<{
-    name: string;
-    age: number;
-  } | null>(null);
+  const { name, birth } = useUserStore();
+
+  // 한국 나이를 계산하는 함수
+  const calculateKoreanAge = (birth: string) => {
+    const birthYear = new Date(birth).getFullYear();
+    const currentYear = new Date().getFullYear();
+    return currentYear - birthYear + 1;
+  };
+
+  const age = calculateKoreanAge(birth);
 
   const getAverageScoreByAge = (age: number) => {
     switch (age) {
@@ -29,24 +33,9 @@ const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
   };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (userSeq) {
-        try {
-          const response = await getUserInfo(userSeq);
-          setUserInfo({ name: response.name, age: response.age });
-        } catch (error) {
-          console.error("유저 정보를 가져오는 중 오류 발생:", error);
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, [userSeq]);
-
-  useEffect(() => {
-    if (chartRef.current && userInfo) {
+    if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
-      const averageScore = getAverageScoreByAge(userInfo.age);
+      const averageScore = getAverageScoreByAge(age);
 
       const option: echarts.EChartsOption = {
         tooltip: {
@@ -64,7 +53,7 @@ const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
         dataset: {
           source: [
             ["word", "person"],
-            [vocabularyScore || 0, userInfo.name],
+            [vocabularyScore || 0, name],
             [averageScore, "평균"],
           ],
         },
@@ -95,7 +84,7 @@ const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
         chartInstance.dispose();
       };
     }
-  }, [vocabularyScore, userInfo]);
+  }, [vocabularyScore, age, name]);
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
