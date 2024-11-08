@@ -54,6 +54,10 @@ public class UserService {
         return new UserResponse(user);
     }
 
+    public User getUserEntity(int userSeq) {
+        return repoUtil.findUser(userSeq);
+    }
+
     // 유저 정보 수정
     @Transactional
     public void updateUser(UserUpdateRequest request) {
