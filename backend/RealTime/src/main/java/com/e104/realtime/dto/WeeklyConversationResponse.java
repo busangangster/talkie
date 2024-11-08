@@ -23,7 +23,7 @@ public class WeeklyConversationResponse {
     private String emotionSummary; // 대화 감정 요약
 
     private String vocabularySummary; // 대화 어휘 요약
-    
+
     private String countSummary; // 대화 횟수 요약
 
     @Data

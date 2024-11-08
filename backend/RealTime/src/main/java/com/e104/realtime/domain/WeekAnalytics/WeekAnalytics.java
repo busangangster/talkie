@@ -67,7 +67,7 @@ public class WeekAnalytics {
     @Transactional
     public void addWordClouds(List<WeekWordCloud> weekWordClouds) {
         try {
-            for(WeekWordCloud weekWordCloud : weekWordClouds) {
+            for (WeekWordCloud weekWordCloud : weekWordClouds) {
                 weekWordCloud.setWeekAnalytics(this);
                 this.weekWordClouds.add(weekWordCloud);
             }
@@ -80,7 +80,7 @@ public class WeekAnalytics {
     @Transactional
     public void clearWordClouds() {
         try {
-            for(WeekWordCloud weekWordCloud : weekWordClouds) {
+            for (WeekWordCloud weekWordCloud : weekWordClouds) {
                 weekWordCloud.setWeekAnalytics(null);
             }
             weekWordClouds.clear();

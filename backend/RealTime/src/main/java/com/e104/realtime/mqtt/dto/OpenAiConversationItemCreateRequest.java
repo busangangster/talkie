@@ -24,7 +24,7 @@ public class OpenAiConversationItemCreateRequest {
 
         public Item(String role, String text) {
             this.role = role;
-            this.content = new Content[] {new Content(text, role)};
+            this.content = new Content[]{new Content(text, role)};
         }
 
         // 항목 내용을 나타내는 내부 클래스
@@ -37,7 +37,7 @@ public class OpenAiConversationItemCreateRequest {
                 this.text = text;
                 // assistant 응답 저장 시엔 'text'로 넣어주어야 함.
                 // 참고: https://platform.openai.com/docs/api-reference/realtime-client-events/conversation/item/create
-                this.type = role.equals("assistant")? "text": "input_text";
+                this.type = role.equals("assistant") ? "text" : "input_text";
             }
         }
     }

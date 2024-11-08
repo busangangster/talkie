@@ -9,7 +9,6 @@ import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
 import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
 import com.e104.realtime.dto.*;
-import com.e104.realtime.mqtt.OpenAISocketService;
 import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
 import com.e104.realtime.redis.repository.ConversationRedisRepository;
@@ -39,7 +38,6 @@ public class UserService {
     private final ChatService chatService;
     private final ConversationRedisRepository conversationRedisRepository;
 
-    private final OpenAISocketService openAISocketService;
     private final ConversationMapper conversationMapper;
 
     private final RestTemplate restTemplate;
@@ -158,6 +156,9 @@ public class UserService {
         conversationRedisRepository.save(conversation);
     }
 
+    public boolean isTalkingNow(int userSeq) {
+        return !conversationRedisRepository.findAllByUserSeq(userSeq).isEmpty();
+    }
 
     @Transactional
     public void saveConversation(int userSeq) {

@@ -96,7 +96,7 @@ public class ConversationAnalytics {
     @Transactional
     public void addWordCloud(List<WordCloud> wordCloud) {
         try {
-            for(WordCloud wc : wordCloud) {
+            for (WordCloud wc : wordCloud) {
                 wc.setConversationAnalytics(this);  // 양방향 관계 설정 (WordCloud 객체가 이 대화에 속해 있음을 명시)
                 this.wordClouds.add(wc);  // 워드클라우드 리스트에 새로운 워드클라우드 추가
             }

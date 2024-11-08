@@ -26,19 +26,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<ResponseDto> handleRestApiException(RestApiException ex) {
-        return CustomHandleExceptionInternal(ex.getStatusCode(),ex.getData());
+        return CustomHandleExceptionInternal(ex.getStatusCode(), ex.getData());
     }
 
     private ResponseEntity<ResponseDto> handleExceptionInternal(StatusCode errorCode) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
-                .body(new ResponseDto(errorCode,null));
+                .body(new ResponseDto(errorCode, null));
     }
 
     private ResponseEntity<ResponseDto> CustomHandleExceptionInternal(StatusCode errorCode, Object data) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
-                .body(new ResponseDto(errorCode,data));
+                .body(new ResponseDto(errorCode, data));
     }
 
 }
