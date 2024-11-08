@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { updateUserInfo, getUserInfo } from "../apis/api";
 import useUserStore from "../store/useUserStore";
 import { formatBirthDate } from "../utils/formatBirthDate";
+import AlertModal from "../components/AlertModal";
+import checkIcon from "/assets/alerticon/check.png";
 
 const InfoPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
-    birth: "", 
+    birth: "",
     gender: "",
     favorite: "",
     remark: "",
@@ -40,10 +42,11 @@ const InfoPage: React.FC = () => {
 
   // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setErrorField("");
+  const { name, value } = e.target;
+  setFormData((prevData) => ({ ...prevData, [name]: value }));
+  setErrorField("");
   };
+  const [showModal, setShowModal] = useState(false);
 
   // 폼 제출 핸들러
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,12 +78,19 @@ const InfoPage: React.FC = () => {
         });
 
         if (response) {
+          // 정보 수정 성공 시 모달 표시
+          setShowModal(true);
           navigate("/home");
         }
       } catch (error) {
         console.error("API 요청 중 오류 발생:", error);
       }
     }
+  };
+
+  // 모달 확인 버튼 클릭 시 페이지 이동
+  const handleModalConfirm = () => {
+    setShowModal(false);
   };
 
   return (
@@ -185,6 +195,14 @@ const InfoPage: React.FC = () => {
           </button>
         </form>
       </div>
+      {/* AlertModal */}
+      {showModal && (
+        <AlertModal
+          icon={<img src={checkIcon} alt="check" />}
+          message="정보가 입력되었어요"
+          onConfirm={handleModalConfirm}
+        />
+      )}
     </div>
   );
 };
