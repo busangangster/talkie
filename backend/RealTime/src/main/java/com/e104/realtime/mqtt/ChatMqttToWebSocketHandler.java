@@ -13,49 +13,25 @@ import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
 import com.e104.realtime.mqtt.dto.mqtt.MqttBaseDto;
 import com.e104.realtime.redis.hash.Conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class ChatMqttToWebSocketHandler {
-
-    @Value("${openai.api.key}")
-    private String openAiApiKey;
-
-    @Value("${openai.websocket.url}")
-    private String openAiWebSocketUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final RepoUtil repoUtil;
-    private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
     private final OpenAISocketService openAISocketService;
-    private final AudioDeltaService audioDeltaService;
-
-    public ChatMqttToWebSocketHandler(RepoUtil repoUtil, @Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel, UserService userService, OpenAISocketService openAISocketService, AudioDeltaService audioDeltaService) {
-        this.repoUtil = repoUtil;
-        this.mqttOutboundChannel = mqttOutboundChannel;
-        this.userService = userService;
-        this.openAISocketService = openAISocketService;
-        this.audioDeltaService = audioDeltaService;
-    }
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
     public void handleMessageFromMqtt(Message<String> message) {
@@ -65,7 +41,8 @@ public class ChatMqttToWebSocketHandler {
         try {
             dto = objectMapper.readValue(payload, MqttBaseDto.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            log.error("JSON 파싱 중 오류가 발생했습니다.", e);
+            return;
         }
 
         log.info("토픽 입력됨! 데이터: {}", dto);
@@ -81,46 +58,25 @@ public class ChatMqttToWebSocketHandler {
             return;
         }
 
-        try {
-            switch (topic) {
-                case Topic.TOPIC_WEBSOCKET_CONNECT:
-                    handleWebSocketConnect(dto);
-                    break;
-
-                case Topic.TOPIC_MESSAGE_SEND:
-                    handleMessageSend(dto);
-                    break;
-
-                case Topic.TOPIC_CONVERSATION_END:
-                    handleConversationEnd(dto);
-                    break;
-
-                case Topic.TOPIC_USER_DETECTION:
-                    handleUserDetection(dto);
-                    break;
-
-                case Topic.TOPIC_VOICE_RECOGNITION:
-                    handleVoiceRecognition(dto);
-                    break;
-
-                default:
-                    log.info("Unknown topic: {}", topic);
-            }
-        } catch (JsonProcessingException e) {
-            log.error("JSON 파싱 중 오류가 발생했습니다.", e);
+        switch (topic) {
+            case Topic.TOPIC_USER_DETECTION:
+                handleUserDetection(dto);
+                break;
+            case Topic.TOPIC_MESSAGE_SEND:
+                handleMessageSend(dto);
+                break;
+            case Topic.TOPIC_CONVERSATION_END:
+                handleConversationEnd(dto);
+                break;
+            default:
+                log.info("Unknown topic: {}", topic);
         }
     }
 
-    // WebSocket 연결을 관리하고 맵에 저장
-    private void handleWebSocketConnect(MqttBaseDto dto) throws JsonProcessingException {
-        int userSeq = dto.userSeq();
-        WebSocketClient webSocketClient = createWebSocketClient(userSeq);
-        openAISocketService.addSocket(userSeq, webSocketClient);
-    }
-
     // 사용자의 메시지를 chatGPT 에게 전송하는 기능
-    private void handleMessageSend(MqttBaseDto dto) throws JsonProcessingException {
+    private void handleMessageSend(MqttBaseDto dto) {
         String content = dto.data().get("content");
+
         Conversation conversation = Conversation.builder()
                 .talker(Talker.CHILD.getValue())
                 .content(content)
@@ -131,12 +87,16 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // 대화 종료 알림을 처리하는 기능
-    private void handleConversationEnd(MqttBaseDto dto) throws JsonProcessingException {
+    private void handleConversationEnd(MqttBaseDto dto) {
         userService.saveConversation(dto.userSeq());
+        openAISocketService.removeSocket(dto.userSeq());
     }
 
     // 사용자 감지 알림을 처리하는 기능
-    private void handleUserDetection(MqttBaseDto dto) throws JsonProcessingException {
+    private void handleUserDetection(MqttBaseDto dto) {
+
+        // 이미 대화중이라면 발동하지 말 것.
+        if (openAISocketService.isConnected(dto.userSeq())) return;
 
         // 현재 시각이 밤중이라면 발동하지 않게 하기.
         if (TimeChecker.isNight()) {
@@ -151,8 +111,11 @@ public class ChatMqttToWebSocketHandler {
             log.error("사용자 조회 중 문제가 발생했습니다.", e);
             return;
         }
+
+        // TODO: 이거 추상화하기
         List<Question> questions = user.getQuestions();
         Question question = questions.get(questions.size() - 1);
+
         if (question.isActive()) {
             sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.ASK_QUESTION.formatted(question.getContent()));
             question.updateAnswerd(true); // 질문이 대답되었음을 표시
@@ -165,128 +128,32 @@ public class ChatMqttToWebSocketHandler {
         log.info("User detected: {}", dto);
     }
 
-    // 대화 시작 신호를 처리하는 기능
-    private void handleVoiceRecognition(MqttBaseDto dto) throws JsonProcessingException {
-        // 음성 인식 이벤트 처리 로직 구현 ( 응, 왜 불러? 같은 식으로 대답을 해야함 )
-        sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION);
-        log.info("Voice recognition event received: {}", dto);
-    }
-
-    // userSeq 별로 WebSocket을 생성하여 저장하는 메서드
-    private WebSocketClient createWebSocketClient(Integer userSeq) {
-        try {
-            WebSocketClient webSocketClient = new WebSocketClient(new URI(openAiWebSocketUrl)) {
-
-                @Override
-                public void onOpen(ServerHandshake handshake) {
-                    log.info("Connected to OpenAI WebSocket for user: {}", userSeq);
-                }
-
-                @Override
-                public void onMessage(String message) {
-                    sendOpenAiResponseToMqttClient(userSeq, message);
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-                    log.info("OpenAI WebSocket closed for user: {} - {}", userSeq, reason);
-                    openAISocketService.removeSocket(userSeq);
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    log.error("소켓 통신 중 오류가 발생했습니다.", ex);
-                }
-            };
-
-            webSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
-            webSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
-            webSocketClient.connectBlocking();
-            return webSocketClient;
-
-        } catch (Exception e) {
-            log.error("소켓 생성 중 오류가 발생했습니다.", e);
-            return null;
-        }
-    }
-
     // userSeq에 따라 WebSocket을 통해 사용자 메시지를 전송하는 메서드
     private void sendClientMessageToOpenaiWebsocket(Integer userSeq, String userMessage) {
         try {
-            WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
+            RealtimeApiSocket webSocketClient = openAISocketService.getWebSocketClient(userSeq);
+
             if (Objects.isNull(webSocketClient)) {
-                log.warn("웹소켓이 존재하지 않습니다! 소켓 연결을 시도합니다.");
-                webSocketClient = createWebSocketClient(userSeq);
-                openAISocketService.addSocket(userSeq, webSocketClient);
-                log.warn("웹소켓을 연결했습니다. 최초 대화 시작 시, 웹소켓 연결 요청을 먼저 시도해주세요. 현재 대화는 정상적으로 기록되지 않을 수 있습니다.");
+                log.info("웹소켓이 존재하지 않습니다! 소켓 연결을 진행합니다.");
+                webSocketClient = openAISocketService.createSocket(userSeq);
             }
-            if (webSocketClient.isOpen()) {
-                String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
-                webSocketClient.send(jsonMessage);
-                // 응답 생성 요청 전송
-                String responseCreateJsonMessage = "{\"type\":\"response.create\"}";
-                webSocketClient.send(responseCreateJsonMessage);
+
+            // 소켓이 초기화될 때까지 대기
+            log.info("소켓 초기화 대기중...");
+            while (true) {
+                if (webSocketClient.isInitialized()) break;
             }
+            log.info("초기화 완료.");
+
+            String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
+            webSocketClient.send(jsonMessage);
+            // 응답 생성 요청 전송
+            String responseCreateJsonMessage = "{\"type\":\"response.create\"}";
+            webSocketClient.send(responseCreateJsonMessage);
+
         } catch (Exception e) {
             log.error("사용자의 메시지를 웹소켓으로 전송하는 중 오류가 발생했습니다.", e);
         }
-    }
-
-    // OpenAI로부터 받은 메시지를 클라이언트로 MQTT를 통해 전송하는 메서드
-    private void sendOpenAiResponseToMqttClient(Integer userSeq, String message) {
-        try {
-            WebSocketClient webSocketClient = openAISocketService.getWebSocketClient(userSeq);
-            JsonNode jsonResponse = objectMapper.readTree(message);
-            String eventType = jsonResponse.path("type").asText();
-
-            log.debug("OpenAI로부터 받은 이벤트 타입: {}", eventType);
-
-            if ("response.audio.delta".equals(eventType)) {
-                // delta에서 오디오 데이터를 가져오기
-                String audioDelta = JsonParser.getDelta(jsonResponse);
-                audioDeltaService.add(userSeq, audioDelta);
-            }
-
-            if ("response.output_item.done".equals(eventType)) {
-                // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = audioDeltaService.squash(userSeq);
-                String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
-
-                // JSON 응답에서 transcript를 추출
-                String transcript = JsonParser.extractTranscriptFromResponseItemDone(jsonResponse);
-                log.info("Transcript: {}", transcript);
-
-                Map<String, String> mqttData = Map.of("audio", finalAudioBase64, "transcript", Objects.requireNonNull(transcript));
-                // 클라이언트에게 오디오 응답 전송
-                mqttOutboundChannel.send(new GenericMessage<>(objectMapper.writeValueAsString(mqttData)));
-                log.info("데이터 전송 완료!");
-
-                // 대화 항목 생성 요청 전송
-                String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", transcript));
-                webSocketClient.send(jsonMessage);
-
-                // AI 대답 Redis 저장
-                Conversation conversation = Conversation.builder()
-                        .talker(Talker.AI.getValue())
-                        .content(jsonMessage)
-                        .build();
-                userService.bufferConversation(conversation);
-            }
-        } catch (Exception e) {
-            log.error("음성 메시지를 처리하는 중 문제가 발생했습니다.", e);
-        }
-    }
-
-    private static final class JsonParser {
-        private static String extractTranscriptFromResponseItemDone(JsonNode jsonResponse) {
-            JsonNode contentArray = jsonResponse.path("item").path("content");
-            return contentArray.get(0).path("transcript").asText();
-        }
-
-        private static String getDelta(JsonNode jsonResponse) {
-            return jsonResponse.path("delta").asText();
-        }
-
     }
 
 }
