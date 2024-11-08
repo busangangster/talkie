@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Conversation {
     @Id
     private final String id;
-    private final long userSeq;
+    private final int userSeq;
     /**
      * 거짓이면 AI, 참이면 아이
      */

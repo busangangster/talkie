@@ -168,9 +168,9 @@ public class UserService {
     public void saveConversation(int userSeq) {
         try {
             List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
+            log.info("레디스로부터 가져온 데이터: {}", conversations);
             // 아이가 한번도 대답하지 않음
             List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
-
             log.info("대화 데이터: {}", conversationContents);
 
             // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.

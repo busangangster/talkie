@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface ConversationRedisRepository extends CrudRepository<Conversation, Long> {
+public interface ConversationRedisRepository extends CrudRepository<Conversation, Integer> {
     List<Conversation> findAllByUserSeq(int userSeq);
 
     void deleteAllByUserSeq(int userSeq);
