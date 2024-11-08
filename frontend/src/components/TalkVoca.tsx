@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 import useUserStore from "../store/useUserStore";
+import { getUserInfo } from "../apis/api";
 
 interface TalkVocaProps {
   vocabularyScore: number | undefined;
@@ -8,7 +9,25 @@ interface TalkVocaProps {
 
 const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
-  const { name, birth } = useUserStore();
+  const { name, birth, setUserInfo, userSeq } = useUserStore();
+
+  // 사용자 정보를 다시 가져오는 함수
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (userSeq) {
+        try {
+          const response = await getUserInfo(userSeq);
+          setUserInfo(response);
+        } catch (error) {
+          console.error("유저 정보를 가져오는 중 오류 발생:", error);
+        }
+      }
+    };
+
+    if (!name || !birth) {
+      fetchUserInfo();
+    }
+  }, [userSeq, setUserInfo, name, birth]);
 
   // 한국 나이를 계산하는 함수
   const calculateKoreanAge = (birth: string) => {
