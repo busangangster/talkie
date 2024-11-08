@@ -13,6 +13,8 @@ import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
 import com.e104.realtime.redis.repository.ConversationRedisRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +35,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final RepoUtil repoUtil;
     private final BuilderUtil builderUtil;
     private final ChatService chatService;
@@ -153,6 +156,7 @@ public class UserService {
 
     @Transactional
     public void bufferConversation(Conversation conversation) {
+        log.info("레디스로 대화 기록: {}", conversation);
         conversationRedisRepository.save(conversation);
     }
 
@@ -166,6 +170,8 @@ public class UserService {
             List<Conversation> conversations = conversationRedisRepository.findAllByUserSeq(userSeq);
             // 아이가 한번도 대답하지 않음
             List<ConversationContent> conversationContents = conversations.stream().map(conversationMapper::toConversationContent).toList();
+
+            log.info("대화 데이터: {}", conversationContents);
 
             // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
             User user = repoUtil.findUser(userSeq);
@@ -183,6 +189,7 @@ public class UserService {
                 question.addAnswer(answer);
             }
             if (conversations.size() <= 1) {
+                log.info("대화 기록이 1 이하입니다. 저장을 건너뜁니다.");
                 return;
             }
 
@@ -232,6 +239,8 @@ public class UserService {
             conversationAnalytics.addWordCloud(wordClouds);
             conversationAnalytics.addConversationContent(conversationContents);
             user.addConversationAnalytics(conversationAnalytics);
+
+            log.info("로그 저장! 로그 데이터: {}", conversationAnalytics);
 
             // Redis 대화 삭제
             conversationRedisRepository.deleteAllByUserSeq(userSeq);
