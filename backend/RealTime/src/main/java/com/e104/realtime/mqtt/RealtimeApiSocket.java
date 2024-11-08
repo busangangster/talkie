@@ -13,14 +13,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.GenericMessage;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -80,7 +78,7 @@ public class RealtimeApiSocket extends WebSocketClient {
 
             if ("response.output_item.done".equals(eventType)) {
                 // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = audioDelta.squash(userSeq);
+                byte[] combinedAudio = audioDelta.squash();
                 String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
 
                 // JSON 응답에서 transcript를 추출

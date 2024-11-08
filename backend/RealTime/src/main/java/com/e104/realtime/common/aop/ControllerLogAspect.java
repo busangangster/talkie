@@ -17,7 +17,8 @@ public class ControllerLogAspect {
     private static final Logger log = LoggerFactory.getLogger(ControllerLogAspect.class);
 
     @Pointcut("within(com.e104.realtime..*Controller)")
-    void controllers() {}
+    void controllers() {
+    }
 
     @Before("controllers")
     public void loggingControllers(JoinPoint joinPoint) {

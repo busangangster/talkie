@@ -36,18 +36,6 @@ public class OpenAISocketService implements Closeable {
         this.mqttOutboundChannel = mqttOutboundChannel;
     }
 
-    public void addSocket(int userSeq, RealtimeApiSocket socketClient) {
-        if (Objects.isNull(socketClient)) {
-            log.warn("입력받은 소켓이 null입니다. 저장 과정을 건너뜁니다.");
-            return;
-        }
-        if (userWebSocketClients.containsKey(userSeq) && Objects.nonNull(userWebSocketClients.get(userSeq))) {
-            log.warn("기존 소켓 연결이 존재합니다. 소켓 저장을 건너뜁니다.");
-            return;
-        }
-        userWebSocketClients.put(userSeq, socketClient);
-    }
-
     public RealtimeApiSocket getWebSocketClient(int userSeq) {
         if (!userWebSocketClients.containsKey(userSeq)) return null;
         return userWebSocketClients.get(userSeq);
