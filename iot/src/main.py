@@ -1,5 +1,6 @@
-# main.py
+# -*- coding: utf-8 -*-
 import asyncio
+import time
 from sensors.pir_sensor_controll import detect_child_approach
 # from src.stt.stt_handler import start_conversation
 from wake_word.talkie_wake_word import initialize_wake_word, detect_wake_word
@@ -8,13 +9,12 @@ from wake_word.talkie_wake_word import initialize_wake_word, detect_wake_word
 conversation_active = False
 
 # 대화 시작 함수
-async def initiate_conversation():
+def initiate_conversation():
     global conversation_active
     conversation_active = True
-    # print("대화를 시작합니다...")
     # 실제 대화 로직 호출
     # await start_conversation()
-    await asyncio.sleep(1)
+    time.sleep(5)
     conversation_active = False
 
 # PIR 센서 감지
@@ -24,8 +24,7 @@ async def detect_motion():
         if conversation_active is not True:
             print("a")
         if not conversation_active and detect_child_approach():
-            # print("PIR 센서로 감지됨! 대화를 시작합니다.")
-            await initiate_conversation()
+            initiate_conversation()
         await asyncio.sleep(1)
 
 # 웨이크 워드 감지
@@ -36,8 +35,8 @@ async def check_wake_word():
         while True:
             if not conversation_active and await detect_wake_word(porcupine, stream):
                 print("웨이크 워드 감지됨! 대화를 시작합니다.")
-                await initiate_conversation()
-            await asyncio.sleep(0.01)
+                initiate_conversation()
+            await asyncio.sleep(0.001)
     finally:
         stream.stop_stream()
         stream.close()
@@ -54,3 +53,4 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
     loop.close()
+
