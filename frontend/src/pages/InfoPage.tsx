@@ -80,7 +80,6 @@ const InfoPage: React.FC = () => {
         if (response) {
           // 정보 수정 성공 시 모달 표시
           setShowModal(true);
-          navigate("/home");
         }
       } catch (error) {
         console.error("API 요청 중 오류 발생:", error);
@@ -91,6 +90,7 @@ const InfoPage: React.FC = () => {
   // 모달 확인 버튼 클릭 시 페이지 이동
   const handleModalConfirm = () => {
     setShowModal(false);
+    navigate("/home");
   };
 
   return (
