@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { UserState, UserResponse } from "../type";
+import { formatBirthDate } from "../utils/formatBirthDate";
 
 const getUserSeqFromLocalStorage = () => {
   try {
@@ -14,8 +15,7 @@ const useUserStore = create<UserState>((set) => ({
   userSeq: getUserSeqFromLocalStorage(),
   notFirstLogin: false,
   name: "",
-  age: 0,
-  birthDate: "", 
+  birth: "",
   gender: "",
   favorite: "",
   remark: "",
@@ -27,8 +27,7 @@ const useUserStore = create<UserState>((set) => ({
   setUserInfo: (userInfo: UserResponse) =>
     set({
       name: userInfo.name,
-      age: userInfo.age,
-      birthDate: userInfo.birthDate || "",
+      birth: formatBirthDate(userInfo.birth),
       gender: userInfo.gender,
       favorite: userInfo.favorite,
       remark: userInfo.remark,
@@ -38,13 +37,12 @@ const useUserStore = create<UserState>((set) => ({
       userSeq: null,
       notFirstLogin: false,
       name: "",
-      age: 0,
-      birthDate: "", 
+      birth: "",
       gender: "",
       favorite: "",
       remark: "",
     });
-    localStorage.removeItem("userSeq"); // 로그아웃 시 localStorage에서 userSeq 제거
+    localStorage.removeItem("userSeq");
   },
 }));
 

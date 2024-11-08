@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateUserInfo, getUserInfo } from "../apis/api";
 import useUserStore from "../store/useUserStore";
+import { formatBirthDate } from "../utils/formatBirthDate";
 
 const InfoPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
-    age: 0,
-    birthDate: "", // 생년월일 추가
+    birth: "", 
     gender: "",
     favorite: "",
     remark: "",
@@ -16,17 +16,16 @@ const InfoPage: React.FC = () => {
   const navigate = useNavigate();
   const { userSeq, setUserInfo } = useUserStore();
 
+  // 유저 정보를 가져와서 formData에 설정
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (userSeq) {
         try {
           const userInfo = await getUserInfo(userSeq);
-          const birthDate = `${new Date().getFullYear() - userInfo.age + 1}-01-01`; // 나이를 이용해 생년월일을 추정
           setFormData({
             name: userInfo.name,
-            age: userInfo.age,
-            birthDate, // 생년월일 설정
-            gender: userInfo.gender === "M" ? "남성" : "여성", // 성별 변환
+            birth: formatBirthDate(userInfo.birth),
+            gender: userInfo.gender === "M" ? "남성" : "여성",
             favorite: userInfo.favorite,
             remark: userInfo.remark,
           });
@@ -39,24 +38,14 @@ const InfoPage: React.FC = () => {
     fetchUserInfo();
   }, [userSeq, setUserInfo]);
 
-  const calculateKoreanAge = (birthDate: string) => {
-    const birthYear = new Date(birthDate).getFullYear();
-    const currentYear = new Date().getFullYear();
-    return currentYear - birthYear + 1;
-  };
-
+  // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    if (name === "birthDate") {
-      const age = calculateKoreanAge(value);
-      setFormData((prevData) => ({ ...prevData, age, birthDate: value }));
-    } else {
-      setFormData((prevData) => ({ ...prevData, [name]: value }));
-    }
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
     setErrorField("");
   };
 
+  // 폼 제출 핸들러
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -65,10 +54,9 @@ const InfoPage: React.FC = () => {
       return;
     }
 
+    // 입력 값 검증
     if (!formData.name.trim()) {
       setErrorField("name");
-    } else if (formData.age <= 0) {
-      setErrorField("age");
     } else if (!formData.gender.trim()) {
       setErrorField("gender");
     } else if (!formData.favorite.trim()) {
@@ -79,6 +67,7 @@ const InfoPage: React.FC = () => {
       try {
         const genderCode = formData.gender === "남성" ? "M" : "F";
 
+        // API로 업데이트 요청
         const response = await updateUserInfo({
           userSeq,
           ...formData,
@@ -99,6 +88,7 @@ const InfoPage: React.FC = () => {
       <div className="bg-white bg-opacity-80 rounded-xl shadow-lg text-center w-2/5 px-28 py-12">
         <h2 className="text-[35px] font-bold mb-6">우리 아이 정보 입력</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 이름 입력 */}
           <div className="space-y-2">
             <input
               type="text"
@@ -107,31 +97,27 @@ const InfoPage: React.FC = () => {
               onChange={handleChange}
               placeholder="이름"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
-              style={{ boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)" }}
             />
             <p className="text-red-500 text-xs text-left ml-2 h-1">
               {errorField === "name" ? "이름을 입력해주세요." : ""}
             </p>
           </div>
 
+          {/* 생년월일 입력 */}
           <div className="space-y-2">
             <input
               type="date"
-              name="birthDate"
-              value={formData.birthDate}
+              name="birth"
+              value={formData.birth}
               onChange={handleChange}
-              placeholder="생년월일"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF] placeholder-gray-400"
-              style={{
-                boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)",
-                color: "inherit",
-              }}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
             />
             <p className="text-red-500 text-xs text-left ml-2 h-1">
-              {errorField === "age" ? "생년월일을 입력해주세요." : ""}
+              {errorField === "birth" ? "생년월일을 입력해주세요." : ""}
             </p>
           </div>
 
+          {/* 성별 선택 */}
           <div className="flex space-x-4">
             <div className="flex-1 flex space-x-2">
               <label className="flex items-center flex-1">
@@ -167,10 +153,7 @@ const InfoPage: React.FC = () => {
             </div>
           </div>
 
-          <p className="text-red-500 text-xs text-left ml-2 h-1">
-            {errorField === "gender" && "성별을 선택해주세요."}
-          </p>
-
+          {/* 좋아하는 것 입력 */}
           <div className="space-y-2">
             <input
               type="text"
@@ -179,13 +162,10 @@ const InfoPage: React.FC = () => {
               onChange={handleChange}
               placeholder="좋아하는 것"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
-              style={{ boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)" }}
             />
-            <p className="text-red-500 text-xs text-left ml-2 h-1">
-              {errorField === "favorite" ? "좋아하는 색을 입력해주세요." : ""}
-            </p>
           </div>
 
+          {/* 특이사항 입력 */}
           <div className="space-y-2">
             <input
               type="text"
@@ -193,14 +173,13 @@ const InfoPage: React.FC = () => {
               value={formData.remark}
               onChange={handleChange}
               placeholder="특이사항"
-              className="w-full px-4 py-2 mb-6 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
-              style={{ boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2)" }}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-gray-600 bg-[#D7E5EF]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#708BA0] hover:bg-[#61a0d0] text-white font-semibold py-2 rounded-xl "
+            className="w-full bg-[#708BA0] hover:bg-[#61a0d0] text-white font-semibold py-2 rounded-xl"
           >
             입력 완료
           </button>
