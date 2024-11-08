@@ -83,7 +83,7 @@ const DayPage: React.FC = () => {
   return (
     <div className="relative flex flex-col items-center min-h-screen">
       {/* 구름과 날짜 */}
-      <div className="flex items-center justify-center mt-16 relative">
+      <div className="flex items-center justify-center mt-16 relative animate-float">
         <img src="/assets/cloud.png" alt="cloud" className="w-80" />
         <div
           onClick={toggleCalendar}
@@ -107,7 +107,7 @@ const DayPage: React.FC = () => {
 
                 {/* 이야기에 관한 div */}
                 <div
-                  className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer animate-float"
+                  className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer hover:scale-105 transition-transform duration-200"
                   onClick={() =>
                     navigate(`/talk/${date}/${story.conversationSeq}`, {
                       state: { title: story.title },
