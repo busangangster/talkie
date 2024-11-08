@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,9 @@ public class User {
     @Column
     private String name; // 사용자 이름
 
+
     @Column
-    private Integer age; // 사용자 나이
+    private LocalDate birth; // 사용자 생년월일
 
     @Column
     private String gender; // 사용자 성별 ( M / F )
@@ -63,10 +65,10 @@ public class User {
 
     // 사용자 정보 변경 메서드
     @Transactional
-    public void updateUserInfo(String newName, Integer newAge, String newGender, String newFavorite, String remark) {
+    public void updateUserInfo(String newName, LocalDate birth, String newGender, String newFavorite, String remark) {
         try {
             this.name = newName;
-            this.age = newAge;
+            this.birth = birth;
             this.gender = newGender;
             this.favorite = newFavorite;
             this.remark = remark;

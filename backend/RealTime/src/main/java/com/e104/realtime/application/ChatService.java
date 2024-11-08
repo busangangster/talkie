@@ -11,6 +11,7 @@ import io.github.flashvayne.chatgpt.service.ChatgptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class ChatService {
                         이와 비슷하게 감정 점수를 요약해주고, 부모님께 아이의 감정 상태에 맞춘 간단한 조언도 제안해 주세요. 예를 들어:
                         
                         '아이의 긍정적인 감정을 키워주기 위해 매일 즐거웠던 일에 대해 이야기해 보세요.' 또는 '아이에게 새로운 활동을 시도하게 하여 놀라움을 느끼게 해주는 것도 좋은 방법이에요.'
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -48,8 +51,8 @@ public class ChatService {
         return message.toString();
     }
 
-    public String summarizeVocabulary(List<DayAnalytics> dayAnalyticsList, int age) {
-        String message = getWeekVocabularyMessage(dayAnalyticsList, age);
+    public String summarizeVocabulary(List<DayAnalytics> dayAnalyticsList, LocalDate birth) {
+        String message = getWeekVocabularyMessage(dayAnalyticsList, birth);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
                         너는 내가 제공하는 아이의 일주일치 어휘력 점수를 바탕으로 부모님께 요약해줘야 해요. 아이의 어휘력 변화를 쉽게 이해할 수 있게 설명해 주세요. 예를 들어:
@@ -59,6 +62,8 @@ public class ChatService {
                         이와 비슷한 형식으로 어휘력 점수를 요약해 주고, 부모님께 아이를 격려할 방법도 간단히 제안해 주세요. 예를 들어:
                         
                         '아이가 관심을 가진 주제에 대해 질문을 해보거나, 새로운 단어를 배울 때마다 스티커를 주며 칭찬해 주세요!' 또는 '아이와 함께 동화책을 읽고 새로운 단어를 찾아보는 활동을 하시면 더욱 좋을 것 같아요!'
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -67,13 +72,14 @@ public class ChatService {
         return chatgptService.multiChat(messages);
     }
 
-    private String getWeekVocabularyMessage(List<DayAnalytics> dayAnalyticsList, int age) {
+    private String getWeekVocabularyMessage(List<DayAnalytics> dayAnalyticsList, LocalDate birth) {
         StringBuilder message = new StringBuilder();
         for (int i = 1; i <= dayAnalyticsList.size(); i++) {
             DayAnalytics dayAnalytics = dayAnalyticsList.get(i - 1);
             message.append("Day ").append(i).append(":\n").append("어휘 점수: ").append(dayAnalytics.getVocabularyScore()).append("\n");
         }
         message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
+        int age = LocalDate.now().getYear() - birth.getYear();
         double avgScore;
         if (age == 5) {
             avgScore = 4.0;
@@ -97,6 +103,8 @@ public class ChatService {
                         '아이는 이번주의 주로 장난감, 가족, 계절, 음식 등이 아이의 관심을 보였어요.'
                         
                         이렇게 워드클라우드를 분석하고 요약해주고, 부모님께 아이와 어떤 활동을 하면 좋을지 제안도 해줘요. 예를 들어, '아이가 좋아하는 장난감을 함께 가지고 놀거나 놀이공원을 방문해보시는 건 어때요?'와 같이 구체적인 제안도 추가해 주세요.
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -130,6 +138,8 @@ public class ChatService {
                         
                         요약: "아이가 토키와 오늘 맑은 날씨에 대해 이야기하며 산책할 계획을 세웠어요."
                         제목: "아이와 토키의 산책 이야기"
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -161,6 +171,8 @@ public class ChatService {
                         '아이는 이번 대화에서 주로 장난감, 가족, 계절, 음식 등이 아이의 관심을 보였어요.'
                         
                         이렇게 워드클라우드를 분석하고 요약해주고, 부모님께 아이와 어떤 활동을 하면 좋을지 제안도 해줘요. 예를 들어, '아이가 좋아하는 장난감을 함께 가지고 놀거나 놀이공원을 방문해보시는 건 어때요?'와 같이 구체적인 제안도 추가해 주세요.
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -188,6 +200,8 @@ public class ChatService {
                         이렇게 감정 분석 결과를 요약해주고, 부모님께 아이의 감정 상태에 맞춘 간단한 조언도 제안해 주세요. 예를 들어:
                         
                         '아이의 긍정적인 감정을 키워주기 위해 매일 즐거웠던 일에 대해 이야기해 보세요.' 또는 '아이에게 새로운 활동을 시도하게 하여 놀라움을 느끼게 해주는 것도 좋은 방법이에요.'
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -200,8 +214,8 @@ public class ChatService {
         return "기쁨: " + sentiment.getHappyScore() + "\n" + "사랑스러움: " + sentiment.getLoveScore() + "\n" + "슬픔: " + sentiment.getSadScore() + "\n" + "화남: " + sentiment.getAngryScore() + "\n" + "놀라움: " + sentiment.getAmazingScore() + "\n" + "두려움: " + sentiment.getScaryScore() + "\n";
     }
 
-    public String summarizeConversationVocabulary(Vocabulary vocabulary, int age) {
-        String message = getConversationVocabularyMessage(vocabulary, age);
+    public String summarizeConversationVocabulary(Vocabulary vocabulary, LocalDate birth) {
+        String message = getConversationVocabularyMessage(vocabulary, birth);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
                         제공된 아이의 어휘력 점수를 바탕으로 부모님께 쉽게 설명해 주세요. 예시 형식은 다음과 같습니다:
@@ -211,6 +225,8 @@ public class ChatService {
                         이와 유사한 방식으로 아이의 어휘력 점수를 요약해 주고, 부모님께 아이를 격려할 수 있는 방법도 함께 제안해 주세요. 예를 들어:
                         
                         '아이에게 관심 있는 주제에 대해 대화를 유도하거나, 새로운 단어를 배울 때마다 스티커를 주며 칭찬해 보세요.' 또는 '아이와 동화책을 읽으며 새로운 단어를 찾아보는 활동을 권해드립니다.'
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
@@ -219,7 +235,8 @@ public class ChatService {
         return chatgptService.multiChat(messages);
     }
 
-    private String getConversationVocabularyMessage(Vocabulary vocabulary, int age) {
+    private String getConversationVocabularyMessage(Vocabulary vocabulary, LocalDate birth) {
+        int age = LocalDate.now().getYear() - birth.getYear();
         double avgScore;
         if (age == 5) {
             avgScore = 4.0;
@@ -244,6 +261,8 @@ public class ChatService {
                         '아이가 이번 주에 총 20번의 대화를 나누었어요. 하루 평균 대화 횟수는 3번이었어요. 대화 횟수는 월요일부터 금요일까지 점차 증가하는 추세를 보였어요. 가장 많은 대화를 나눈 날은 목요일이었어요.'
                         
                         이와 같이 대화 횟수를 요약해주세요.
+                        
+                        글자수는 150자 이내로 작성해 주세요.
                         """
                 ),
                 new MultiChatMessage("user", message)
