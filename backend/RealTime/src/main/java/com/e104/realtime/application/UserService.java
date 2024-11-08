@@ -64,7 +64,7 @@ public class UserService {
     @Transactional
     public void updateUser(UserUpdateRequest request) {
         User user = repoUtil.findUser(request.getUserSeq());
-        user.updateUserInfo(request.getName(), request.getAge(), request.getGender(), request.getFavorite(), request.getRemark());
+        user.updateUserInfo(request.getName(), request.getBirth(), request.getGender(), request.getFavorite(), request.getRemark());
     }
 
     // 질문 등록
@@ -227,7 +227,7 @@ public class UserService {
             // 감정분석, 워드클라우드, 어휘력 설명 가져오기
             String wordCloudSummary = chatService.summarizeConversationWordCloud(wordClouds);
             String emotionSummary = chatService.summarizeConversationEmotion(sentiment);
-            String vocabularySummary = chatService.summarizeConversationVocabulary(vocabulary, user.getAge());
+            String vocabularySummary = chatService.summarizeConversationVocabulary(vocabulary, user.getBirth());
 
             // 대화 통계 생성 및 저장
             ConversationAnalytics conversationAnalytics = builderUtil.buildConversationAnalytics(title, emotionSummary, vocabularySummary, wordCloudSummary);

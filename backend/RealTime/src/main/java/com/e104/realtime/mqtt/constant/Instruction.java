@@ -2,6 +2,8 @@ package com.e104.realtime.mqtt.constant;
 
 import com.e104.realtime.domain.User.User;
 
+import java.time.LocalDate;
+
 public final class Instruction {
     public static final String INSTRUCTION = """ 
             너의 이름은 '토키'야.
@@ -39,11 +41,11 @@ public final class Instruction {
 
     public static String getInstructions(User user) {
 
-
         String gender = user.getGender().equals("M") ? "남자" : "여자";
+        int age = LocalDate.now().getYear() - user.getBirth().getYear();
         return Instruction.INSTRUCTION +
                "아이의 이름은: " + user.getName() +
-               ", 아이의 나이는: " + user.getAge() +
+               ", 아이의 나이는: " + age +
                ", 아이의 성별은 : " + gender +
                ", 아이가 좋아하는 건: " + user.getFavorite() +
                ",아이의 특이사항은: " + user.getRemark() +

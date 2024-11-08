@@ -145,7 +145,7 @@ public class ScheduledTask {
             // 감정 요약
             String emotionSummary = chatService.summarizeEmotions(filteredDayAnalytics);
             // 어휘 요약
-            String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics, user.getAge());
+            String vocabularySummary = chatService.summarizeVocabulary(filteredDayAnalytics, user.getBirth());
             // 워드 클라우드 요약
             String wordCloudSummary = chatService.summarizeWeekWordCloud(newWeekWordClouds);
             // 대화 횟수 요약
