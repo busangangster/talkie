@@ -4,6 +4,7 @@ import { QnaProps } from "../type";
 import { deleteQuestion } from "../apis/api";
 import AlertModal from "../components/AlertModal";
 import useUserStore from "../store/useUserStore";
+import childIcon from "/assets/talk/child.png";
 
 interface QnaPropsExtended extends QnaProps {
   onQuestionDelete: (questionSeq: number) => void;
@@ -103,14 +104,14 @@ const Qna: React.FC<QnaPropsExtended> = ({
                   {item.question}
                 </p>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center">
                 {!item.answer && userSeq !== null && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete(item.questionSeq);
                     }}
-                    className="bg-[#dadada] px-1.5 py-0.5 rounded-md text-sm hover:bg-[#bfbfbf] px-"
+                    className="bg-[#dadada] px-1.5 py-0.5 rounded-md text-sm hover:bg-[#bfbfbf] -mr-5"
                   >
                     삭제
                   </button>
@@ -123,7 +124,10 @@ const Qna: React.FC<QnaPropsExtended> = ({
             {openQuestionSeqs.includes(item.questionSeq) && (
               <div className="mt-3 ml-6 mr-28">
                 {item.answer ? (
-                  <p>{item.answer}</p>
+                  <div className="flex items-center space-x-2">
+                    <img src={childIcon} alt="Child" className="w-6 h-6" />
+                    <span>: {item.answer}</span>
+                  </div>
                 ) : (
                   <div className="text-gray-400">
                     <p>아직 질문을 하지 않았어요!</p>

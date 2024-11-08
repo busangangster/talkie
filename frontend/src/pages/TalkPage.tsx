@@ -180,7 +180,7 @@ const TalkPage: React.FC = () => {
         </div>
         <div className="w-[53%] bg-white p-10 rounded-xl shadow-md bg-opacity-60">
           <div className="flex items-center mb-4">
-            <span className="bg-[#E3E7F0] text-black text-[25px] px-5 py-2 rounded-2xl font-bold mr-2">
+            <span className="bg-[#D6D6D6] text-black text-[25px] px-5 py-2 rounded-2xl font-bold mr-2">
               감정
             </span>
           </div>
