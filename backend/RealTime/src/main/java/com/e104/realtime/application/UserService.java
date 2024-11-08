@@ -9,7 +9,6 @@ import com.e104.realtime.domain.User.Question;
 import com.e104.realtime.domain.User.User;
 import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
 import com.e104.realtime.dto.*;
-import com.e104.realtime.mqtt.OpenAISocketService;
 import com.e104.realtime.redis.hash.Conversation;
 import com.e104.realtime.redis.mapper.ConversationMapper;
 import com.e104.realtime.redis.repository.ConversationRedisRepository;

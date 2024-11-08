@@ -1,7 +1,5 @@
 package com.e104.realtime.redis.hash;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
