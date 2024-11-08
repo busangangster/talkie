@@ -15,7 +15,7 @@ public class AudioDelta {
         audioDeltas.add(audioDeltaPiece);
     }
 
-    public byte[] squash(int userSeq) {
+    public byte[] squash() {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             for (String delta : audioDeltas) {
                 byte[] audioBytes = Base64.getDecoder().decode(delta);

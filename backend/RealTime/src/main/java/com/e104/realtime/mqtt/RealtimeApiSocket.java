@@ -80,7 +80,7 @@ public class RealtimeApiSocket extends WebSocketClient {
 
             if ("response.output_item.done".equals(eventType)) {
                 // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = audioDelta.squash(userSeq);
+                byte[] combinedAudio = audioDelta.squash();
                 String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
 
                 // JSON 응답에서 transcript를 추출
