@@ -239,7 +239,7 @@ public class ChatMqttToWebSocketHandler {
             JsonNode jsonResponse = objectMapper.readTree(message);
             String eventType = jsonResponse.path("type").asText();
 
-            log.debug("OpenAI로부터 받은 이벤트 타입: {}", eventType);
+            log.info("OpenAI로부터 받은 이벤트 타입: {}", eventType);
 
             if ("response.audio.delta".equals(eventType)) {
                 // delta에서 오디오 데이터를 가져오기
