@@ -79,6 +79,7 @@ public class ChatMqttToWebSocketHandler {
 
         Conversation conversation = Conversation.builder()
                 .talker(Talker.CHILD.getValue())
+                .userSeq(dto.userSeq())
                 .content(content)
                 .build();
         userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
@@ -88,7 +89,9 @@ public class ChatMqttToWebSocketHandler {
 
     // 대화 종료 알림을 처리하는 기능
     private void handleConversationEnd(MqttBaseDto dto) {
+        log.info("대화 저장 시작");
         userService.saveConversation(dto.userSeq());
+        log.info("대화 저장 끝");
 //        openAISocketService.removeSocket(dto.userSeq());
     }
 
@@ -137,14 +140,15 @@ public class ChatMqttToWebSocketHandler {
             if (Objects.isNull(webSocketClient)) {
                 log.info("웹소켓이 존재하지 않습니다! 소켓 연결을 진행합니다.");
                 webSocketClient = openAISocketService.createSocket(userSeq);
-            }
+                // 소켓이 초기화될 때까지 대기
+                log.info("소켓 초기화 대기중...");
+                while (true) {
+                    Thread.sleep(500);
+                    if (webSocketClient.isInitialized()) break;
+                }
+                log.info("초기화 완료.");
 
-            // 소켓이 초기화될 때까지 대기
-            log.info("소켓 초기화 대기중...");
-            while (true) {
-                if (webSocketClient.isInitialized()) break;
             }
-            log.info("초기화 완료.");
 
             String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
             webSocketClient.send(jsonMessage);

@@ -97,7 +97,8 @@ public class RealtimeApiSocket extends WebSocketClient {
                 // AI 대답 Redis 저장
                 Conversation conversation = Conversation.builder()
                         .talker(Talker.AI.getValue())
-                        .content(jsonMessage)
+                        .userSeq(userSeq)
+                        .content(transcript)
                         .build();
                 userService.bufferConversation(conversation);
             }
