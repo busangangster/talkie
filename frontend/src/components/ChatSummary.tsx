@@ -1,4 +1,6 @@
 import React from "react";
+import ReactDOM from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatSummaryProps {
   title: string; 
@@ -11,25 +13,29 @@ const ChatSummary: React.FC<ChatSummaryProps> = ({
   content,
   onClose,
 }) => {
-  return (
+  const modalContent = (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose} 
+      onClick={onClose}
     >
-      <div
+      <motion.div
         className="relative h-96 w-[820px] p-8 shadow-lg bg-cover"
         style={{
-          backgroundImage: "url('/assets/note.png')", 
+          backgroundImage: "url('/assets/note.png')",
         }}
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.2 }}
       >
         {/* 닫기 버튼 */}
-        <button
+        {/* <button
           className="absolute top-12 right-5 text-gray-500 hover:text-gray-700"
           onClick={onClose}
         >
           X
-        </button>
+        </button> */}
 
         {/* 제목과 내용 */}
         <div className="text-center text-black">
@@ -39,9 +45,14 @@ const ChatSummary: React.FC<ChatSummaryProps> = ({
           </p>{" "}
           {/* 내용 */}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
+  
+return ReactDOM.createPortal(
+  <AnimatePresence>{modalContent}</AnimatePresence>,
+  document.getElementById("modal-root") as HTMLElement
+);
 };
 
 export default ChatSummary;

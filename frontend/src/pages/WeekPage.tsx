@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaRegCalendarAlt } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import WeekFrame from "../components/WeekFrame";
 import Calendar from "../components/Calendar";
 import useTabStore from "../store/useTabStore";
@@ -16,12 +16,14 @@ const WeekPage: React.FC = () => {
   const tabs = ["감정", "어휘력", "관심사", "대화 빈도"];
   const [showCalendar, setShowCalendar] = useState(false);
   const { selectedTab, setSelectedTab } = useTabStore();
-  const [weeklyData, setWeeklyData] =
-    useState<WeeklyConversationResponse | null>(null);
+  const [weeklyData, setWeeklyData] = useState<
+    WeeklyConversationResponse | null | undefined
+  >(undefined);
 
   const { startDate } = useParams<{ startDate: string }>();
   const startMoment = moment(startDate, "YYYY-MM-DD");
   const endMoment = startMoment.clone().add(6, "days");
+  const location = useLocation();
 
   const swiperRef = useRef<SwiperClass | null>(null);
   const currentTabIndex = tabs.findIndex((tab) => tab === selectedTab);
@@ -37,9 +39,23 @@ const WeekPage: React.FC = () => {
     setSelectedTab(tab);
   };
 
+  // 페이지가 처음 로드되었는지 확인 (새로고침이 아닌 경우에만 기본 탭 설정)
   useEffect(() => {
-    // startDate가 변경될 때마다 weeklyData 초기화
-    setWeeklyData(null);
+    const isReload = window.performance
+      .getEntriesByType("navigation")
+      .some((nav) => {
+        return (nav as PerformanceNavigationTiming).type === "reload";
+      });
+
+    if (!isReload && !location.state?.keepTab) {
+      setSelectedTab("감정");
+    }
+  }, [location.state, setSelectedTab]);
+
+  // 데이터 fetch
+  useEffect(() => {
+    setWeeklyData(undefined); // 로딩 중에 undefined로 초기화
+
     const fetchData = async () => {
       if (startDate) {
         try {
@@ -51,15 +67,20 @@ const WeekPage: React.FC = () => {
           setWeeklyData(response);
         } catch (error) {
           console.error("Failed to fetch weekly data:", error);
+          setWeeklyData(null); // 오류 발생 시 데이터 없음으로 처리
         }
       }
     };
     fetchData();
   }, [startDate]);
 
+  // 로딩 중에는 아무것도 표시하지 않음
+  if (weeklyData === undefined) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen relative">
-      {/* 달력 및 주간 통계 제목 */}
       <div className="flex items-center mt-12 px-16 py-4 bg-white rounded-2xl shadow-md text-2xl font-semibold cursor-pointer space-x-2">
         <FaRegCalendarAlt onClick={toggleCalendar} className="text-[#3F3F3F]" />
         <span onClick={toggleCalendar} className="text-[#3F3F3F]">
@@ -68,10 +89,8 @@ const WeekPage: React.FC = () => {
         </span>
       </div>
 
-      {/* 데이터 없을 때 메시지 표시 */}
       {weeklyData ? (
         <>
-          {/* 소제목 탭 */}
           <div className="flex space-x-12 mt-10">
             {tabs.map((tab) => (
               <button
@@ -88,7 +107,6 @@ const WeekPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Swiper 적용 */}
           <Swiper
             effect="cube"
             modules={[EffectCube]}
@@ -118,7 +136,6 @@ const WeekPage: React.FC = () => {
         </div>
       )}
 
-      {/* 달력 모달 */}
       {showCalendar && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div

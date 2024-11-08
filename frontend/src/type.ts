@@ -21,34 +21,34 @@ export interface LoginInfoResponse {
 export interface UserInfo {
   userSeq: number;
   name: string;
-  age: number;
+  birth: string;
   gender: string;
   favorite: string;
   remark?: string;
+}
+
+
+export interface UserResponse {
+  userSeq: number;
+  name: string;
+  birth: number[];
+  gender: string;
+  favorite: string;
+  remark: string;
 }
 
 export interface UserState {
   userSeq: number | null;
   notFirstLogin: boolean;
   name: string;
-  age: number;
+  birth: string;
   gender: string;
   favorite: string;
   remark?: string;
   setUserSeq: (userSeq: number) => void;
   setNotFirstLogin: (notFirstLogin: boolean) => void;
   setUserInfo: (userInfo: UserResponse) => void;
-}
-
-export interface UserResponse {
-  userSeq: number;
-  userId: string;
-  name: string;
-  age: number;
-  gender: string;
-  favorite: string;
-  remark: string;
-  notFirstLogin: boolean;
+  resetUser: () => void;
 }
 
 export interface QuestionData {

@@ -12,10 +12,10 @@ export const StyledCalendarWrapper = styled.div`
   .react-calendar {
     width: 900px;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.7rem;
     box-shadow: 4px 2px 10px 0px rgba(0, 0, 0, 0.13);
     font-family: "MyCustomFont", SuncheonR, sans-serif;
-    padding: 8% 3%;
+    padding: 5% 3% 10% 3%;
     background-color: white;
   }
 
@@ -57,7 +57,7 @@ export const StyledCalendarWrapper = styled.div`
   /* 네비게이션 가운데 정렬 */
   .react-calendar__navigation {
     justify-content: center;
-    margin-bottom: 40px;
+    margin-bottom: 80px;
   }
 
   /* 네비게이션 폰트 설정 */
@@ -215,7 +215,7 @@ export const MoveNext = styled.div`
   color: blue;
   font-weight: 600;
   position: absolute;
-  top: 90%;
+  top: 88%;
   left: 50%;
   width: 120px;
   height: 40px;
@@ -262,7 +262,7 @@ export const StyledWrapper = styled.div`
 export const StyledLabel = styled.label`
   display: flex;
   align-items: center;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: #242424; /* 텍스트 색상 */
 `;
