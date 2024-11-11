@@ -250,24 +250,20 @@ public class UserService {
     }
 
     private <T> T fetchPostRequest(List<String> conversationOfKid, Class<T> responseType, String path) {
-        try {
-            FastApiRequest request = new FastApiRequest(conversationOfKid);
+        FastApiRequest request = new FastApiRequest(conversationOfKid);
 
-            // HTTP 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // HTTP 엔티티 생성 (헤더와 요청 데이터 설정)
-            HttpEntity<FastApiRequest> requestEntity = new HttpEntity<>(request, headers);
+        // HTTP 엔티티 생성 (헤더와 요청 데이터 설정)
+        HttpEntity<FastApiRequest> requestEntity = new HttpEntity<>(request, headers);
 
-            // HTTP POST 요청 보내기
-            String url = fastApiUrl + path;
-            ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
+        // HTTP POST 요청 보내기
+        String url = fastApiUrl + path;
+        ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
 
-            // 응답 값
-            return responseEntity.getBody();
-        } catch (Exception e) {
-            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "FastAPI 연결 실패");
-        }
+        // 응답 값
+        return responseEntity.getBody();
     }
 }
