@@ -6,6 +6,7 @@ import com.e104.realtime.domain.User.User;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class ConversationAnalytics {
 
     @Id
@@ -77,6 +79,7 @@ public class ConversationAnalytics {
             sentiment.setConversationAnalytics(this);  // 양방향 관계 설정 (Sentiment 객체가 이 대화에 속해 있음을 명시)
             this.sentiment = sentiment;  // 감정 정보 추가
         } catch (Exception e) {
+            log.error("감정 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "감정 추가 중 오류가 발생했습니다.");
         }
     }
@@ -88,6 +91,7 @@ public class ConversationAnalytics {
             vocabulary.setConversationAnalytics(this);  // 양방향 관계 설정 (Vocabulary 객체가 이 대화에 속해 있음을 명시)
             this.vocabulary = vocabulary;  // 어휘 정보 추가
         } catch (Exception e) {
+            log.error("어휘 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "어휘 추가 중 오류가 발생했습니다.");
         }
     }
@@ -101,6 +105,7 @@ public class ConversationAnalytics {
                 this.wordClouds.add(wc);  // 워드클라우드 리스트에 새로운 워드클라우드 추가
             }
         } catch (Exception e) {
+            log.error("워드클라우드 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "워드클라우드 추가 중 오류가 발생했습니다.");
         }
     }
@@ -112,6 +117,7 @@ public class ConversationAnalytics {
             conversationSummary.setConversationAnalytics(this);  // 양방향 관계 설정 (ConversationSummary 객체가 이 대화에 속해 있음을 명시)
             this.conversationSummary = conversationSummary;  // 대화 요약 추가
         } catch (Exception e) {
+            log.error("대화 요약 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 요약 추가 중 오류가 발생했습니다.");
         }
     }
@@ -125,6 +131,7 @@ public class ConversationAnalytics {
                 this.conversationContents.add(cc);  // 대화 내용 리스트에 새로운 대화 내용 추가
             }
         } catch (Exception e) {
+            log.error("대화 내용 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화 내용 추가 중 오류가 발생했습니다.");
         }
     }

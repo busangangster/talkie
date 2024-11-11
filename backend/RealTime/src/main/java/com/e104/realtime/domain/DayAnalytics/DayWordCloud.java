@@ -4,6 +4,7 @@ import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class DayWordCloud {
 
     @Id
@@ -36,6 +38,7 @@ public class DayWordCloud {
         try {
             this.dayAnalytics = dayAnalytics; // 일별 워드 클라우드와 일별 분석 간의 양방향 관계 설정
         } catch (Exception e) {
+            log.error("일별 워드 클라우드와 일별 분석 간의 관계 설정 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "일별 워드 클라우드와 일별 분석 간의 관계 설정 중 오류가 발생했습니다.");
         }
     }

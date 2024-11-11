@@ -4,6 +4,7 @@ import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.status.StatusCode;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Question {
 
     @Id
@@ -56,6 +58,7 @@ public class Question {
             this.answer = answer;  // 질문에 대한 답변 추가
             this.isActive = false;  // 질문 활성화 여부를 false로 설정
         } catch (Exception e) {
+            log.error("답변 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "답변 추가 중 오류가 발생했습니다.");
         }
     }
@@ -66,6 +69,7 @@ public class Question {
         try {
             this.user = user;
         } catch (Exception e) {
+            log.error("유저와 질문 간의 관계 설정 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "유저와 질문 간의 관계 설정 중 오류가 발생했습니다.");
         }
     }
@@ -79,6 +83,7 @@ public class Question {
             this.content = content;
             this.createdAt = LocalDateTime.now();
         } catch (Exception e) {
+            log.error("질문 정보 업데이트 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 정보 업데이트 중 오류가 발생했습니다.");
         }
     }
@@ -88,6 +93,7 @@ public class Question {
         try {
             this.isAnswered = isAnswered;
         } catch (Exception e) {
+            log.error("질문 답변 여부 업데이트 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 답변 여부 업데이트 중 오류가 발생했습니다.");
         }
     }

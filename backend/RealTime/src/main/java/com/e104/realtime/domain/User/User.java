@@ -7,6 +7,7 @@ import com.e104.realtime.domain.DayAnalytics.DayAnalytics;
 import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class User {
 
     @Id
@@ -74,6 +76,7 @@ public class User {
             this.remark = remark;
             this.isNotFirstLogin = true;
         } catch (Exception e) {
+            log.error("사용자 정보 업데이트 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "사용자 정보 업데이트 중 오류가 발생했습니다.");
         }
     }
@@ -88,6 +91,7 @@ public class User {
             question.setUser(this);  // 양방향 관계 설정 (Actor 객체가 이 영화에 속해 있음을 명시)
             this.questions.add(question);  // 질문리스트에 새로운 질문 추가
         } catch (Exception e) {
+            log.error("질문 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 추가 중 오류가 발생했습니다.");
         }
     }
@@ -114,6 +118,7 @@ public class User {
             question.setUser(null);  // 양방향 관계 해제
             this.questions.remove(question);
         } catch (Exception e) {
+            log.error("질문 제거 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 제거 중 오류가 발생했습니다.");
         }
     }
@@ -125,6 +130,7 @@ public class User {
             dayAnalytics.setUser(this);
             this.dayAnalytics.add(dayAnalytics);
         } catch (Exception e) {
+            log.error("일별 통계 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "일별 통계 추가 중 오류가 발생했습니다.");
         }
     }
@@ -144,6 +150,7 @@ public class User {
             conversationAnalytics.setUser(this);
             this.conversationAnalytics.add(conversationAnalytics);
         } catch (Exception e) {
+            log.error("대화별 통계 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "대화별 통계 추가 중 오류가 발생했습니다.");
         }
     }
@@ -155,6 +162,7 @@ public class User {
             weekAnalytics.setUser(this);
             this.weekAnalytics.add(weekAnalytics);
         } catch (Exception e) {
+            log.error("주별 통계 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주별 통계 추가 중 오류가 발생했습니다.");
         }
     }

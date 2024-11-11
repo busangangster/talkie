@@ -11,6 +11,7 @@ import com.e104.realtime.domain.WeekAnalytics.WeekAnalytics;
 import com.e104.realtime.domain.WeekAnalytics.WeekWordCloud;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import java.util.Locale;
 @EnableScheduling  // 스케줄링 활성화
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduledTask {
 
     private final RepoUtil repoUtil;
@@ -95,6 +97,7 @@ public class ScheduledTask {
                 updateWeekAnalytics(user, dayAnalytics);
             }
         } catch (Exception e) {
+            log.error("스케줄링 작업 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "스케줄링 작업 중 오류가 발생했습니다.");
         }
     }
@@ -161,6 +164,7 @@ public class ScheduledTask {
             }
             weekAnalytics.addWordClouds(newWeekWordClouds);
         } catch (Exception e) {
+            log.error("주간 통계 업데이트 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "주간 통계 업데이트 중 오류가 발생했습니다.");
         }
     }
