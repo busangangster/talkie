@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -82,6 +83,7 @@ public class BuilderUtil {
                 .emotionSummary(emotionSummary)
                 .vocabularySummary(vocabularySummary)
                 .wordCloudSummary(wordCloudSummary)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }
