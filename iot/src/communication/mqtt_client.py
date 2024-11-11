@@ -118,7 +118,7 @@ client.on_message = on_message
 print("콜백 함수 등록 완료")
 
 # 브로커에 연결
-client.connect(BROKER_ADDRESS, keepalive=5)
+client.connect(BROKER_ADDRESS, keepalive=30)
 print("브로커에 연결 완료")
 
 # 구독 설정
