@@ -4,6 +4,12 @@ import pyaudio
 import audioop
 import nest_pb2
 import nest_pb2_grpc
+
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from src.config.api_key import STREAMING_KEY
 
 # 오디오 설정
