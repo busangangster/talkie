@@ -123,3 +123,4 @@ def detect_wake_word():
 #         if detect_wake_word():
 #             print("Wake word activated!")
 #             break
+
