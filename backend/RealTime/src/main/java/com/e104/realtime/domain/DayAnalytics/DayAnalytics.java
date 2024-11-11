@@ -6,6 +6,7 @@ import com.e104.realtime.domain.User.User;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class DayAnalytics {
 
     @Id
@@ -62,6 +64,7 @@ public class DayAnalytics {
         try {
             this.user = user; // 사용자와 일별 분석 간의 양방향 관계 설정
         } catch (Exception e) {
+            log.error("사용자와 일별 분석 간의 관계 설정 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "사용자와 일별 분석 간의 관계 설정 중 오류가 발생했습니다.");
         }
     }
@@ -75,6 +78,7 @@ public class DayAnalytics {
                 this.dayWordClouds.add(dayWordCloud); // 일별 분석에 워드 클라우드 추가
             }
         } catch (Exception e) {
+            log.error("워드 클라우드 추가 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "워드 클라우드 추가 중 오류가 발생했습니다.");
         }
     }

@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownContentTypeException;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
@@ -261,9 +262,14 @@ public class UserService {
 
         // HTTP POST 요청 보내기
         String url = fastApiUrl + path;
-        ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
-
-        // 응답 값
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<T> responseEntity = restTemplate.postForEntity(url, requestEntity, responseType);
+            return responseEntity.getBody();
+        } catch (UnknownContentTypeException ex) {
+            // 비정상적인 응답을 로그에 기록
+            ResponseEntity<String> errorResponse = restTemplate.postForEntity(url, requestEntity, String.class);
+            System.out.println("Unexpected response: " + errorResponse.getBody());
+            throw new RuntimeException("서버에서 예상치 못한 응답을 받았습니다.");
+        }
     }
 }

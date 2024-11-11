@@ -2,6 +2,7 @@ package com.e104.realtime.domain.User;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Answer {
 
     @Id
@@ -38,6 +40,7 @@ public class Answer {
         try {
             this.question = question; // 질문과 답변 간의 양방향 관계 설정
         } catch (Exception e) {
+            log.error("질문과 답변 간의 관계 설정 중 오류가 발생했습니다.", e);
             throw new RuntimeException("질문과 답변 간의 관계 설정 중 오류가 발생했습니다.");
         }
     }
