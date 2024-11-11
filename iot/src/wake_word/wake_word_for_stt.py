@@ -1,7 +1,6 @@
 import os
 import io
 import wave
-import requests
 import webrtcvad
 import pyaudio
 import sys
@@ -9,8 +8,9 @@ from difflib import SequenceMatcher
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from src.config.api_key import CLIENT_ID, CLIENT_SECRET, URL
+from src.config.settings import WAKE_WORD_LIST
 from src.logger.logger import get_logger
+from src.stt.stt_handler import clova_stt
 
 # 로거 설정
 logger = get_logger()
@@ -18,39 +18,15 @@ logger = get_logger()
 # 오디오 설정
 RATE = 16000  # 샘플링 속도
 CHUNK = 320  # 20ms 프레임 크기
-WAKE_WORDS = ["토키야", "톡키야", "토끼야", "복희야", "로키야"]  # 감지할 wake words 목록
+WAKE_WORDS = WAKE_WORD_LIST
 SIMILARITY_THRESHOLD = 0.5  # 유사도 임계값
 SILENCE_DURATION = 1  # 침묵 지속 시간 (초)
 
-# 최소 STT 요청 데이터 길이 (1초)
+# 최소 STT 요청 데이터 길이
 MIN_AUDIO_LENGTH = RATE * 3
-
-# 헤더 설정
-headers = {
-    "X-NCP-APIGW-API-KEY-ID": CLIENT_ID,
-    "X-NCP-APIGW-API-KEY": CLIENT_SECRET,
-    "Content-Type": "application/octet-stream"
-}
 
 # VAD 설정 - 민감도를 3으로 설정하여 음성을 더 잘 감지
 vad = webrtcvad.Vad(3)
-
-
-def clova_stt(audio_data):
-    """ 네이버 클로바 STT API로 WAV 데이터를 텍스트로 변환하는 함수 """
-    try:
-        response = requests.post(URL, headers=headers, data=audio_data)
-        if response.status_code == 200:
-            result = response.json().get("text", "")
-            logger.info("STT 변환 성공: %s", result)
-            return result
-        else:
-            logger.error("STT 변환 오류: %s %s", response.status_code, response.text)
-            return None
-    except requests.exceptions.RequestException as e:
-        logger.error("STT 요청 실패: %s", e)
-        return None
-
 
 def detect_silence_with_vad(frames):
     """ VAD를 사용해 음성을 감지하고, 음성이 아닌 경우 침묵으로 판단 """
@@ -110,7 +86,7 @@ def is_similar_to_wake_word(text):
     """ STT 텍스트가 WAKE_WORDS에 포함된 단어들과 유사한지 비교 """
     for wake_word in WAKE_WORDS:
         similarity = SequenceMatcher(None, wake_word, text).ratio()
-        print(f"{wake_word}와의 유사도: {similarity}")
+        logger.info(f"{wake_word}와의 유사도: {similarity}")
         if similarity >= SIMILARITY_THRESHOLD:
             return True
     return False
@@ -141,9 +117,9 @@ def detect_wake_word():
 
 
 # 실행
-if __name__ == "__main__":
-    print("Listening for wake word...")
-    while True:
-        if detect_wake_word():
-            print("Wake word activated!")
-            break
+# if __name__ == "__main__":
+#     print("Listening for wake word...")
+#     while True:
+#         if detect_wake_word():
+#             print("Wake word activated!")
+#             break
