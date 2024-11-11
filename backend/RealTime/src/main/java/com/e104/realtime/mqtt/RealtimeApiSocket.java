@@ -2,7 +2,6 @@ package com.e104.realtime.mqtt;
 
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
-import com.e104.realtime.mqtt.constant.Instruction;
 import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
 import com.e104.realtime.mqtt.dto.OpenAiSessionUpdateRequest;
 import com.e104.realtime.redis.hash.Conversation;
@@ -33,18 +32,20 @@ public class RealtimeApiSocket extends WebSocketClient {
     private final Consumer<Integer> closeHandler;
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
+    private final String instruction;
 
     @Getter
     private boolean initialized = false;
 
     @Builder
-    public RealtimeApiSocket(String openAiWebSocketUrl, int userSeq, ObjectMapper objectMapper, Consumer<Integer> closeHandler, MessageChannel mqttOutboundChannel, UserService userService) throws URISyntaxException {
+    public RealtimeApiSocket(String openAiWebSocketUrl, int userSeq, ObjectMapper objectMapper, Consumer<Integer> closeHandler, MessageChannel mqttOutboundChannel, UserService userService, String instruction) throws URISyntaxException {
         super(new URI(openAiWebSocketUrl));
         this.userSeq = userSeq;
         this.objectMapper = objectMapper;
         this.closeHandler = closeHandler;
         this.mqttOutboundChannel = mqttOutboundChannel;
         this.userService = userService;
+        this.instruction = instruction;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class RealtimeApiSocket extends WebSocketClient {
 
             if ("session.created".equals(eventType)) {
                 log.info("세션 생성 확인. 세션 업데이트 요청을 전송합니다.");
-                this.send(objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(Instruction.INSTRUCTION)));
+                this.send(objectMapper.writeValueAsString(new OpenAiSessionUpdateRequest(instruction)));
             }
 
             if ("session.updated".equals(eventType)) {

@@ -1,6 +1,7 @@
 package com.e104.realtime.mqtt;
 
 import com.e104.realtime.application.UserService;
+import com.e104.realtime.mqtt.constant.Instruction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
@@ -63,6 +64,7 @@ public class OpenAISocketService implements Closeable {
                     .closeHandler(this::removeSocket)
                     .mqttOutboundChannel(mqttOutboundChannel)
                     .userService(userService)
+                    .instruction(Instruction.getInstructions(userService.getUserEntity(userSeq)))
                     .build();
             webSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
             webSocketClient.addHeader("OpenAI-Beta", "realtime=v1");
