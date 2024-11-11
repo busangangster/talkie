@@ -77,7 +77,7 @@ public class MqttIntegrationConfig {
     public MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(serverSendClientId, mqttClientFactory());
 //        messageHandler.setAsync(true);  // 비동기 전송 설정
-        messageHandler.setDefaultQos(1);
+        messageHandler.setDefaultQos(2);
         messageHandler.setDefaultTopic(publishTopic);  // 기본 발행 토픽 설정
         return messageHandler;
     }

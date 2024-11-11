@@ -41,14 +41,27 @@ public final class Instruction {
 
     public static String getInstructions(User user) {
 
-        String gender = user.getGender().equals("M") ? "남자" : "여자";
-        int age = LocalDate.now().getYear() - user.getBirth().getYear();
-        return Instruction.INSTRUCTION +
-               "아이의 이름은: " + user.getName() +
-               ", 아이의 나이는: " + age +
-               ", 아이의 성별은 : " + gender +
-               ", 아이가 좋아하는 건: " + user.getFavorite() +
-               ",아이의 특이사항은: " + user.getRemark() +
-               ". 아이의 인적사항에 알맞게 대화해야해. \n";
+        StringBuilder instruction = new StringBuilder();
+        if (user.getName() != null) {
+            instruction.append("아이의 이름은: ").append(user.getName()).append(". ");
+        }
+        if (user.getBirth() != null) {
+            int age = LocalDate.now().getYear() - user.getBirth().getYear();
+            instruction.append("아이의 나이는: ").append(age).append(". ");
+        }
+        if (user.getGender() != null) {
+            String gender = user.getGender().equals("M") ? "남자" : "여자";
+            instruction.append("아이의 성별은 : ").append(gender).append(". ");
+        }
+        if (user.getFavorite() != null) {
+            instruction.append("아이가 좋아하는 건: ").append(user.getFavorite()).append(". ");
+        }
+        if (user.getRemark() != null) {
+            instruction.append("아이의 특이사항은: ").append(user.getRemark()).append(". ");
+        }
+        if (!instruction.isEmpty()) {
+            return Instruction.INSTRUCTION + instruction + "아이의 인적사항에 알맞게 대화해야해. \n";
+        }
+        return Instruction.INSTRUCTION;
     }
 }
