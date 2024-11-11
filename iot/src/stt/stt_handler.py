@@ -113,9 +113,4 @@ def start_conversation():
     text_result = clova_stt(audio_data)  # STT 변환 요청
     if text_result:
         logger.info("변환된 텍스트: %s", text_result)
-        # print("변환된 텍스트: %s", text_result)
     return text_result
-
-
-# 실행
-print(start_conversation())
