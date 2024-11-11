@@ -198,7 +198,6 @@ public class UserService {
         }
 
         List<String> conversationOfKid = conversationContents.stream().filter(ConversationContent::isAnswer).map(ConversationContent::getContent).toList();
-        System.out.println("conversationOfKid = " + conversationOfKid);
         FastApiWordCloudResponse fastApiWordCloudResponse = fetchPostRequest(conversationOfKid, FastApiWordCloudResponse.class, "/wordcloud");
         FastApiSentimentResponse fastApiSentimentResponse = fetchPostRequest(conversationOfKid, FastApiSentimentResponse.class, "/emotion");
         FastApiVocabularyResponse fastApiVocabularyResponse = fetchPostRequest(conversationOfKid, FastApiVocabularyResponse.class, "/vocabulary");
