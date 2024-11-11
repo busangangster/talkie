@@ -12,6 +12,7 @@ from pydub.playback import play
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
 from src.stt.stt_handler import speech_to_text
 
@@ -19,6 +20,9 @@ from src.stt.stt_handler import speech_to_text
 voice_event = threading.Event()
 exit_event = threading.Event()
 session_active = True  # 세션 상태 플래그
+last_response_time = time.time()  # 마지막 응답 수신 시간   
+response_received = False
+
 
 user_seq = 1
 
@@ -45,7 +49,7 @@ def on_disconnect(client, userdata, rc):
         session_active = False
 
 def on_message(client, userdata, message):
-    global session_active
+    global session_active, last_response_time, response_received
 
     if not session_active:
         print("세션이 끊겨 메시지를 받을 수 없습니다.")
@@ -66,9 +70,23 @@ def on_message(client, userdata, message):
                     wav_file.writeframes(pcm_data)
 
                 audio = AudioSegment.from_wav("response.wav")
+                
+                # 응답 수신 상태를 True로 설정
+                response_received = True
+                
+                # 음성 파일 재생 시작
+                print("음성 파일 재생 시작")
                 play(audio)
-                print("메세지 수신완료")
+                print("음성 파일 재생 완료")
+                
                 os.remove("response.wav")
+                
+                # 음성 파일 재생 후에 응답 시간 갱신
+                last_response_time = time.time()
+                
+                # 응답 수신 상태 초기화
+                response_received = False
+
             except Exception as e:
                 print("PCM 데이터 처리 중 오류:", e)
         else:
@@ -91,6 +109,7 @@ def publish_message(header, data=None):
     print(f"메시지 발행 결과: {result.rc}, MID: {result.mid}")
 
 def start_conversation():
+    global last_response_time, response_received
     while not exit_event.is_set():
         print("텍스트 받는 중")
         text = ""
@@ -101,15 +120,27 @@ def start_conversation():
         if exit_event.is_set():
             break
 
-        print("메시지 전송")
+        print("메시지 전송",text)
         publish_message("topic/message/send", data={"content": text})
 
         print("응답 대기 중...")
         voice_event.clear()
+        
+        # 마지막 응답 시간 초기화
+        last_response_time = time.time()
+
         while not voice_event.is_set() and not exit_event.is_set():
+            # 응답 대기 중 2초 이상 경과 시 재요청
+            if time.time() - last_response_time > 2 and not response_received:
+                print("응답 시간이 초과되었습니다. 다시 요청을 시도합니다.")
+                publish_message("topic/message/send", data={"content": text})
+                last_response_time = time.time()  # 재요청 후 대기 시작 시간 초기화
+
             time.sleep(0.1)
+
         # 서버 과부하 방지를 위해 잠시 대기
         time.sleep(1)
+
 
 # MQTT 클라이언트 설정
 client = mqtt.Client(client_id=CLIENT_ID, clean_session=True, protocol=getattr(mqtt, PROTOCOL))
