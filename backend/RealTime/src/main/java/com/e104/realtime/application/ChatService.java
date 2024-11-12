@@ -79,7 +79,7 @@ public class ChatService {
             message.append("Day ").append(i).append(":\n").append("어휘 점수: ").append(dayAnalytics.getVocabularyScore()).append("\n");
         }
         message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
-        int age = LocalDate.now().getYear() - birth.getYear();
+        int age = LocalDate.now().getYear() - birth.getYear() + 1;
         double avgScore;
         if (age == 5) {
             avgScore = 4.0;
@@ -236,7 +236,7 @@ public class ChatService {
     }
 
     private String getConversationVocabularyMessage(Vocabulary vocabulary, LocalDate birth) {
-        int age = LocalDate.now().getYear() - birth.getYear();
+        int age = LocalDate.now().getYear() - birth.getYear() + 1;
         double avgScore;
         if (age == 5) {
             avgScore = 4.0;
