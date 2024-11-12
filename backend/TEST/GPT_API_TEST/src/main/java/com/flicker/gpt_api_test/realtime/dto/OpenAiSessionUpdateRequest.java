@@ -29,7 +29,7 @@ public class OpenAiSessionUpdateRequest {
         private String instructions;
 
         // 음성 톤 또는 스타일 (고정값: alloy)
-        private final String voice = "echo";
+        private final String voice = "ballad";
 
         // 입력 오디오 형식 (고정값: pcm16)
         private final String input_audio_format = "pcm16";
