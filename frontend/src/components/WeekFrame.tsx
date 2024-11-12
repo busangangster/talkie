@@ -5,7 +5,6 @@ import WeekInterest from "../components/WeekInterest";
 import TalkCnt from "../components/TalkCnt";
 import { WeekFrameProps } from "../type";
 
-
 const WeekFrame: React.FC<WeekFrameProps> = ({ selectedTab, weeklyData }) => {
   const renderGraphComponent = () => {
     switch (selectedTab) {
@@ -31,7 +30,7 @@ const WeekFrame: React.FC<WeekFrameProps> = ({ selectedTab, weeklyData }) => {
       case "관심사":
         return weeklyData?.wordCloudSummary || "";
       case "대화 빈도":
-        return weeklyData?.countSummary ||"";
+        return weeklyData?.countSummary || "";
       default:
         return "";
     }
@@ -49,7 +48,7 @@ const WeekFrame: React.FC<WeekFrameProps> = ({ selectedTab, weeklyData }) => {
         </div>
 
         <div className="w-1/3 h-full bg-white p-8 rounded-lg shadow-md">
-          <p className="text-gray-900 text-xl font-bold leading-loose">
+          <p className="text-gray-900 text-xl font-bold leading-loose overflow-y-auto max-h-full px-2">
             {getSummaryText()}
           </p>
         </div>
