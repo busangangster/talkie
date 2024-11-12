@@ -78,14 +78,6 @@ public class ChatMqttToWebSocketHandler {
 
         String content = dto.data().get("content");
 
-        Conversation conversation = Conversation.builder()
-                .talker(Talker.CHILD.getValue())
-                .userSeq(dto.userSeq())
-                .content(content)
-                .build();
-        userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
-
-
         // 대화가 진행 중이면 대화를 보냄
         if (userService.isTalkingNow(dto.userSeq())) {
             sendClientMessageToOpenaiWebsocket(dto.userSeq(), content);  // WebSocket으로 메시지 전송
@@ -98,8 +90,18 @@ public class ChatMqttToWebSocketHandler {
             }
             else {
                 // '토키야'라는 말이 없으면 그냥 끝냄
+                log.info("대화가 시작되지 않음. '토키야'로 대화 시작 필요.");
+                return;
             }
         }
+
+        Conversation conversation = Conversation.builder()
+                .talker(Talker.CHILD.getValue())
+                .userSeq(dto.userSeq())
+                .content(content)
+                .build();
+        userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
+
     }
 
     // 대화 종료 알림을 처리하는 기능
