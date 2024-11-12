@@ -52,6 +52,9 @@ def on_message(client, userdata, message):
     if not session_active:
         print("세션이 끊겨 메시지를 받을 수 없습니다.")
         return
+    
+    print("on_message 트리거됨")  # 추가된 로그
+
 
     try:
         payload = json.loads(message.payload.decode())
@@ -79,11 +82,13 @@ def on_message(client, userdata, message):
                 
                 os.remove("response.wav")
                 
+                # 응답 수신 상태 초기화
+                response_received = True
+                voice_event.set()
+
                 # 음성 파일 재생 후에 응답 시간 갱신
                 last_response_time = time.time()
-                
-                # 응답 수신 상태 초기화
-                response_received = False
+
 
             except Exception as e:
                 print("PCM 데이터 처리 중 오류:", e)
@@ -93,8 +98,6 @@ def on_message(client, userdata, message):
         print("메시지 페이로드의 JSON 디코딩에 실패했습니다.")
     except Exception as e:
         print("on_message 오류:", e)
-
-    voice_event.set()
 
 def publish_message(header, data=None):
     msg = {
@@ -113,23 +116,24 @@ def start_conversation():
         text = ""
         while not text and not exit_event.is_set():
             text = speech_to_text()
-            pass
 
         if exit_event.is_set():
             break
 
-        print("메시지 전송",text)
+        print("메시지 전송", text)
         publish_message("topic/message/send", data={"content": text})
 
         print("응답 대기 중...")
         voice_event.clear()
         
         # 마지막 응답 시간 초기화
+        response_received = False  # 응답 수신 상태 초기화
         last_response_time = time.time()
 
+
         while not voice_event.is_set() and not exit_event.is_set():
-            # 응답 대기 중 2초 이상 경과 시 재요청
-            if time.time() - last_response_time > 2 and not response_received:
+            # 응답 대기 중 2초 이상 경과 시 재요청 (단, 아직 응답이 오지 않은 경우에만)
+            if time.time() - last_response_time > 4 and not response_received:
                 print("응답 시간이 초과되었습니다. 다시 요청을 시도합니다.")
                 publish_message("topic/message/send", data={"content": text})
                 last_response_time = time.time()  # 재요청 후 대기 시작 시간 초기화
@@ -139,8 +143,9 @@ def start_conversation():
         # 서버 과부하 방지를 위해 잠시 대기
         time.sleep(1)
 
+
 # MQTT 클라이언트 설정
-client = mqtt.Client(client_id=CLIENT_ID, clean_session=True, protocol=getattr(mqtt, PROTOCOL))
+client = mqtt.Client(client_id=CLIENT_ID, clean_session=False, protocol=getattr(mqtt, PROTOCOL))
 client.on_disconnect = on_disconnect
 client.on_message = on_message
 print("콜백 함수 등록 완료")
