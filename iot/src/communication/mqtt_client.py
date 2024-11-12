@@ -142,9 +142,14 @@ def start_conversation():
                 print("대화가 종료됩니다.")
                 publish_message("topic/conversation/end")
                 exit_event.set()
+                print("exit_event 설정됨, 내부 루프 종료")
                 break
 
             time.sleep(0.1)
+
+        if exit_event.is_set():
+            print("exit_event 설정됨, 상위 루프 최종 종료")
+            break
 
         # 서버 과부하 방지를 위해 잠시 대기
         time.sleep(1)
