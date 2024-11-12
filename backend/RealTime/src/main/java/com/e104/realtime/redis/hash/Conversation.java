@@ -18,5 +18,6 @@ public class Conversation {
      */
     private boolean talker;
     private String content;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }
