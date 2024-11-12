@@ -126,7 +126,7 @@ const DayPage: React.FC = () => {
                   {/* 이야기 제목과 시간 */}
                   <div className="flex flex-col flex-1 ml-4 mb-3">
                     <span className="font-semibold text-2xl mb-3">
-                      {story.title}
+                      {story.title.replace(/^"|"$/g, "")}
                     </span>
                     <span className="text-[#707070]">
                       {story.formattedTime}

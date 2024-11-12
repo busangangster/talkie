@@ -126,7 +126,7 @@ const TalkPage: React.FC = () => {
       {/* 이야기 제목 */}
       <div className="flex items-center mt-10 text-3xl font-bold self-start z-20">
         <div className="bg-[#F3E651] w-2 h-10 mr-4" />
-        <span>{title}</span>
+        <span>{title.replace(/^"|"$/g, "")}</span>
       </div>
 
       {/* 그래프 및 분석 결과 영역 */}
@@ -213,12 +213,8 @@ const TalkPage: React.FC = () => {
 
       {/* 달력 모달 */}
       {showCalendar && (
-        <div
-          onClick={() => setShowCalendar(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div onClick={() => setShowCalendar(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
             <Calendar onClose={() => setShowCalendar(false)} />
           </div>
         </div>
@@ -227,8 +223,8 @@ const TalkPage: React.FC = () => {
       {/* 요약 모달 */}
       {showSummary && summaryContent && (
         <ChatSummary
-          title={title}
-          content={summaryContent}
+          title={title.replace(/^"|"$/g, "")}
+          content={summaryContent.replace(/^"|"$/g, "")}
           onClose={closeSummary}
         />
       )}
