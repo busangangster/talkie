@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useUserStore from "../store/useUserStore";
-import "../css/home.css"
+import "../css/Home.css"
 
 // 날짜 계산 함수 (이번 주 일요일을 계산)
 const getEndOfWeek = () => {
