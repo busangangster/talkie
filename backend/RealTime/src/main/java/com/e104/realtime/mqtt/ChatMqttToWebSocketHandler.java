@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -113,7 +114,8 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // 사용자 감지 알림을 처리하는 기능
-    private void handleUserDetection(MqttBaseDto dto) {
+    @Transactional
+    public void handleUserDetection(MqttBaseDto dto) {
 
         // 이미 대화중이라면 발동하지 말 것.
         log.info("인체감지 알림을 받았습니다. 사용자 시퀀스: {}", dto.userSeq());
