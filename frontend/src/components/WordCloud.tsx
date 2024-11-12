@@ -28,7 +28,7 @@ const WordCloudComponent: React.FC<WordCloudComponentProps> = ({ words }) => {
         padding={20}
         fill={() => colors[Math.floor(Math.random() * colors.length)]}
         width={500}
-        height={350}
+        height={300}
       />
     );
   }, [formattedWords]);

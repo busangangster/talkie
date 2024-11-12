@@ -12,7 +12,7 @@ body {
 
 /* 스크롤바 너비 및 높이 설정 */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
   height: 8px;
 }
 

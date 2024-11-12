@@ -5,7 +5,10 @@ import talkieIcon from "/assets/talk/talkie.png";
 
 const Chat: React.FC<ChatProps> = ({ messages }) => {
   return (
-    <div className="bg-[#F9F9F9] p-10 rounded-xl mt-5 w-[1100px] overflow-y-scroll space-y-4 max-h-[720px]">
+    <div
+      className="bg-[#F9F9F9] p-10 rounded-xl mt-5 overflow-y-scroll space-y-4 max-h-[70vh]"
+      style={{ width: "68vw" }} // 화면 너비의 70%로 설정
+    >
       {messages.map((message, index) => (
         <div
           key={index}
@@ -13,7 +16,6 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
             message.user_Seq === 1 ? "justify-end" : ""
           } space-x-4`}
         >
-          {/* 톡이의 말풍선 (user_Seq === 0) */}
           {message.user_Seq === 0 && (
             <img src={talkieIcon} alt="Talkie" className="w-10 h-10" />
           )}
@@ -29,7 +31,6 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
             {message.content}
           </span>
 
-          {/* 아이의 말풍선 (user_Seq === 1) */}
           {message.user_Seq === 1 && (
             <img src={childIcon} alt="Child" className="w-10 h-10 mb-2" />
           )}

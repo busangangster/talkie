@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useUserStore from "../store/useUserStore";
-import "../css/Home.css"
+import "../css/Home.css";
 
-// 날짜 계산 함수 (이번 주 일요일을 계산)
-const getEndOfWeek = () => {
-  const today = moment();
-  const endOfWeek = today.clone().endOf("isoWeek").format("YYYY-MM-DD"); // 이번 주 일요일
-  console.log("이번 주 마지막 날짜 (일요일):", endOfWeek);
-  return endOfWeek;
+// 오늘 날짜를 가져오는 함수
+const getToday = () => {
+  const today = moment().format("YYYY-MM-DD");
+  console.log("오늘 날짜:", today);
+  return today;
 };
 
 // HomePage 컴포넌트
@@ -23,18 +22,18 @@ const HomePage: React.FC = () => {
     setIsLoggedIn(!!userSeq); // userSeq가 있으면 로그인 상태로 설정
   }, [userSeq]);
 
-  // 이번 주 일요일로 이동하는 함수
-  const goToThisWeekPage = () => {
-    const endOfWeek = getEndOfWeek();
-    navigate(`/week/${endOfWeek}`);
+  // 오늘 날짜로 이동하는 함수
+  const goToTodayPage = () => {
+    const today = getToday();
+    navigate(`/day/${today}`);
   };
 
   // 버튼 클릭 핸들러
   const handleButtonClick = () => {
     if (isLoggedIn) {
-      goToThisWeekPage(); // 로그인 상태면 이번 주 일요일 페이지로 이동
+      goToTodayPage();
     } else {
-      navigate("/login"); // 비로그인 상태면 로그인 페이지로 이동
+      navigate("/login");
     }
   };
 
