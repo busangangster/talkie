@@ -5,7 +5,6 @@ import moment from "moment";
 import {
   StyledCalendar,
   StyledCalendarWrapper,
-  StyledDot,
   StyledToday,
   MoveNext,
   StyledWrapper,
@@ -29,8 +28,7 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
   const [activeStartDate, setActiveStartDate] = useState<Date | null>(today);
   const [selectedWeek, setSelectedWeek] = useState<Date[]>([]);
   const [checked, setChecked] = useState(false);
-
-  const attendDay = ["2024-10-25", "2024-10-10"];
+  const [currentView, setCurrentView] = useState("month"); // 현재 뷰 상태 저장
 
   const handleDateChange = (newDate: Value) => {
     setDate(newDate);
@@ -103,9 +101,21 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
             prev2Label={null}
             minDetail="year"
             activeStartDate={activeStartDate || undefined}
-            onActiveStartDateChange={({ activeStartDate }) =>
-              setActiveStartDate(activeStartDate)
+            onActiveStartDateChange={({ activeStartDate, view }) => {
+              setActiveStartDate(activeStartDate);
+              setCurrentView(view); // 현재 뷰 업데이트
+            }}
+            nextLabel={
+              (currentView === "month" &&
+                activeStartDate &&
+                moment(activeStartDate).isSameOrAfter(moment(), "month")) ||
+              (currentView === "year" &&
+                activeStartDate &&
+                activeStartDate.getFullYear() >= new Date().getFullYear())
+                ? null // 미래의 달 또는 연도이면 화살표 숨기기
+                : ">"
             }
+            prevLabel={"<"}
             tileContent={({ date, view }) => {
               const html = [];
 
@@ -115,12 +125,6 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
                 date.getDate() === today.getDate()
               ) {
                 html.push(<StyledToday key={"today"}>오늘</StyledToday>);
-              }
-
-              if (attendDay.includes(moment(date).format("YYYY-MM-DD"))) {
-                html.push(
-                  <StyledDot key={moment(date).format("YYYY-MM-DD")} />
-                );
               }
 
               return <>{html}</>;
@@ -148,18 +152,24 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
             }}
             maxDate={new Date()} // 오늘 이후의 날짜는 선택 불가
           />
-          <MoveNext onClick={handleMoveNext}>이동하기</MoveNext>
-          <StyledWrapper>
-            <StyledLabel>
-              <StyledCheckbox
-                type="checkbox"
-                checked={checked}
-                onChange={handleCheckboxChange}
-              />
-              <span>주간 통계 보기</span>
-            </StyledLabel>
-            <StyledUnderline />
-          </StyledWrapper>
+
+          {/* 날짜 선택 모드에서만 표시 */}
+          {currentView === "month" && (
+            <>
+              <MoveNext onClick={handleMoveNext}>이동하기</MoveNext>
+              <StyledWrapper>
+                <StyledLabel>
+                  <StyledCheckbox
+                    type="checkbox"
+                    checked={checked}
+                    onChange={handleCheckboxChange}
+                  />
+                  <span>주간 통계 보기</span>
+                </StyledLabel>
+                <StyledUnderline />
+              </StyledWrapper>
+            </>
+          )}
         </StyledCalendarWrapper>
       </motion.div>
     </div>

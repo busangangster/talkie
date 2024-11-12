@@ -19,9 +19,6 @@ const DayPage: React.FC = () => {
     setShowCalendar(!showCalendar);
   };
 
-  const closeCalendar = () => {
-    setShowCalendar(false); // 모달 창 닫기
-  };
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -45,25 +42,45 @@ const DayPage: React.FC = () => {
     fetchConversations();
   }, [userSeq, date]);
 
-  const getOrderText = (order: number) => {
-    const orderTextMap = [
-      "첫번째",
-      "두번째",
-      "세번째",
-      "네번째",
-      "다섯번째",
-      "여섯번째",
-      "일곱번째",
-      "여덟번째",
-      "아홉번째",
-      "열번째",
-      "열한번째",
-      "열두번째",
-      "열세번째",
-      "열네번째",
-      "열다섯번째",
+  const getOrderText = (order: number): string => {
+    const units = [
+      "",
+      "한",
+      "두",
+      "세",
+      "네",
+      "다섯",
+      "여섯",
+      "일곱",
+      "여덟",
+      "아홉",
     ];
-    return order <= 15 ? orderTextMap[order - 1] : `${order}번째`;
+    const tens = [
+      "",
+      "열",
+      "스물",
+      "서른",
+      "마흔",
+      "쉰",
+      "예순",
+      "일흔",
+      "여든",
+      "아흔",
+    ];
+
+    if (order <= 0) return "";
+    if (order > 99) return `${order}번째`;
+
+    if (order === 1) return "첫번째";
+
+    const ten = Math.floor(order / 10);
+    const unit = order % 10;
+
+    if (unit === 0) return `${tens[ten]}번째`;
+
+    if (unit === 1 && ten > 0) return `${tens[ten]}한번째`;
+
+    return `${tens[ten]}${units[unit]}번째`;
   };
 
   const formatTime = (createdAt: number[]) => {
@@ -110,7 +127,7 @@ const DayPage: React.FC = () => {
                   className="flex items-center p-4 bg-white rounded-2xl shadow-md cursor-pointer hover:scale-105 transition-transform duration-200"
                   onClick={() =>
                     navigate(`/talk/${date}/${story.conversationSeq}`, {
-                      state: { title: story.title },
+                      state: { title: story.title, order: story.order },
                     })
                   }
                 >
@@ -144,17 +161,7 @@ const DayPage: React.FC = () => {
       </div>
 
       {/* 달력 모달 */}
-      {showCalendar && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="relative z-10 bg-white rounded-lg shadow-lg p-4">
-            <Calendar onClose={closeCalendar} /> {/* 달력에 onClose 전달 */}
-          </div>
-          <div
-            className="absolute inset-0"
-            onClick={() => setShowCalendar(false)}
-          />
-        </div>
-      )}
+      {showCalendar && <Calendar onClose={() => setShowCalendar(false)} />}
     </div>
   );
 };

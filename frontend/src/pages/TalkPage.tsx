@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import { FaRegCalendarAlt } from "react-icons/fa";
-import Calendar from "../components/Calendar";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import WordCloud from "../components/WordCloud";
 import ChatSummary from "../components/ChatSummary";
 import Chat from "../components/Chat";
@@ -19,15 +17,19 @@ const TalkPage: React.FC = () => {
     conversationSeq: string;
   }>();
   const { userSeq } = useUserStore();
-  const [showCalendar, setShowCalendar] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [summaryContent, setSummaryContent] = useState<string | null>(null);
   const [conversationDetail, setConversationDetail] =
     useState<ConversationDetailResponse | null>(null);
   const location = useLocation();
-  const { title } = location.state || {};
+  const { title, order } = location.state || {};
+  const navigate = useNavigate();
 
-  const toggleCalendar = () => setShowCalendar(!showCalendar);
+  const goToDayPage = () => {
+    if (date) {
+      navigate(`/day/${date}`);
+    }
+  };
 
   const openSummary = async () => {
     if (userSeq && conversationSeq) {
@@ -108,18 +110,14 @@ const TalkPage: React.FC = () => {
       <div className="flex items-center justify-center relative -mt-3 z-20 animate-float">
         <img src="/assets/cloud.png" alt="cloud" className="w-96" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-700">
-          {/* 날짜 및 달력 아이콘 */}
+          {/* 날짜 아이콘 */}
           <div className="flex items-center text-2xl font-medium text-[#4E4E4E] mb-2">
-            <FaRegCalendarAlt
-              onClick={toggleCalendar}
-              className="cursor-pointer mr-2"
-            />
-            <span onClick={toggleCalendar} className="font-bold cursor-pointer">
+            <span onClick={goToDayPage} className="font-bold cursor-pointer">
               {date ? moment(date).format("YYYY년 MM월 DD일") : "날짜 선택"}
             </span>
           </div>
           {/* 이야기 결과지 제목 */}
-          <span className="text-3xl font-bold mt-1">첫번째 이야기 결과지</span>
+          <span className="text-3xl font-bold mt-1">{order} 이야기 결과지</span>
         </div>
       </div>
 
@@ -210,15 +208,6 @@ const TalkPage: React.FC = () => {
       <div className="z-30">
         <Chat messages={messages} />
       </div>
-
-      {/* 달력 모달 */}
-      {showCalendar && (
-        <div onClick={() => setShowCalendar(false)}>
-          <div onClick={(e) => e.stopPropagation()}>
-            <Calendar onClose={() => setShowCalendar(false)} />
-          </div>
-        </div>
-      )}
 
       {/* 요약 모달 */}
       {showSummary && summaryContent && (
