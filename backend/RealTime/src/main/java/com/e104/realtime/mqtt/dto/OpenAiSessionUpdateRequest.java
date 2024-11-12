@@ -23,7 +23,7 @@ public class OpenAiSessionUpdateRequest {
     @AllArgsConstructor
     static class OpenAiSession {
         // 응답 형식(모드): 텍스트와 오디오를 사용
-        private final String[] modalities = new String[]{"text", "audio"};
+        private final String[] modalities = new String[]{"audio"};
 
         // 사용자로부터 입력받은 지침 (instructions)
         private String instructions;
