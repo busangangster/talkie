@@ -146,6 +146,7 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
               }
               return "";
             }}
+            maxDate={new Date()} // 오늘 이후의 날짜는 선택 불가
           />
           <MoveNext onClick={handleMoveNext}>이동하기</MoveNext>
           <StyledWrapper>

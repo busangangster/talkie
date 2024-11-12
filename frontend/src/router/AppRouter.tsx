@@ -10,13 +10,14 @@ import WeekPage from "../pages/WeekPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { AnimatePresence } from "framer-motion";
 import Motion from "../components/Motion";
-
+import LogoHeader from "../components/LogoHeader"; 
 const AppRouter: React.FC = () => {
   const location = useLocation();
 
   const routes = [
-    { path: "/login", element: <LoginPage />, protected: false },
     { path: "/home", element: <HomePage />, protected: false },
+    { path: "/", element: <HomePage />, protected: false },
+    { path: "/login", element: <LoginPage />, protected: false },
     { path: "/day/:date", element: <DayPage />, protected: true },
     { path: "/info", element: <InfoPage />, protected: true },
     { path: "/question", element: <QuestionPage />, protected: true },
@@ -28,8 +29,13 @@ const AppRouter: React.FC = () => {
     { path: "/week/:startDate", element: <WeekPage />, protected: true },
   ];
 
+  // 현재 페이지가 HomePage인지 확인
+  const isHomePage = location.pathname === "/home" || location.pathname === "/";
+
   return (
     <AnimatePresence mode="wait">
+      {!isHomePage && <LogoHeader />}
+
       <Routes location={location} key={location.pathname}>
         {routes.map(({ path, element, protected: isProtected }) => (
           <Route

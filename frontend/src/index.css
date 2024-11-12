@@ -5,8 +5,12 @@
 /* styles.css 파일 (Tailwind와 함께 로드해야 함) */
 .animate-float {
   animation: float 1.5s ease-in-out infinite;
+  animation-play-state: running;
 }
 
+.animate-float:hover {
+  animation-play-state: paused; /* 마우스 호버 시 애니메이션 멈춤 */
+}
 
 @keyframes float {
   0%, 100% {
@@ -16,4 +20,3 @@
     transform: translateY(-7px);
   }
 }
-

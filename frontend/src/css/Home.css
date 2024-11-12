@@ -1,0 +1,39 @@
+.snowman {
+  position: absolute;
+  left: 120px;
+  width: 270px;
+  bottom: 20px;
+}
+
+.teddybear {
+  position: absolute;
+  right: 310px;
+  width: 140px;
+  bottom: 16px;
+}
+
+.child {
+  position: absolute;
+  right: 170px;
+  width: 170px;
+  bottom: 12px;
+}
+
+/* 반응형 스타일 */
+@media (min-width: 640px) {
+  .snowman { bottom: 32px; }
+  .teddybear { bottom: 24px; }
+  .child { bottom: 20px; }
+}
+
+@media (min-width: 768px) {
+  .snowman { bottom: 60px; }
+  .teddybear { bottom: 32px; }
+  .child { bottom: 28px; }
+}
+
+@media (min-height: 1028px) {
+  .snowman { bottom: 100px; }
+  .teddybear { bottom: 100px; }
+  .child { bottom: 100px; }
+}
