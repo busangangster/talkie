@@ -75,6 +75,7 @@ public class ChatMqttToWebSocketHandler {
 
     // 사용자의 메시지를 chatGPT 에게 전송하는 기능
     private void handleMessageSend(MqttBaseDto dto) {
+
         String content = dto.data().get("content");
 
         Conversation conversation = Conversation.builder()
@@ -84,7 +85,12 @@ public class ChatMqttToWebSocketHandler {
                 .build();
         userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
 
-        sendClientMessageToOpenaiWebsocket(dto.userSeq(), content);  // WebSocket으로 메시지 전송
+        if(content.contains("토끼야") || content.contains("토키야")) {
+            sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION + content);
+        }
+        else {
+            sendClientMessageToOpenaiWebsocket(dto.userSeq(), content);  // WebSocket으로 메시지 전송
+        }
     }
 
     // 대화 종료 알림을 처리하는 기능
