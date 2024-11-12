@@ -194,7 +194,8 @@ async def wordcloud(request: TextListRequest):
         words.extend(okt.nouns(te))
 
     stop_words = ['제', '저']
-    filtered_words = [word for word in words if word not in stop_words]
+    filtered_words = [word for word in words if (word not in stop_words) and (len(word) > 1)]
+
 
     # 단어 빈도 계산
     word_counts = Counter(filtered_words)
