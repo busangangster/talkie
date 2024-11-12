@@ -85,11 +85,20 @@ public class ChatMqttToWebSocketHandler {
                 .build();
         userService.bufferConversation(conversation); // 아이의 대답을 Redis 저장
 
-        if(content.contains("토끼야") || content.contains("토키야")) {
-            sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION + content);
-        }
-        else {
+
+        // 대화가 진행 중이면 대화를 보냄
+        if (userService.isTalkingNow(dto.userSeq())) {
             sendClientMessageToOpenaiWebsocket(dto.userSeq(), content);  // WebSocket으로 메시지 전송
+        }
+        // 대화가 진행 중이 아니라면
+        else {
+            // '토키야'라는 말이 있으면 대화를 시작함.
+            if (content.contains("토끼야") || content.contains("토키야")) {
+                sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION + content);
+            }
+            else {
+                // '토키야'라는 말이 없으면 그냥 끝냄
+            }
         }
     }
 
