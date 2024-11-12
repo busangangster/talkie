@@ -156,15 +156,19 @@ export interface WordCloudResponse {
   count: number;
 }
 
-export interface WeeklyConversationResponse {
+export type WeeklyConversationData = {
   weeklyConversations: WeeklyConversation[];
   wordCloudResponses: WordCloudResponse[];
   wordCloudSummary: string;
   emotionSummary: string;
   vocabularySummary: string;
   countSummary: string;
-}
+};
 
+export interface WeeklyConversationResponse {
+  data: WeeklyConversationData | string; // 객체 또는 문자열이 될 수 있음
+  message?: string;
+}
 export interface WeekFrameProps {
   selectedTab: string;
   weeklyData: WeeklyConversationResponse | null;

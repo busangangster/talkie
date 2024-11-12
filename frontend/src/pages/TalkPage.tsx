@@ -105,7 +105,7 @@ const TalkPage: React.FC = () => {
       </div>
 
       {/* 제목 영역 */}
-      <div className="flex items-center justify-center relative -mt-3 z-20">
+      <div className="flex items-center justify-center relative -mt-3 z-20 animate-float">
         <img src="/assets/cloud.png" alt="cloud" className="w-96" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-700">
           {/* 날짜 및 달력 아이콘 */}
@@ -214,11 +214,9 @@ const TalkPage: React.FC = () => {
       {/* 달력 모달 */}
       {showCalendar && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40"
           onClick={() => setShowCalendar(false)}
         >
           <div
-            className="relative bg-white rounded-lg shadow-lg p-4"
             onClick={(e) => e.stopPropagation()}
           >
             <Calendar onClose={() => setShowCalendar(false)} />
