@@ -105,7 +105,7 @@ def record_until_silence():
     return wav_data.read()
 
 
-def start_conversation():
+def speech_to_text():
     """
     음성 수집 후 STT 변환 결과를 반환하는 함수
     """
