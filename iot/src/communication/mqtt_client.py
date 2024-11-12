@@ -11,8 +11,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-
+    
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
 from src.stt.stt_handler import speech_to_text
 
@@ -22,7 +21,6 @@ exit_event = threading.Event()
 session_active = True  # 세션 상태 플래그
 last_response_time = time.time()  # 마지막 응답 수신 시간   
 response_received = False
-
 
 user_seq = 1
 
@@ -37,7 +35,7 @@ def on_disconnect(client, userdata, rc):
         while not session_active and reconnect_attempts < 5:
             try:
                 client.reconnect()
-                client.subscribe(TOPIC_SUB, qos=2)  # 재연결 후 구독 재설정
+                client.subscribe(TOPIC_SUB, qos=1)  # 재연결 후 구독 재설정
                 session_active = True
                 print("재연결 및 구독 재설정 성공")
             except Exception as e:
@@ -59,7 +57,7 @@ def on_message(client, userdata, message):
         payload = json.loads(message.payload.decode())
 
         audio_base64 = payload.get("audio", None)
-        print("Received message:", audio_base64)
+        # print("Received message:", audio_base64)
         if audio_base64 and isinstance(audio_base64, str):
             try:
                 pcm_data = base64.b64decode(audio_base64)
@@ -141,7 +139,6 @@ def start_conversation():
         # 서버 과부하 방지를 위해 잠시 대기
         time.sleep(1)
 
-
 # MQTT 클라이언트 설정
 client = mqtt.Client(client_id=CLIENT_ID, clean_session=True, protocol=getattr(mqtt, PROTOCOL))
 client.on_disconnect = on_disconnect
@@ -153,7 +150,7 @@ client.connect(BROKER_ADDRESS, keepalive=30)
 print("브로커에 연결 완료")
 
 # 구독 설정
-client.subscribe(TOPIC_SUB, qos=2)
+client.subscribe(TOPIC_SUB, qos=1)
 print(f"주제 {TOPIC_SUB} 구독 완료")
 
 # 이벤트 루프 시작
