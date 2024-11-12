@@ -141,9 +141,10 @@ public class ChatMqttToWebSocketHandler {
 
         // TODO: 이거 추상화하기
         List<Question> questions = user.getQuestions();
-        Question question = questions.get(questions.size() - 1);
+        Question question = null;
+        if(!questions.isEmpty()) question = questions.get(questions.size() - 1);
 
-        if (question.isActive()) {
+        if (question != null && question.isActive()) {
             sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.ASK_QUESTION.formatted(question.getContent()));
             question.updateAnswerd(true); // 질문이 대답되었음을 표시
         } else {
