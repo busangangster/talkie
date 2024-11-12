@@ -60,7 +60,9 @@ public class RealtimeApiSocket extends WebSocketClient {
             String eventType = jsonResponse.path("type").asText();
 
             log.info("OpenAI로부터 받은 이벤트 타입: {}", eventType);
-//            log.info("OpenAI로부터 받은 데이터 내용: {}", jsonResponse);
+            if (!eventType.equals("response.audio.delta")) {
+                log.info("OpenAI로부터 받은 데이터 내용: {}", jsonResponse);
+            }
 
             if ("session.created".equals(eventType)) {
                 log.info("세션 생성 확인. 세션 업데이트 요청을 전송합니다.");
@@ -82,7 +84,7 @@ public class RealtimeApiSocket extends WebSocketClient {
 
                 // 음성 데이터인지 확인
                 String type = JsonParser.extractItemTypeFromResponseItemDone(jsonResponse);
-                if(!type.equals("message")) return;
+                if (!type.equals("message")) return;
 
                 // JSON 응답에서 transcript를 추출
                 String transcript = JsonParser.extractTranscriptFromResponseItemDone(jsonResponse);
@@ -128,7 +130,7 @@ public class RealtimeApiSocket extends WebSocketClient {
     private static final class JsonParser {
         private static String extractTranscriptFromResponseItemDone(JsonNode jsonResponse) {
             JsonNode contentArray = jsonResponse.path("item").path("content");
-            if(contentArray.isEmpty()) {
+            if (contentArray.isEmpty()) {
                 return null;
             }
             return contentArray.get(0).path("transcript").asText();
