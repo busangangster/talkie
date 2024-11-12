@@ -13,12 +13,12 @@ from src.wake_word.talkie_wake_word import initialize_wake_word, detect_wake_wor
 from src.communication.mqtt_client import publish_message  # MQTT 메시지 전송 함수
 from src.stt.stt_handler import speech_to_text  # 음성 인식
 
-# MQTT 설정
-BROKER_ADDRESS = "YOUR_BROKER_ADDRESS"  # 실제 브로커 주소
-TOPIC_SUB = "YOUR_SUB_TOPIC"
-TOPIC_PUB = "YOUR_PUB_TOPIC"
-CLIENT_ID = "YOUR_CLIENT_ID"
-PROTOCOL = "MQTTv311"  # 사용할 프로토콜 버전
+# mqtt 설정
+BROKER_ADDRESS = "k11e104.p.ssafy.io"
+TOPIC_SUB = "tokie-client"
+TOPIC_PUB = "tokie-server"
+CLIENT_ID = "Participant_A"
+PROTOCOL = "MQTTv311"
 
 # MQTT 클라이언트 초기화
 client = mqtt.Client(client_id=CLIENT_ID, protocol=getattr(mqtt, PROTOCOL))

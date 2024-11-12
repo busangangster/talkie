@@ -46,7 +46,7 @@ def on_disconnect(client, userdata, rc):
         print("정상적으로 연결이 종료되었습니다.")
         session_active = False
 
-def on_message(client, userdata, message):
+def on_message(client, userdata,message):
     global session_active, last_response_time, response_received
 
     if not session_active:
@@ -138,6 +138,12 @@ def start_conversation():
                 publish_message("topic/message/send", data={"content": text})
                 last_response_time = time.time()  # 재요청 후 대기 시작 시간 초기화
 
+            if time.time() - last_response_time > 10 and not response_received:
+                print("대화가 종료됩니다.")
+                publish_message("topic/conversation/end")
+                exit_event.set()
+                break
+
             time.sleep(0.1)
 
         # 서버 과부하 방지를 위해 잠시 대기
@@ -179,3 +185,4 @@ conversation_thread.join()
 client.loop_stop()
 client.disconnect()
 print("프로그램이 종료되었습니다.")
+
