@@ -60,6 +60,7 @@ public class RealtimeApiSocket extends WebSocketClient {
             String eventType = jsonResponse.path("type").asText();
 
             log.info("OpenAI로부터 받은 이벤트 타입: {}", eventType);
+            log.info("OpenAI로부터 받은 데이터 내용: {}", jsonResponse);
 
             if ("session.created".equals(eventType)) {
                 log.info("세션 생성 확인. 세션 업데이트 요청을 전송합니다.");
@@ -77,14 +78,14 @@ public class RealtimeApiSocket extends WebSocketClient {
                 audioDelta.add(audioDeltaPiece);
             }
 
-            if ("response.audio.done".equals(eventType)) {
-                // 오디오 델타를 병합하고 Base64로 인코딩
-                byte[] combinedAudio = audioDelta.squash();
-                String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
-
+            if ("response.output_item.done".equals(eventType)) {
                 // JSON 응답에서 transcript를 추출
                 String transcript = JsonParser.extractTranscriptFromResponseItemDone(jsonResponse);
                 log.info("Transcript: {}", transcript);
+
+                // 오디오 델타를 병합하고 Base64로 인코딩
+                byte[] combinedAudio = audioDelta.squash();
+                String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
 
                 Map<String, String> mqttData = Map.of("audio", finalAudioBase64, "transcript", Objects.requireNonNull(transcript));
                 // 클라이언트에게 오디오 응답 전송
@@ -104,7 +105,7 @@ public class RealtimeApiSocket extends WebSocketClient {
                 userService.bufferConversation(conversation);
             }
         } catch (Exception e) {
-            log.error("음성 메시지를 처리하는 중 문제가 발생했습니다.", e);
+            log.error("소켓 메시지를 처리하는 중 문제가 발생했습니다.", e);
         }
     }
 
@@ -122,13 +123,15 @@ public class RealtimeApiSocket extends WebSocketClient {
     private static final class JsonParser {
         private static String extractTranscriptFromResponseItemDone(JsonNode jsonResponse) {
             JsonNode contentArray = jsonResponse.path("item").path("content");
+            if(contentArray.isEmpty()) {
+                return null;
+            }
             return contentArray.get(0).path("transcript").asText();
         }
 
         private static String getDelta(JsonNode jsonResponse) {
             return jsonResponse.path("delta").asText();
         }
-
     }
 
 }
