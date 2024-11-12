@@ -116,13 +116,17 @@ public class ChatMqttToWebSocketHandler {
     private void handleUserDetection(MqttBaseDto dto) {
 
         // 이미 대화중이라면 발동하지 말 것.
+        log.info("인체감지 알림을 받았습니다. 사용자 시퀀스: {}", dto.userSeq());
 //        if (openAISocketService.isConnected(dto.userSeq())) return;
         if (userService.isTalkingNow(dto.userSeq())) return;
 
+        log.info("사용자가 대화중이지 않습니다.");
+        log.info("현재 시각: {}", TimeChecker.now());
         // 현재 시각이 밤중이라면 발동하지 않게 하기.
         if (TimeChecker.isNight()) {
             return;
         }
+        log.info("사용자가 대화중이지 않고, 밤이 아닙니다.");
 
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
         User user;
