@@ -77,7 +77,7 @@ public class RealtimeApiSocket extends WebSocketClient {
                 audioDelta.add(audioDeltaPiece);
             }
 
-            if ("response.output_item.done".equals(eventType)) {
+            if ("response.audio.done".equals(eventType)) {
                 // 오디오 델타를 병합하고 Base64로 인코딩
                 byte[] combinedAudio = audioDelta.squash();
                 String finalAudioBase64 = Base64.getEncoder().encodeToString(combinedAudio); // 다시 Base64로 인코딩
