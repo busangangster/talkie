@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Slf4j
@@ -110,7 +109,6 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // 사용자 감지 알림을 처리하는 기능
-    @Transactional
     public void handleUserDetection(MqttBaseDto dto) {
 
         // 이미 대화중이라면 발동하지 말 것.
