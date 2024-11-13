@@ -18,7 +18,6 @@ import org.springframework.messaging.support.GenericMessage;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
