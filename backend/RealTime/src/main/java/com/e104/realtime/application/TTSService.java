@@ -1,10 +1,14 @@
 package com.e104.realtime.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -15,6 +19,7 @@ public class TTSService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String OPENAI_TTS_URL = "https://api.openai.com/v1/audio/speech";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public byte[] getPcmAudio(String text) {
         try {
@@ -24,15 +29,15 @@ public class TTSService {
             headers.setBearerAuth(apiKey);
 
             // 요청 데이터 설정
-            String requestJson = String.format(
-                    "{" +
-                            "\"model\": \"tts-1-hd\"," +
-                            "\"voice\": \"echo\"," +
-                            "\"input\": \"%s\"," +
-                            "\"response_format\": \"pcm\"," +
-                            "\"speed\": 1" +
-                            "}", text
-            );
+            Map<String, Object> requestData = new HashMap<>();
+            requestData.put("model", "tts-1-hd");
+            requestData.put("voice", "echo");
+            requestData.put("input", text);
+            requestData.put("response_format", "pcm");
+            requestData.put("speed", 1);
+
+            // JSON 직렬화
+            String requestJson = objectMapper.writeValueAsString(requestData);
 
             // HTTP 요청 전송
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
