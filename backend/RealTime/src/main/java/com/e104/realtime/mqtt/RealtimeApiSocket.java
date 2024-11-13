@@ -1,5 +1,6 @@
 package com.e104.realtime.mqtt;
 
+import com.e104.realtime.application.TTSService;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
 import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
@@ -17,6 +18,7 @@ import org.springframework.messaging.support.GenericMessage;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
@@ -33,18 +35,20 @@ public class RealtimeApiSocket extends WebSocketClient {
     private final MessageChannel mqttOutboundChannel;
     private final UserService userService;
     private final String instruction;
+    private final TTSService ttsService;
 
     @Getter
     private boolean initialized = false;
 
     @Builder
-    public RealtimeApiSocket(String openAiWebSocketUrl, int userSeq, ObjectMapper objectMapper, Consumer<Integer> closeHandler, MessageChannel mqttOutboundChannel, UserService userService, String instruction) throws URISyntaxException {
+    public RealtimeApiSocket(String openAiWebSocketUrl, int userSeq, ObjectMapper objectMapper, Consumer<Integer> closeHandler, MessageChannel mqttOutboundChannel, UserService userService, String instruction, TTSService ttsService) throws URISyntaxException {
         super(new URI(openAiWebSocketUrl));
         this.userSeq = userSeq;
         this.objectMapper = objectMapper;
         this.closeHandler = closeHandler;
         this.mqttOutboundChannel = mqttOutboundChannel;
         this.userService = userService;
+        this.ttsService = ttsService;
         this.instruction = instruction;
     }
 
@@ -111,6 +115,30 @@ public class RealtimeApiSocket extends WebSocketClient {
                         .build();
                 userService.bufferConversation(conversation);
             }
+
+            // TODO: TTS(PCM)로 변환해서 전송해야함 ( 테스트안됨 )
+            if("response.text.done".equals(eventType)) {
+                log.info("RealTime에서 Text타입으로 응답이 반환됨");
+                String text = JsonParser.extractTextFromResponseTextDone(jsonResponse);
+
+                byte[] pcmAudio = ttsService.getPcmAudio(text);
+                String base64AudioString = new String(pcmAudio);
+                Map<String, String> mqttData = Map.of("audio", base64AudioString, "transcript", text);
+                mqttOutboundChannel.send(new GenericMessage<>(objectMapper.writeValueAsString(mqttData)));
+                log.info("TTS 전송 완료!");
+
+
+                String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", text));
+                this.send(jsonMessage);
+
+                // AI 대답 Redis 저장
+                Conversation conversation = Conversation.builder()
+                        .talker(Talker.AI.getValue())
+                        .userSeq(userSeq)
+                        .content(text)
+                        .build();
+                userService.bufferConversation(conversation);
+            }
         } catch (Exception e) {
             log.error("소켓 메시지를 처리하는 중 문제가 발생했습니다.", e);
         }
@@ -142,6 +170,10 @@ public class RealtimeApiSocket extends WebSocketClient {
 
         public static String extractItemTypeFromResponseItemDone(JsonNode jsonResponse) {
             return jsonResponse.path("item").path("type").asText();
+        }
+
+        public static String extractTextFromResponseTextDone(JsonNode jsonResponse) {
+            return jsonResponse.path("text").asText();
         }
     }
 
