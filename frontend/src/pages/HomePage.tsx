@@ -7,7 +7,6 @@ import "../css/Home.css";
 // 오늘 날짜를 가져오는 함수
 const getToday = () => {
   const today = moment().format("YYYY-MM-DD");
-  console.log("오늘 날짜:", today);
   return today;
 };
 

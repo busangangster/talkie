@@ -40,11 +40,11 @@ const TalkVoca: React.FC<TalkVocaProps> = ({ vocabularyScore }) => {
 
   const getAverageScoreByAge = (age: number) => {
     switch (age) {
-      case 4:
-        return 4;
       case 5:
-        return 5;
+        return 4;
       case 6:
+        return 5;
+      case 7:
         return 6;
       default:
         return 5;

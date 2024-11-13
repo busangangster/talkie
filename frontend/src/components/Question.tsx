@@ -21,7 +21,6 @@ const Question: React.FC<QuestionProps> = ({
   const [modalIcon, setModalIcon] = useState("");
   const { userSeq } = useUserStore();
 
-
   const handleSubmit = async () => {
     if (!question.trim()) {
       setModalMessage("질문을 입력해주세요");
@@ -52,12 +51,12 @@ const Question: React.FC<QuestionProps> = ({
       } catch (error) {
         console.error("질문 등록 중 오류 발생:", error);
         setModalMessage("질문 등록에 실패했습니다. 다시 시도해주세요.");
-        setModalIcon("/assets/alerticon/error.png");
+        setModalIcon("/assets/alerticon/exclamationMark.png");
         setIsModalOpen(true);
       }
     } else {
       setModalMessage("로그인이 필요합니다.");
-      setModalIcon("/assets/alerticon/error.png");
+      setModalIcon("/assets/alerticon/exclamationMark.png");
       setIsModalOpen(true);
     }
   };
