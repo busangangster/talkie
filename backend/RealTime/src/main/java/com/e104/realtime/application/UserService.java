@@ -272,4 +272,11 @@ public class UserService {
             throw new RuntimeException("서버에서 예상치 못한 응답을 받았습니다.");
         }
     }
+
+    @Transactional
+    public Question getLastQuestion(int userSeq) {
+        List<Question> questions = repoUtil.findUser(userSeq).getQuestions();
+        if (questions.isEmpty()) return null;
+        return questions.get(questions.size() - 1);
+    }
 }
