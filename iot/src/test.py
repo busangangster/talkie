@@ -124,6 +124,8 @@ def start_conversation():
         print("텍스트 받는 중")
 
         text = ""
+        idle_time = 0  # 음성 입력 대기 시간 카운터
+
 
         while not text and not exit_event.is_set():
             text = speech_to_text()
@@ -132,6 +134,15 @@ def start_conversation():
             if text:
                 print(text)
                 break
+            else:
+                idle_time += 1
+                print(f"음성 입력 대기 중... 경과 시간: {idle_time}초")
+                if idle_time >= 20:
+                    print("대화가 종료됩니다.")
+                    publish_message("topic/conversation/end")
+                    exit_event.set()
+                    print("exit_event 설정됨, 내부 루프 종료")
+                    break
 
         if exit_event.is_set():
             print("exit_event 설정됨, 상위 루프 종료")
@@ -153,6 +164,17 @@ def start_conversation():
         if exit_event.is_set():
             print("exit_event 설정됨, 상위 루프 최종 종료")
             break
+        
+        idle_time = 0
+        while not exit_event.is_set():
+            time.sleep(1)
+            idle_time += 1
+            print(f"음성 파일 재생 후 경과 시간: {idle_time}초")
+            if idle_time >= 10:
+                print("10초 동안 입력이 없어 대화를 종료합니다.")
+                publish_message("topic/conversation/end")
+                exit_event.set()
+                break
 
     print("대화가 종료되었습니다.")
     conversation_active = False  # 대화 상태 플래그 리셋
