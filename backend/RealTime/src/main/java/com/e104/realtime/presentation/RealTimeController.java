@@ -1,5 +1,6 @@
 package com.e104.realtime.presentation;
 
+import com.e104.realtime.application.TTSService;
 import com.e104.realtime.application.UserService;
 import com.e104.realtime.common.response.ResponseDto;
 import com.e104.realtime.common.status.StatusCode;
@@ -9,7 +10,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
