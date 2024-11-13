@@ -7,22 +7,6 @@ import QuestionButton from "./components/QuestionButton";
 import HamburgerButton from "./components/HamburgerButton";
 import LogoHeader from "./components/LogoHeader";
 
-// Service Worker 등록 코드 추가
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/serviceWorker.js")
-      .then((registration) => {
-        console.log(
-          "Service Worker registered with scope:",
-          registration.scope
-        );
-      })
-      .catch((error) => {
-        console.error("Service Worker registration failed:", error);
-      });
-  });
-}
 
 const App: React.FC = () => {
   return (
