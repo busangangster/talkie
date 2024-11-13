@@ -68,9 +68,15 @@ def detect_silence(frames, silence_frames):
     return silence_frames
 
 
-def record_until_silence():
+import pyaudio
+import wave
+import time
+import io
+
+def record_until_silence(timeout=None):
     """
     일정 시간 동안 음성을 수집하며, 침묵이 감지되면 종료하고 수집된 음성 데이터 반환
+    timeout: 녹음 최대 시간(초). 이 시간이 지나면 자동으로 녹음 종료.
     :return: WAV 포맷의 바이너리 데이터
     """
     audio = pyaudio.PyAudio()
@@ -80,12 +86,18 @@ def record_until_silence():
     frames = []
     silence_frames = 0
     max_silence_frames = int(SILENCE_DURATION * RATE / CHUNK)
+    start_time = time.time()  # 녹음 시작 시간
 
     try:
         while silence_frames < max_silence_frames:
             data = stream.read(CHUNK, exception_on_overflow=False)
             frames.append(data)
             silence_frames = detect_silence(data, silence_frames)
+
+            # 타임아웃 체크
+            if timeout and (time.time() - start_time) > timeout:
+                print("녹음 타임아웃 종료")
+                break
     finally:
         stream.stop_stream()
         stream.close()
@@ -105,12 +117,20 @@ def record_until_silence():
     return wav_data.read()
 
 
-def speech_to_text():
+
+def speech_to_text(timeout=None):
     """
     음성 수집 후 STT 변환 결과를 반환하는 함수
+    timeout: 음성 입력 대기 시간(초)
     """
-    audio_data = record_until_silence()  # 음성 수집 및 침묵 감지 종료
+    audio_data = record_until_silence(timeout=timeout)  # 타임아웃 설정
+    if not audio_data:
+        print("녹음된 음성 데이터가 없습니다.")
+        return ""
+    
     text_result = clova_stt(audio_data)  # STT 변환 요청
     if text_result:
         logger.info("변환된 텍스트: %s", text_result)
+    else:
+        print("STT 변환 결과가 없습니다.")
     return text_result
