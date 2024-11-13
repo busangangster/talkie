@@ -209,14 +209,14 @@ public class UserService {
         FastApiVocabularyResponse fastApiVocabularyResponse = fetchPostRequest(conversationOfKid, FastApiVocabularyResponse.class, "/vocabulary");
         String wordCloudResponse = chatService.getWordCloud(conversationContents);
         List<WordCloud> wordClouds = new ArrayList<>();
-        List<String> wordCloudList = List.of(wordCloudResponse.split("-"));
+        List<String> wordCloudList = List.of(wordCloudResponse.trim().split("-"));
         for (String wordCloud : wordCloudList) {
             log.info("대화별 워드클라우드 데이터: {}", wordCloud);
             String[] wordCloudParts = wordCloud.split("/");
             if (wordCloudParts.length == 2) {
                 log.info("대화별 워드클라우드 데이터 파싱 (단어): {}", wordCloudParts[0]);
                 log.info("대화별 워드클라우드 데이터 파싱 (횟수): {}", wordCloudParts[1]);
-                wordClouds.add(WordCloud.builder().word(wordCloudParts[0]).count(Integer.parseInt(wordCloudParts[1])).build());
+                wordClouds.add(WordCloud.builder().word(wordCloudParts[0]).count(Integer.parseInt(wordCloudParts[1].trim())).build());
             } else {
                 log.info("대화별 워드클라우드 데이터 파싱 오류: {}", Arrays.toString(wordCloudParts));
             }
