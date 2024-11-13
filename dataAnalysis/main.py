@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 from transformers import ElectraModel, AutoTokenizer
 from konlpy.tag import Okt
 from typing import Dict, List, Tuple
-import re
+import pandas as pd
 from collections import Counter
 
 # 감정 레이블 리스트
@@ -47,8 +47,8 @@ class KOTEtagger(pl.LightningModule):
 
 # 모델 초기화 및 로드
 trained_model = KOTEtagger()
-# trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
-trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
+trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
+#trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
 trained_model.eval()
 
 # FastAPI 초기화
@@ -182,7 +182,7 @@ async def morphAnalyze(request: TextListRequest):
 
 
 @app.post("/api/data/wordcloud", response_model=WordCloudResponse)
-async def wordcloud(request: TextListRequest):
+def wordcloud(request: TextListRequest):
 
     okt = Okt()
     text = request.textList
@@ -193,9 +193,9 @@ async def wordcloud(request: TextListRequest):
     for te in text:
         words.extend(okt.nouns(te))
 
-    stop_words = ['제', '저', '안녕','너','오늘','뭐','김']
-    filtered_words = [word for word in words if (word not in stop_words)]
-
+    # 불용어 파일 읽기
+    stop_words = set(line.strip() for line in open("/app/stopwords-ko.txt", encoding='utf-8'))
+    filtered_words = [word for word in words if word not in stop_words]
 
     # 단어 빈도 계산
     word_counts = Counter(filtered_words)
