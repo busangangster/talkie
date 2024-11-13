@@ -183,16 +183,14 @@ public class UserService {
         if(!questions.isEmpty()) {
             Question question = questions.get(questions.size() - 1);
             boolean isActive = question.isActive();
-            boolean isAnswered = question.isAnswered();
-            log.info("질문 상태: isActive = {}, isAnswered = {}", isActive, isAnswered);
+            log.info("질문 상태: isActive = {}", isActive);
             log.info("질문 내용: {}", question.getContent());
-            if (isActive && isAnswered) {
+            if (isActive) {
                 if (conversations.size() <= 1) {
-                    log.info("대화 기록이 1 이하입니다. 저장을 건너뜁니다.");
-                    question.updateAnswerd(false);
+                    log.info("대화 기록이 1 이하입니다. 질문에 대한 응답 저장을 건너뜁니다.");
                     return;
                 }
-                log.info("대화 기록이 1 이상입니다. 질문 및 응답 저장을 시작합니다.");
+                log.info("대화 기록이 1 이상입니다. 질문에 대한 응답 저장을 시작합니다.");
                 String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
                 Answer answer = builderUtil.buildAnswer(content);
                 question.addAnswer(answer);

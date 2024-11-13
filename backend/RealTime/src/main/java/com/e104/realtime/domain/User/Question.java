@@ -32,9 +32,6 @@ public class Question {
     private boolean isActive;  // 질문 활성화 여부
 
     @Column(nullable = false)
-    private boolean isAnswered;  // 질문에 대한 답변이 있는지 여부
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;  // 질문 생성 시간
 
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,7 +43,6 @@ public class Question {
     @PrePersist
     public void prePersist() {
         this.isActive = true;  // 질문이 생성되면 기본적으로 활성화됨
-        this.isAnswered = false;  // 질문에 대한 답변이 없음
         this.createdAt = LocalDateTime.now();
     }
 
@@ -85,16 +81,6 @@ public class Question {
         } catch (Exception e) {
             log.error("질문 정보 업데이트 중 오류가 발생했습니다.", e);
             throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 정보 업데이트 중 오류가 발생했습니다.");
-        }
-    }
-
-    @Transactional
-    public void updateAnswerd(boolean isAnswered) {
-        try {
-            this.isAnswered = isAnswered;
-        } catch (Exception e) {
-            log.error("질문 답변 여부 업데이트 중 오류가 발생했습니다.", e);
-            throw new RestApiException(StatusCode.INTERNAL_SERVER_ERROR, "질문 답변 여부 업데이트 중 오류가 발생했습니다.");
         }
     }
 }
