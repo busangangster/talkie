@@ -127,8 +127,8 @@ public class RealtimeApiSocket extends WebSocketClient {
                 String base64AudioString = Base64.getEncoder().encodeToString(pcmAudio);
                 Map<String, String> mqttData = Map.of("audio", base64AudioString, "transcript", text);
                 mqttOutboundChannel.send(new GenericMessage<>(objectMapper.writeValueAsString(mqttData)));
-                log.info("TTS 전송 완료!: {}", objectMapper.writeValueAsString(mqttData));
-
+//                log.info("TTS 전송 완료!: {}", objectMapper.writeValueAsString(mqttData));
+                log.info("TTS 전송 완료!");
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", text));
                 this.send(jsonMessage);
 

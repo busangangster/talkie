@@ -53,7 +53,7 @@ public class OpenAiSessionUpdateRequest {
         private final double temperature = 0.7;
 
         // 생성할 응답의 최대 토큰 수 (고정값: inf)
-        private final int max_response_output_tokens = 500;
+        private final int max_response_output_tokens = 1000;
 
         // 생성자: 사용자로부터 instructions를 받아서 세션을 설정, 입력 오디오 전사 모델과 턴 감지도 설정
         public OpenAiSession(String instructions) {
