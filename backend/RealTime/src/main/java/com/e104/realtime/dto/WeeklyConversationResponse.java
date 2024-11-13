@@ -68,7 +68,11 @@ public class WeeklyConversationResponse {
         }
         weeklyConversations.sort(Comparator.comparing(WeeklyConversation::getCreatedAt));
 
-        for (WeekWordCloud weekWordCloud : weekAnalytics.getWeekWordClouds()) {
+        List<WeekWordCloud> weekWordClouds = weekAnalytics.getWeekWordClouds();
+        weekWordClouds.sort(Comparator.comparing(WeekWordCloud::getCount).reversed());
+        int size = Math.min(weekWordClouds.size(), 5);
+        for (int i=0; i < size; i++) {
+            WeekWordCloud weekWordCloud = weekWordClouds.get(i);
             WordCloudResponse wordCloudResponse = new WordCloudResponse();
             wordCloudResponse.setWord(weekWordCloud.getWord());
             wordCloudResponse.setCount(weekWordCloud.getCount());

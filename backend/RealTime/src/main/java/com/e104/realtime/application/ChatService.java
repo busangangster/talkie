@@ -116,7 +116,11 @@ public class ChatService {
 
     private String getWeekWordCloudMessage(List<WeekWordCloud> weekWordClouds) {
         StringBuilder message = new StringBuilder();
-        for (int i = 1; i <= weekWordClouds.size(); i++) {
+        if(weekWordClouds.isEmpty()) {
+            message.append("아이가 이번 주에 관심을 보이는 주제가 없어요.");
+        }
+        int size = Math.min(weekWordClouds.size(), 5);
+        for (int i = 1; i <= size; i++) {
             WeekWordCloud weekWordCloud = weekWordClouds.get(i - 1);
             message.append("Word ").append(i).append(":\n").append(weekWordCloud.getWord()).append(": ").append(weekWordCloud.getCount()).append("개\n");
         }
@@ -184,6 +188,9 @@ public class ChatService {
 
     private String getConversationWordCloudMessage(List<WordCloud> wordClouds) {
         StringBuilder message = new StringBuilder();
+        if(wordClouds.isEmpty()) {
+            message.append("아이가 이번 대화에서 관심을 보이는 주제가 없어요.");
+        }
         for (WordCloud wordCloud : wordClouds) {
             message.append(wordCloud.getWord()).append(": ").append(wordCloud.getCount()).append("개\n");
         }
