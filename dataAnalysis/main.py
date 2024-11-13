@@ -47,8 +47,8 @@ class KOTEtagger(pl.LightningModule):
 
 # 모델 초기화 및 로드
 trained_model = KOTEtagger()
-trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
-#trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
+# trained_model.load_state_dict(torch.load("/app/kote_pytorch_lightning.bin"), strict=False)
+trained_model.load_state_dict(torch.load(r"C:\Users\SSAFY\Downloads\kote_pytorch_lightning.bin"), strict=False)
 trained_model.eval()
 
 # FastAPI 초기화
@@ -112,7 +112,7 @@ async def predict_emotion(request: TextListRequest):
     texts = request.textList
 
     mapped_scores = {
-        'happyScore': 0,
+        'happyScorse': 0,
         'loveScore': 0,
         'sadScore': 0,
         'scaryScore': 0,
@@ -193,8 +193,8 @@ async def wordcloud(request: TextListRequest):
     for te in text:
         words.extend(okt.nouns(te))
 
-    stop_words = ['제', '저']
-    filtered_words = [word for word in words if (word not in stop_words) and (len(word) > 1)]
+    stop_words = ['제', '저', '안녕','너','오늘','뭐','김']
+    filtered_words = [word for word in words if (word not in stop_words)]
 
 
     # 단어 빈도 계산
