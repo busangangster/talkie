@@ -189,6 +189,7 @@ public class UserService {
             if (isActive) {
                 if (conversations.size() <= 1) {
                     log.info("대화 기록이 1 이하입니다. 질문에 대한 응답 저장을 건너뜁니다.");
+                    conversationRedisRepository.deleteAllByUserSeq(userSeq);
                     return;
                 }
                 log.info("대화 기록이 1 이상입니다. 질문에 대한 응답 저장을 시작합니다.");
@@ -199,6 +200,7 @@ public class UserService {
         }
         if (conversations.size() <= 1) {
             log.info("대화 기록이 1 이하입니다. 저장을 건너뜁니다.");
+            conversationRedisRepository.deleteAllByUserSeq(userSeq);
             return;
         }
 
