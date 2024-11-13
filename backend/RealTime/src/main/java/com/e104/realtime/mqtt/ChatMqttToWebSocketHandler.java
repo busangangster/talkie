@@ -3,10 +3,8 @@ package com.e104.realtime.mqtt;
 import com.e104.realtime.application.RepoUtil;
 import com.e104.realtime.application.Talker;
 import com.e104.realtime.application.UserService;
-import com.e104.realtime.common.exception.RestApiException;
 import com.e104.realtime.common.util.TimeChecker;
 import com.e104.realtime.domain.User.Question;
-import com.e104.realtime.domain.User.User;
 import com.e104.realtime.mqtt.constant.Instruction;
 import com.e104.realtime.mqtt.constant.Topic;
 import com.e104.realtime.mqtt.dto.OpenAiConversationItemCreateRequest;
@@ -19,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j

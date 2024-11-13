@@ -1,5 +1,6 @@
 package com.e104.realtime.mqtt;
 
+import com.e104.realtime.application.TTSService;
 import com.e104.realtime.application.UserService;
 import com.e104.realtime.mqtt.constant.Instruction;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,12 +30,14 @@ public class OpenAISocketService implements Closeable {
 
     private final ObjectMapper objectMapper;
     private final UserService userService;
+    private final TTSService ttsService;
     private final MessageChannel mqttOutboundChannel;
 
-    public OpenAISocketService(ObjectMapper objectMapper, UserService userService, @Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel) {
+    public OpenAISocketService(ObjectMapper objectMapper, UserService userService, @Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel, TTSService ttsService) {
         this.objectMapper = objectMapper;
         this.userService = userService;
         this.mqttOutboundChannel = mqttOutboundChannel;
+        this.ttsService = ttsService;
     }
 
     public RealtimeApiSocket getWebSocketClient(int userSeq) {
@@ -64,6 +67,7 @@ public class OpenAISocketService implements Closeable {
                     .closeHandler(this::removeSocket)
                     .mqttOutboundChannel(mqttOutboundChannel)
                     .userService(userService)
+                    .ttsService(ttsService)
                     .instruction(Instruction.getInstructions(userService.getUserEntity(userSeq)))
                     .build();
             webSocketClient.addHeader("Authorization", "Bearer " + openAiApiKey);
