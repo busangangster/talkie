@@ -115,7 +115,6 @@ public class RealtimeApiSocket extends WebSocketClient {
                 userService.bufferConversation(conversation);
             }
 
-            // TODO: TTS(PCM)로 변환해서 전송해야함 ( 테스트안됨 )
             if("response.text.done".equals(eventType)) {
                 log.info("RealTime에서 Text타입으로 응답이 반환됨");
                 String text = JsonParser.extractTextFromResponseTextDone(jsonResponse);
@@ -125,7 +124,6 @@ public class RealtimeApiSocket extends WebSocketClient {
                 Map<String, String> mqttData = Map.of("audio", base64AudioString, "transcript", text);
                 mqttOutboundChannel.send(new GenericMessage<>(objectMapper.writeValueAsString(mqttData)));
                 log.info("TTS 전송 완료!");
-
 
                 String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("assistant", text));
                 this.send(jsonMessage);

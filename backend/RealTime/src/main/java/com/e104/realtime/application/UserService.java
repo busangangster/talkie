@@ -28,6 +28,7 @@ import org.springframework.web.client.UnknownContentTypeException;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -180,7 +181,7 @@ public class UserService {
         // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
         User user = repoUtil.findUser(userSeq);
         List<Question> questions = user.getQuestions();
-        if(!questions.isEmpty()) {
+        if (!questions.isEmpty()) {
             Question question = questions.get(questions.size() - 1);
             boolean isActive = question.isActive();
             log.info("질문 상태: isActive = {}", isActive);
@@ -202,13 +203,23 @@ public class UserService {
         }
 
         List<String> conversationOfKid = conversationContents.stream().filter(ConversationContent::isAnswer).map(ConversationContent::getContent).toList();
-        FastApiWordCloudResponse fastApiWordCloudResponse = fetchPostRequest(conversationOfKid, FastApiWordCloudResponse.class, "/wordcloud");
         FastApiSentimentResponse fastApiSentimentResponse = fetchPostRequest(conversationOfKid, FastApiSentimentResponse.class, "/emotion");
         FastApiVocabularyResponse fastApiVocabularyResponse = fetchPostRequest(conversationOfKid, FastApiVocabularyResponse.class, "/vocabulary");
+        String wordCloudResponse = chatService.getWordCloud(conversationContents);
         List<WordCloud> wordClouds = new ArrayList<>();
-        for (FastApiWordCloudResponse.wordCloud wordCloud : fastApiWordCloudResponse.getWordCloud()) {
-            wordClouds.add(WordCloud.builder().word(wordCloud.getWord()).count(wordCloud.getCount()).build());
+        List<String> wordCloudList = List.of(wordCloudResponse.split("-"));
+        for (String wordCloud : wordCloudList) {
+            log.info("대화별 워드클라우드 데이터: {}", wordCloud);
+            String[] wordCloudParts = wordCloud.split("/");
+            if (wordCloudParts.length == 2) {
+                log.info("대화별 워드클라우드 데이터 파싱 (단어): {}", wordCloudParts[0]);
+                log.info("대화별 워드클라우드 데이터 파싱 (횟수): {}", wordCloudParts[1]);
+                wordClouds.add(WordCloud.builder().word(wordCloudParts[0]).count(Integer.parseInt(wordCloudParts[1])).build());
+            } else {
+                log.info("대화별 워드클라우드 데이터 파싱 오류: {}", Arrays.toString(wordCloudParts));
+            }
         }
+
         Vocabulary vocabulary = Vocabulary.builder().vocabularyScore(fastApiVocabularyResponse.getMorph_analyze()).build();
         Sentiment sentiment = Sentiment.builder()
                 .happyScore(fastApiSentimentResponse.getPredictions().getHappyScore())
