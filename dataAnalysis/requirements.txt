@@ -5,3 +5,4 @@ pytorch-lightning==2.0.0
 transformers==4.29.2
 konlpy==0.6.0
 uvicorn==0.22.0
+pandas==2.2.3
