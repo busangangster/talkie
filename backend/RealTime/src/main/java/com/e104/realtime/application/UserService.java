@@ -180,17 +180,23 @@ public class UserService {
         // 대화 내용 저장할때 부모의 질문 활성화 되어있고, 아이의 대답이 완료되었다면 응답에도 저장해야함.
         User user = repoUtil.findUser(userSeq);
         List<Question> questions = user.getQuestions();
-        Question question = questions.get(questions.size() - 1);
-        boolean isActive = question.isActive();
-        boolean isAnswered = question.isAnswered();
-        if (isActive && isAnswered) {
-            if (conversations.size() <= 1) {
-                question.updateAnswerd(false);
-                return;
+        if(!questions.isEmpty()) {
+            Question question = questions.get(questions.size() - 1);
+            boolean isActive = question.isActive();
+            boolean isAnswered = question.isAnswered();
+            log.info("질문 상태: isActive = {}, isAnswered = {}", isActive, isAnswered);
+            log.info("질문 내용: {}", question.getContent());
+            if (isActive && isAnswered) {
+                if (conversations.size() <= 1) {
+                    log.info("대화 기록이 1 이하입니다. 저장을 건너뜁니다.");
+                    question.updateAnswerd(false);
+                    return;
+                }
+                log.info("대화 기록이 1 이상입니다. 질문 및 응답 저장을 시작합니다.");
+                String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
+                Answer answer = builderUtil.buildAnswer(content);
+                question.addAnswer(answer);
             }
-            String content = conversations.get(1).getContent(); // 아이의 제일 첫번째 대답을 뽑아내야함
-            Answer answer = builderUtil.buildAnswer(content);
-            question.addAnswer(answer);
         }
         if (conversations.size() <= 1) {
             log.info("대화 기록이 1 이하입니다. 저장을 건너뜁니다.");
