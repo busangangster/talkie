@@ -1,0 +1,6 @@
+.talk-page {
+  background-image: url('/assets/background_talkpage.jpg');
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.5s ease-in-out;
+}

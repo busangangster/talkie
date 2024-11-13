@@ -262,15 +262,15 @@ export const StyledWrapper = styled.div`
 export const StyledLabel = styled.label`
   display: flex;
   align-items: center;
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 700;
   color: #242424; /* 텍스트 색상 */
 `;
 
 export const StyledCheckbox = styled.input`
   appearance: none; /* 브라우저의 기본 체크박스 제거 */
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border: 2px solid #a084ca; /* 체크박스 외곽선 */
   border-radius: 2px;
   margin-right: 5px;

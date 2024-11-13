@@ -10,6 +10,7 @@ import moment from "moment";
 import { getConversationDetail, getConversationSummary } from "../apis/api";
 import { ConversationDetailResponse } from "../type";
 import useUserStore from "../store/useUserStore";
+import "../css/TalkPage.css";
 
 const TalkPage: React.FC = () => {
   const { date, conversationSeq } = useParams<{
@@ -38,7 +39,6 @@ const TalkPage: React.FC = () => {
           userSeq,
           Number(conversationSeq)
         );
-        console.log(summaryResponse.data.content);
         setSummaryContent(summaryResponse.data.content);
         setShowSummary(true);
       } catch (error) {
@@ -57,7 +57,6 @@ const TalkPage: React.FC = () => {
             userSeq,
             Number(conversationSeq)
           );
-          console.log(response);
           setConversationDetail(response);
         } catch (error) {
           console.error("대화 상세 정보를 가져오는 중 오류 발생:", error);
@@ -76,10 +75,7 @@ const TalkPage: React.FC = () => {
     })) || [];
 
   return (
-    <div
-      className="relative flex flex-col items-center px-[260px] py-12 min-h-screen overflow-y-scroll bg-cover bg-center"
-      style={{ backgroundImage: "url('/assets/background.jpg')" }}
-    >
+    <div className="talk-page relative flex flex-col items-center px-[260px] py-12 min-h-screen overflow-y-scroll">
       <style>{`
         .left-tail::after {
           content: '';

@@ -33,6 +33,7 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
   const handleDateChange = (newDate: Value) => {
     setDate(newDate);
     setSelectedWeek([]);
+    setChecked(false);
   };
 
   const handleCheckboxChange = () => {
