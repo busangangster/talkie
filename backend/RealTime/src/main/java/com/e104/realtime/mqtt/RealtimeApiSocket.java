@@ -92,6 +92,9 @@ public class RealtimeApiSocket extends WebSocketClient {
                 // JSON 응답에서 transcript를 추출
                 String transcript = JsonParser.extractTranscriptFromResponseItemDone(jsonResponse);
                 log.info("Transcript: {}", transcript);
+                if(transcript == null || transcript.isEmpty() || transcript.isBlank()) {
+                    return;
+                }
 
                 // 오디오 델타를 병합하고 Base64로 인코딩
                 byte[] combinedAudio = audioDelta.squash();
