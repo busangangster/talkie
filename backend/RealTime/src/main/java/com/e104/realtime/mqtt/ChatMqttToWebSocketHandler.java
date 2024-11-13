@@ -35,7 +35,6 @@ public class ChatMqttToWebSocketHandler {
     private final OpenAISocketService openAISocketService;
 
     // MQTT에서 메시지를 수신하여 처리하는 메서드
-    @Transactional
     public void handleMessageFromMqtt(Message<String> message) {
         String payload = message.getPayload();
 
@@ -115,7 +114,6 @@ public class ChatMqttToWebSocketHandler {
     }
 
     // 사용자 감지 알림을 처리하는 기능
-    @Transactional
     public void handleUserDetection(MqttBaseDto dto) {
 
         // 이미 대화중이라면 발동하지 말 것.
@@ -132,12 +130,7 @@ public class ChatMqttToWebSocketHandler {
         log.info("사용자가 대화중이지 않고, 밤이 아닙니다.");
 
         // 사용자 감지 시의 로직 구현 ( 시간대별로 말을 다르게해야함, 부모의 질문이있으면 그걸 말해줘야함, 아이의 이름을 불러야함 )
-        User user = repoUtil.findUser(dto.userSeq());
-
-        // TODO: 이거 추상화하기
-        List<Question> questions = user.getQuestions();
-        Question question = null;
-        if(!questions.isEmpty()) question = questions.get(questions.size() - 1);
+        Question question = userService.getLastQuestion(dto.userSeq());
 
         if (question != null && question.isActive()) {
             sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.ASK_QUESTION.formatted(question.getContent()));
@@ -161,10 +154,9 @@ public class ChatMqttToWebSocketHandler {
                 webSocketClient = openAISocketService.createSocket(userSeq);
                 // 소켓이 초기화될 때까지 대기
                 log.info("소켓 초기화 대기중...");
-                while (true) {
+                do {
                     Thread.sleep(500);
-                    if (webSocketClient.isInitialized()) break;
-                }
+                } while (!webSocketClient.isInitialized());
                 log.info("초기화 완료.");
 
             }
@@ -172,7 +164,7 @@ public class ChatMqttToWebSocketHandler {
             String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
             webSocketClient.send(jsonMessage);
             // 응답 생성 요청 전송
-            String responseCreateJsonMessage = "{\"type\":\"response.create\", response: { modalities: [\"audio\", \"text\"] }}";
+            String responseCreateJsonMessage = "{\"type\":\"response.create\", \"response\": { \"modalities\": [\"audio\", \"text\"] }}";
             webSocketClient.send(responseCreateJsonMessage);
 
         } catch (Exception e) {

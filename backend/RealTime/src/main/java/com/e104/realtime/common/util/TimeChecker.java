@@ -6,7 +6,7 @@ public final class TimeChecker {
 
     public static boolean isNight() {
         LocalTime now = LocalTime.now();
-        return 21 <= now.getHour() || now.getHour() <= 9;
+        return 21 <= now.getHour() || now.getHour() < 9;
     }
 
     public static String now() {
