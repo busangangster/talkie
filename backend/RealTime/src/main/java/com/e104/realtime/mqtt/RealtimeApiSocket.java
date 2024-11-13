@@ -118,6 +118,7 @@ public class RealtimeApiSocket extends WebSocketClient {
             if("response.text.done".equals(eventType)) {
                 log.info("RealTime에서 Text타입으로 응답이 반환됨");
                 String text = JsonParser.extractTextFromResponseTextDone(jsonResponse);
+                log.info("Text: {}", text);
 
                 byte[] pcmAudio = ttsService.getPcmAudio(text);
                 String base64AudioString = new String(pcmAudio);
