@@ -57,7 +57,8 @@ public class ConversationDetailResponse {
         this.emotionSummary = conversationAnalytics.getEmotionSummary();
         this.vocabularySummary = conversationAnalytics.getVocabularySummary();
         this.wordCloudSummary = conversationAnalytics.getWordCloudSummary();
-        this.vocabularyScore = conversationAnalytics.getVocabulary().getVocabularyScore();
+        double vocabularyScore = conversationAnalytics.getVocabulary().getVocabularyScore();
+        this.vocabularyScore = Math.round(vocabularyScore * 100) / 100.0;
         this.happyScore = conversationAnalytics.getSentiment().getHappyScore();
         this.loveScore = conversationAnalytics.getSentiment().getLoveScore();
         this.sadScore = conversationAnalytics.getSentiment().getSadScore();
