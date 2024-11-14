@@ -82,7 +82,9 @@ public class WeeklyConversationResponse {
 
     private static WeeklyConversation getWeeklyConversation(DayAnalytics dayAnalytics) {
         WeeklyConversation weeklyConversation = new WeeklyConversation();
-        weeklyConversation.setVocabularyScore(dayAnalytics.getVocabularyScore());
+        // 어휘력점수 소수점 2자리까지만
+        double vocabularyScore = dayAnalytics.getVocabularyScore();
+        weeklyConversation.setVocabularyScore((double) Math.round(vocabularyScore * 100) / 100);
         weeklyConversation.setHappyScore(dayAnalytics.getHappyScore());
         weeklyConversation.setLoveScore(dayAnalytics.getLoveScore());
         weeklyConversation.setSadScore(dayAnalytics.getSadScore());
