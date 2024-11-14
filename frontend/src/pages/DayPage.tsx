@@ -104,7 +104,7 @@ const DayPage: React.FC = () => {
         <img src="/assets/cloud.png" alt="cloud" className="w-80" />
         <div
           onClick={toggleCalendar}
-          className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-700 mt-3 cursor-pointer"
+          className="absolute inset-0 flex items-center justify-center text-[26px] font-bold text-gray-700 mt-3 cursor-pointer"
         >
           <FaRegCalendarAlt className="cursor-pointer mr-2" />
           <span>{formattedDate}</span>
@@ -112,7 +112,7 @@ const DayPage: React.FC = () => {
       </div>
 
       {/* 이야기 리스트 */}
-      <div className="w-4/5 mt-24 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[650px] overflow-y-scroll py-16 px-10">
+      <div className="w-4/5 mt-12 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[650px] overflow-y-scroll py-16 px-10">
         {stories.length > 0 ? (
           <div className="grid grid-cols-2 gap-y-20 gap-x-10">
             {stories.map((story) => (
