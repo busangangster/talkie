@@ -15,6 +15,7 @@ from pydub.playback import play
 from src.sensors.pir_controll_wpy import detect_child_approach  # PIR 센서 감지 함수
 from src.stt.mqtt_for_stt import speech_to_text  # 음성 인식
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
+from wake_word.wake_word_for_stt import detect_wake_word
 
 # 이벤트 객체 생성
 voice_event = threading.Event()
@@ -184,9 +185,27 @@ async def detect_motion():
             conversation_thread.start()
         await asyncio.sleep(1)
 
+# 웨이크 워드 감지
+async def check_wake_word():
+    global conversation_active
+    try:
+        while True:
+            if not conversation_active and detect_wake_word():
+                print("웨이크 워드 감지됨! 대화를 시작합니다.")
+                publish_message("topic/message/send", data={"content": "토키야!!"})
+                conversation_active = True
+                exit_event.clear()
+                conversation_thread = threading.Thread(target=start_conversation)
+                conversation_thread.start()
+            await asyncio.sleep(0.01)
+    finally:
+        print("웨이크 워드 감지 종료")
+
+
 # 메인 함수 (비동기)
 async def main():
     await asyncio.gather(
+        check_wake_word(),
         detect_motion()
     )
 
