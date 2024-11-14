@@ -214,9 +214,9 @@ public class UserService {
             log.info("대화별 워드클라우드 데이터: {}", wordCloud);
             String[] wordCloudParts = wordCloud.split("/");
             if (wordCloudParts.length == 2) {
-                log.info("대화별 워드클라우드 데이터 파싱 (단어): {}", wordCloudParts[0]);
+                log.info("대화별 워드클라우드 데이터 파싱 (단어): {}", wordCloudParts[0].replace(" ", ""));
                 log.info("대화별 워드클라우드 데이터 파싱 (횟수): {}", wordCloudParts[1]);
-                wordClouds.add(WordCloud.builder().word(wordCloudParts[0]).count(Integer.parseInt(wordCloudParts[1].trim())).build());
+                wordClouds.add(WordCloud.builder().word(wordCloudParts[0].replace(" ", "")).count(Integer.parseInt(wordCloudParts[1].trim())).build());
             } else {
                 log.info("대화별 워드클라우드 데이터 파싱 오류: {}", Arrays.toString(wordCloudParts));
             }
