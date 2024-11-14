@@ -7,29 +7,26 @@ import json
 import paho.mqtt.client as mqtt
 import threading
 import wave
-from queue import Queue  # 추가된 부분
+from queue import Queue 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from pydub import AudioSegment
 from pydub.playback import play
-from src.sensors.pir_controll_wpy import detect_child_approach  # PIR 센서 감지 함수
-from src.stt.mqtt_for_stt import speech_to_text  # 음성 인식
+from src.sensors.pir_controll_wpy import detect_child_approach  
+from src.stt.mqtt_for_stt import speech_to_text 
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
 from wake_word.wake_word_for_stt import detect_wake_word
 
 # 이벤트 객체 생성
 voice_event = threading.Event()
 exit_event = threading.Event()
-session_active = True  # 세션 상태 플래그
+session_active = True  
 response_received = False
-conversation_active = False  # 대화 상태 플래그
+conversation_active = False  
 user_seq = 1
-
 playback_in_progress = threading.Event()
-
-# 메시지 큐 생성
-message_queue = Queue()  # 추가된 부분
+message_queue = Queue()  
 
 
 def on_disconnect(client, userdata, rc):
@@ -61,7 +58,7 @@ def on_message(client, userdata, message):
         print("세션이 끊겨 메시지를 받을 수 없습니다.")
         return
     
-    print("on_message 트리거됨")  # 추가된 로그
+    print("on_message 트리거됨") 
 
     try:
         payload = json.loads(message.payload.decode())
@@ -77,7 +74,7 @@ def on_message(client, userdata, message):
                     wav_file.writeframes(pcm_data)
 
                 def play_audio():
-                    global last_response_time, response_received  # 전역 변수 선언
+                    global last_response_time, response_received  
 
                     audio = AudioSegment.from_wav("response.wav")
                     print("음성 파일 재생 시작")
@@ -105,17 +102,17 @@ def on_message(client, userdata, message):
         print("on_message 오류:", e)
 
 
-def enqueue_message(header, data=None):  # 수정된 함수
+def enqueue_message(header, data=None):
     msg = {
         "userSeq": user_seq,
         "header": header
     }
     if data:
         msg["data"] = data
-    message_queue.put(msg)  # 메시지를 큐에 추가
+    message_queue.put(msg)  
     print(f"메시지 큐에 추가됨: {msg}")
 
-def message_publisher():  # 추가된 함수
+def message_publisher():  
     while True:
         msg = message_queue.get()  # 큐에서 메시지 가져오기
         try:
@@ -126,8 +123,8 @@ def message_publisher():  # 추가된 함수
         message_queue.task_done()
 
 # 메시지 발행 스레드 시작
-publisher_thread = threading.Thread(target=message_publisher, daemon=True)  # 추가된 부분
-publisher_thread.start()  # 추가된 부분
+publisher_thread = threading.Thread(target=message_publisher, daemon=True)  
+publisher_thread.start()  
 
 def start_conversation():
     global last_response_time, response_received, conversation_active
@@ -135,8 +132,7 @@ def start_conversation():
         print("텍스트 받는 중")
 
         text = ""
-        idle_time = 0  # 음성 입력 대기 시간 카운터
-
+        idle_time = 0 
 
         while not text and not exit_event.is_set():
             text = speech_to_text()
@@ -149,7 +145,7 @@ def start_conversation():
                 print(f"음성 입력 대기 중... 경과 시간: {idle_time}초")
                 if idle_time >= 30:
                     print("대화가 종료됩니다.")
-                    enqueue_message("topic/conversation/end")  # 수정된 부분
+                    enqueue_message("topic/conversation/end")  
                     exit_event.set()
                     print("exit_event 설정됨, 내부 루프 종료")
                     break
@@ -159,14 +155,14 @@ def start_conversation():
             break
 
         print("메시지 전송:", text)
-        enqueue_message("topic/message/send", data={"content": text})  # 수정된 부분
+        enqueue_message("topic/message/send", data={"content": text}) 
 
         print("응답 대기 중...")
         voice_event.clear()
         response_received = False  
 
 
-        voice_event.wait(timeout=10)  # 최대 10초 대기
+        voice_event.wait(timeout=10) 
         if not response_received:
             print("응답이 없습니다. 다시 시도합니다.")
             continue
@@ -177,7 +173,7 @@ def start_conversation():
         
 
     print("대화가 종료되었습니다.")
-    conversation_active = False  # 대화 상태 플래그 리셋
+    conversation_active = False  
 
 # PIR 센서 감지 함수
 async def detect_motion():
@@ -186,7 +182,7 @@ async def detect_motion():
         if not conversation_active and detect_child_approach():
             print("PIR 센서로 감지됨! 대화를 시작합니다.")
             # 사용자 감지 주제로 메시지 전송
-            enqueue_message("topic/user/detection")  # 수정된 부분
+            enqueue_message("topic/user/detection") 
             # 대화 시작
             conversation_active = True
             exit_event.clear()
@@ -201,7 +197,7 @@ async def check_wake_word():
         while True:
             if not conversation_active and detect_wake_word():
                 print("웨이크 워드 감지됨! 대화를 시작합니다.")
-                enqueue_message("topic/message/send", data={"content": "토키야!!"})  # 수정된 부분
+                enqueue_message("topic/message/send", data={"content": "토키야!!"})  
                 conversation_active = True
                 exit_event.clear()
                 conversation_thread = threading.Thread(target=start_conversation)
@@ -242,7 +238,7 @@ if __name__ == "__main__":
         loop.run_until_complete(main())
         loop.close()
     except KeyboardInterrupt:
-        enqueue_message("topic/conversation/end")  # 수정된 부분
+        enqueue_message("topic/conversation/end")  
         print("프로그램 종료")
         exit_event.set()
     finally:
