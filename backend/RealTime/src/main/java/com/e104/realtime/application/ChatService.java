@@ -48,7 +48,7 @@ public class ChatService {
         StringBuilder message = new StringBuilder();
         for (int i = 1; i <= dayAnalyticsList.size(); i++) {
             DayAnalytics dayAnalytics = dayAnalyticsList.get(i - 1);
-            if(dayAnalytics.getHappyScore() == 0 && dayAnalytics.getLoveScore() == 0 && dayAnalytics.getSadScore() == 0 && dayAnalytics.getAngryScore() == 0 && dayAnalytics.getAmazingScore() == 0 && dayAnalytics.getScaryScore() == 0)
+            if (dayAnalytics.getHappyScore() == 0 && dayAnalytics.getLoveScore() == 0 && dayAnalytics.getSadScore() == 0 && dayAnalytics.getAngryScore() == 0 && dayAnalytics.getAmazingScore() == 0 && dayAnalytics.getScaryScore() == 0)
                 continue;
             message.append("Day ").append(i).append(":\n").append("기쁨: ").append(dayAnalytics.getHappyScore()).append("\n").append("사랑스러움: ").append(dayAnalytics.getLoveScore()).append("\n").append("슬픔: ").append(dayAnalytics.getSadScore()).append("\n").append("화남: ").append(dayAnalytics.getAngryScore()).append("\n").append("놀라움: ").append(dayAnalytics.getAmazingScore()).append("\n").append("두려움: ").append(dayAnalytics.getScaryScore()).append("\n");
         }
@@ -89,17 +89,18 @@ public class ChatService {
             sum += dayAnalytics.getVocabularyScore();
             count++;
         }
-        message.append("이번 주 어휘력 평균 점수: ").append(sum/count).append("\n");
+        double vocabularyScore = sum / count;
+        message.append("이번 주 어휘력 평균 점수: ").append(Math.round(vocabularyScore * 100) / 100.0).append("\n");
         int age = LocalDate.now().getYear() - birth.getYear() + 1;
-        double avgScore;
+        int avgScore;
         if (age == 5) {
-            avgScore = 4.0;
+            avgScore = 4;
         } else if (age == 6) {
-            avgScore = 5.0;
+            avgScore = 5;
         } else if (age == 7) {
-            avgScore = 6.0;
+            avgScore = 6;
         } else {
-            avgScore = 5.0;
+            avgScore = 5;
         }
         message.append("동나이 어린이의 어휘력 평균 점수: ").append(avgScore).append("\n");
         return message.toString();
@@ -256,15 +257,15 @@ public class ChatService {
 
     private String getConversationVocabularyMessage(Vocabulary vocabulary, LocalDate birth) {
         int age = LocalDate.now().getYear() - birth.getYear() + 1;
-        double avgScore;
+        int avgScore;
         if (age == 5) {
-            avgScore = 4.0;
+            avgScore = 4;
         } else if (age == 6) {
-            avgScore = 5.0;
+            avgScore = 5;
         } else if (age == 7) {
-            avgScore = 6.0;
+            avgScore = 6;
         } else {
-            avgScore = 5.0;
+            avgScore = 5;
         }
         return "어휘 점수: " + vocabulary.getVocabularyScore() + "\n" +
                 "동나이대 평균 어휘 점수: " + avgScore + "\n";
@@ -301,7 +302,7 @@ public class ChatService {
             totalConversationCount += dayAnalytics.getConversationCount();
         }
         message.append("이번 주 총 대화 횟수: ").append(totalConversationCount).append("\n");
-        message.append("하루 평균 대화 횟수: ").append((double) totalConversationCount / filteredDayAnalytics.size()).append("\n");
+        message.append("하루 평균 대화 횟수: ").append(totalConversationCount / filteredDayAnalytics.size()).append("\n");
         return message.toString();
     }
 
@@ -314,7 +315,6 @@ public class ChatService {
                             각 관심사는 세부 주제별로 분류하고, 언급된 횟수를 포함하며, 관심도가 높은 순으로 정렬해 줘.
                             모든 항목은 독립적으로 나열해야 하며, 같은 주제라도 세부 항목으로 구분해서 각각 횟수를 표시해야 해.
                             전체적인 대화 흐름을 파악하고, 아이의 대화에서만 관심사를 뽑아내야 해.
-                            관심사의 개수는 상위(횟수가 많은) 5개 이하로 제한해야 해.
                         
                             예시:
                             대화 목록:
