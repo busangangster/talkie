@@ -112,7 +112,7 @@ const DayPage: React.FC = () => {
       </div>
 
       {/* 이야기 리스트 */}
-      <div className="w-4/5 mt-24 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[450px] overflow-y-scroll py-16 px-10">
+      <div className="w-4/5 mt-24 bg-[#D9D9D9] bg-opacity-60 rounded-xl shadow-lg h-[650px] overflow-y-scroll py-16 px-10">
         {stories.length > 0 ? (
           <div className="grid grid-cols-2 gap-y-20 gap-x-10">
             {stories.map((story) => (

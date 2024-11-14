@@ -1,6 +1,5 @@
-// Calendar.tsx
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
 import {
   StyledCalendar,
@@ -12,7 +11,7 @@ import {
   StyledCheckbox,
   StyledUnderline,
 } from "../style";
-import { motion } from "framer-motion"; // **Framer Motion import 추가**
+import { motion } from "framer-motion";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -24,11 +23,63 @@ interface CalendarProps {
 const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
   const today = new Date();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [date, setDate] = useState<Value>(today);
-  const [activeStartDate, setActiveStartDate] = useState<Date | null>(today);
+const [activeStartDate, setActiveStartDate] = useState<Date | null>(today);
   const [selectedWeek, setSelectedWeek] = useState<Date[]>([]);
   const [checked, setChecked] = useState(false);
-  const [currentView, setCurrentView] = useState("month"); // 현재 뷰 상태 저장
+  const [currentView, setCurrentView] = useState("month");
+
+  const extractDateFromUrl = (): Date => {
+    const path = location.pathname;
+    const regex = /\/(day|week)\/(\d{4}-\d{2}-\d{2})/;
+    const match = path.match(regex);
+
+    if (match) {
+      return new Date(match[2]);
+    }
+    return today;
+  };
+
+  // 주간 선택 모드에서 URL의 날짜를 기준으로 주간 날짜 배열 설정
+  const selectWeekFromUrl = () => {
+    const dateFromUrl = extractDateFromUrl();
+    const startOfWeek = moment(dateFromUrl).startOf("week").toDate();
+    const endOfWeek = moment(dateFromUrl).endOf("week").toDate();
+
+    const weekDates: Date[] = [];
+    const currentDate = new Date(startOfWeek);
+
+    while (currentDate <= endOfWeek) {
+      weekDates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    setSelectedWeek(weekDates);
+    setDate(dateFromUrl);
+    setActiveStartDate(startOfWeek); // 선택된 주의 시작 날짜로 이동
+  };
+
+  // URL에서 가져온 날짜로 초기 설정
+  useEffect(() => {
+    const path = location.pathname;
+    const dateFromUrl = extractDateFromUrl();
+
+    if (path.startsWith("/week")) {
+      selectWeekFromUrl();
+      setChecked(true);
+    } else {
+      setDate(dateFromUrl);
+      setSelectedWeek([]);
+      setChecked(false);
+    }
+
+    // 선택된 날짜의 월로 달력 이동
+    if (!moment(activeStartDate).isSame(dateFromUrl, "month")) {
+      setActiveStartDate(moment(dateFromUrl).startOf("month").toDate());
+    }
+  }, [location]);
 
   const handleDateChange = (newDate: Value) => {
     setDate(newDate);
@@ -77,10 +128,8 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-      {/* 배경을 클릭하면 모달이 닫히도록 설정 */}
       <div className="absolute inset-0" onClick={onClose}></div>
 
-      {/* 애니메이션이 적용된 달력 컴포넌트 */}
       <motion.div
         className="relative rounded-lg shadow-lg p-4 z-[101]"
         initial={{ opacity: 0, scale: 0.8 }}
@@ -89,7 +138,6 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
         transition={{ duration: 0.2 }}
       >
         <StyledCalendarWrapper>
-          {/* 기존 달력 내용 */}
           <StyledCalendar
             value={date}
             onChange={handleDateChange}
@@ -104,7 +152,7 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
             activeStartDate={activeStartDate || undefined}
             onActiveStartDateChange={({ activeStartDate, view }) => {
               setActiveStartDate(activeStartDate);
-              setCurrentView(view); // 현재 뷰 업데이트
+              setCurrentView(view);
             }}
             nextLabel={
               (currentView === "month" &&
@@ -113,7 +161,7 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
               (currentView === "year" &&
                 activeStartDate &&
                 activeStartDate.getFullYear() >= new Date().getFullYear())
-                ? null // 미래의 달 또는 연도이면 화살표 숨기기
+                ? null
                 : ">"
             }
             prevLabel={"<"}
@@ -123,7 +171,8 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
               if (
                 view === "month" &&
                 date.getMonth() === today.getMonth() &&
-                date.getDate() === today.getDate()
+                date.getDate() === today.getDate() &&
+                date.getFullYear() === today.getFullYear()
               ) {
                 html.push(<StyledToday key={"today"}>오늘</StyledToday>);
               }
@@ -136,6 +185,12 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
                 const currentYear = activeStartDate?.getFullYear();
 
                 if (selectedWeek.some((d) => moment(d).isSame(date, "day"))) {
+                  if (
+                    date.getMonth() !== currentMonth ||
+                    date.getFullYear() !== currentYear
+                  ) {
+                    return "highlight-week";
+                  }
                   return "highlight-week";
                 }
 
@@ -145,16 +200,16 @@ const Calendar: React.FC<CalendarProps> = ({ onClose }) => {
                 ) {
                   return "neighboring-month";
                 }
+
                 if (date.getDay() === 0) {
                   return "sunday";
                 }
               }
               return "";
             }}
-            maxDate={new Date()} // 오늘 이후의 날짜는 선택 불가
+            maxDate={new Date()}
           />
 
-          {/* 날짜 선택 모드에서만 표시 */}
           {currentView === "month" && (
             <>
               <MoveNext onClick={handleMoveNext}>이동하기</MoveNext>

@@ -112,9 +112,9 @@ export const StyledCalendarWrapper = styled.div`
     }
   }
 
-  /* 선택된 주 강조 스타일 */
+  /* 선택된 주간 강조 스타일 */
   .highlight-week {
-    background-color: #dfe9ff; /* 연한 노란색 배경 */
+    background-color: #dfe9ff; /* 연한 파란색 배경 */
     font-weight: bold;
     color: black;
   }

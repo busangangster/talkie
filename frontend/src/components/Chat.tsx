@@ -7,7 +7,7 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
   return (
     <div
       className="bg-[#F9F9F9] p-10 rounded-xl mt-5 overflow-y-scroll space-y-4 max-h-[70vh]"
-      style={{ width: "68vw" }} // 화면 너비의 70%로 설정
+      style={{ width: "68vw" }}
     >
       {messages.map((message, index) => (
         <div
@@ -26,9 +26,10 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
                 ? "bg-[#D9D9D9] left-tail"
                 : "bg-[#CED1EE] right-tail"
             }`}
-            style={{ maxWidth: "60%" }}
+            style={{ maxWidth: "45%" }}
           >
-            {message.content}
+            {/* 빈 content인 경우 스페이스 한 칸으로 대체 */}
+            {message.content.trim() !== "" ? message.content : "..."}
           </span>
 
           {message.user_Seq === 1 && (
