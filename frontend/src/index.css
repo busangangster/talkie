@@ -20,3 +20,10 @@
     transform: translateY(-7px);
   }
 }
+
+@font-face {
+  font-family: 'SuncheonR';
+  src: url('/assets/fonts/SuncheonR.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import WordCloud from "react-d3-cloud";
-import { WordCloudComponentProps } from "../type"; // 타입 import
-
+import { WordCloudComponentProps } from "../type";
 
 const WordCloudComponent: React.FC<WordCloudComponentProps> = ({ words }) => {
   const formattedWords = words.map((word) => ({
@@ -22,7 +21,7 @@ const WordCloudComponent: React.FC<WordCloudComponentProps> = ({ words }) => {
     return (
       <WordCloud
         data={formattedWords}
-        font={() => "NanumGothic"}
+        font={() => "SuncheonR"} // 폰트를 직접 지정
         fontSize={fontSize}
         rotate={rotate}
         padding={20}
@@ -34,7 +33,7 @@ const WordCloudComponent: React.FC<WordCloudComponentProps> = ({ words }) => {
   }, [formattedWords]);
 
   return (
-    <div className="mt-4">
+    <div className="mt-4" style={{ fontFamily: "SuncheonR, sans-serif" }}>
       <div className="bg-white p-2 rounded">{wordCloudComponent}</div>
     </div>
   );
