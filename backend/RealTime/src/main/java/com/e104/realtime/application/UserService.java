@@ -221,8 +221,8 @@ public class UserService {
                 log.info("대화별 워드클라우드 데이터 파싱 오류: {}", Arrays.toString(wordCloudParts));
             }
         }
-
-        Vocabulary vocabulary = Vocabulary.builder().vocabularyScore(fastApiVocabularyResponse.getMorph_analyze()).build();
+        double vocabularyScore = fastApiVocabularyResponse.getMorph_analyze();
+        Vocabulary vocabulary = Vocabulary.builder().vocabularyScore(Math.round(vocabularyScore * 100) / 100.0).build();
         Sentiment sentiment = Sentiment.builder()
                 .happyScore(fastApiSentimentResponse.getPredictions().getHappyScore())
                 .loveScore(fastApiSentimentResponse.getPredictions().getLoveScore())
