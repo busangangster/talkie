@@ -37,7 +37,7 @@ const WeekFrame: React.FC<WeekFrameProps> = ({ selectedTab, weeklyData }) => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full py-20 px-12 rounded-2xl shadow-md bg-[#C7D2E3] bg-opacity-80">
+    <div className="flex flex-col items-center w-full h-full pt-16 pb-12 px-12 rounded-2xl shadow-md bg-[#C7D2E3] bg-opacity-80">
       <h2 className="text-3xl font-bold text-black mb-6 -mt-8">
         {`${selectedTab} 그래프`}
       </h2>

@@ -103,7 +103,10 @@ const TalkPage: React.FC = () => {
       </div>
 
       {/* 제목 영역 */}
-      <div className="flex items-center justify-center relative -mt-3 z-20 animate-float">
+      <div
+        className="flex items-center justify-center relative z-20 animate-float cursor-pointer"
+        onClick={goToDayPage}
+      >
         <img src="/assets/cloud.png" alt="cloud" className="w-96" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-700">
           {/* 날짜 아이콘 */}
