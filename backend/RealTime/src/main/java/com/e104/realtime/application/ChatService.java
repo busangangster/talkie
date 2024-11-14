@@ -25,6 +25,8 @@ public class ChatService {
         String message = getWeekEmotionMessage(dayAnalyticsList);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
+                        Day1이 일요일이고, Day2가 월요일, Day3이 화요일, Day4가 수요일, Day5가 목요일, Day6이 금요일, Day7이 토요일이야.
+                        
                         너는 내가 제공하는 아이의 일주일치 감정 점수를 바탕으로 부모님께 요약해줘야 해요. 아이의 감정 패턴을 이해하기 쉽게 설명해 주세요. 예를 들어:
                         
                         '아이가 일주일 동안 보인 감정을 분석해 보면, 기쁨과 놀라움에서 높은 반응을 보이며, 두려움과 슬픔에서 낮은 반응을 보여요. 이는 아이가 주로 긍정적인 감정을 더 강하게 느끼는 경향이 있음을 나타내요.'
@@ -46,6 +48,8 @@ public class ChatService {
         StringBuilder message = new StringBuilder();
         for (int i = 1; i <= dayAnalyticsList.size(); i++) {
             DayAnalytics dayAnalytics = dayAnalyticsList.get(i - 1);
+            if(dayAnalytics.getHappyScore() == 0 && dayAnalytics.getLoveScore() == 0 && dayAnalytics.getSadScore() == 0 && dayAnalytics.getAngryScore() == 0 && dayAnalytics.getAmazingScore() == 0 && dayAnalytics.getScaryScore() == 0)
+                continue;
             message.append("Day ").append(i).append(":\n").append("기쁨: ").append(dayAnalytics.getHappyScore()).append("\n").append("사랑스러움: ").append(dayAnalytics.getLoveScore()).append("\n").append("슬픔: ").append(dayAnalytics.getSadScore()).append("\n").append("화남: ").append(dayAnalytics.getAngryScore()).append("\n").append("놀라움: ").append(dayAnalytics.getAmazingScore()).append("\n").append("두려움: ").append(dayAnalytics.getScaryScore()).append("\n");
         }
         return message.toString();
@@ -55,6 +59,8 @@ public class ChatService {
         String message = getWeekVocabularyMessage(dayAnalyticsList, birth);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
+                        Day1이 일요일이고, Day2가 월요일, Day3이 화요일, Day4가 수요일, Day5가 목요일, Day6이 금요일, Day7이 토요일이야.
+                        
                         너는 내가 제공하는 아이의 일주일치 어휘력 점수를 바탕으로 부모님께 요약해줘야 해요. 아이의 어휘력 변화를 쉽게 이해할 수 있게 설명해 주세요. 예를 들어:
                         
                         '아이가 일주일 동안 보인 어휘력 점수를 보면, 어휘력이 점점 증가하는 게 보이네요. 이번 주 어휘력 평균 점수는 4.0점으로, 동나이 어린이의 평균 점수인 3.75보다 높아요. 아이에게 칭찬해 주세요!'
@@ -74,12 +80,16 @@ public class ChatService {
 
     private String getWeekVocabularyMessage(List<DayAnalytics> dayAnalyticsList, LocalDate birth) {
         StringBuilder message = new StringBuilder();
+        double sum = 0;
+        int count = 0;
         for (int i = 1; i <= dayAnalyticsList.size(); i++) {
             DayAnalytics dayAnalytics = dayAnalyticsList.get(i - 1);
             if (dayAnalytics.getVocabularyScore() == 0) continue;
             message.append("Day ").append(i).append(":\n").append("어휘 점수: ").append(dayAnalytics.getVocabularyScore()).append("\n");
+            sum += dayAnalytics.getVocabularyScore();
+            count++;
         }
-        message.append("이번 주 어휘력 평균 점수: ").append(dayAnalyticsList.stream().mapToDouble(DayAnalytics::getVocabularyScore).average().orElse(0)).append("\n");
+        message.append("이번 주 어휘력 평균 점수: ").append(sum/count).append("\n");
         int age = LocalDate.now().getYear() - birth.getYear() + 1;
         double avgScore;
         if (age == 5) {
@@ -119,7 +129,8 @@ public class ChatService {
         if (weekWordClouds.isEmpty()) {
             message.append("아이가 이번 주에 관심을 보이는 주제가 없어요.");
         }
-        int size = Math.min(weekWordClouds.size(), 5);
+        int size = Math.min(weekWordClouds.size(), 5); // 상위 5개만 출력
+        weekWordClouds.sort((o1, o2) -> o2.getCount() - o1.getCount());
         for (int i = 1; i <= size; i++) {
             WeekWordCloud weekWordCloud = weekWordClouds.get(i - 1);
             message.append("Word ").append(i).append(":\n").append(weekWordCloud.getWord()).append(": ").append(weekWordCloud.getCount()).append("개\n");
@@ -257,13 +268,14 @@ public class ChatService {
         }
         return "어휘 점수: " + vocabulary.getVocabularyScore() + "\n" +
                 "동나이대 평균 어휘 점수: " + avgScore + "\n";
-
     }
 
     public String summarizeConversationCount(List<DayAnalytics> filteredDayAnalytics) {
         String message = getConversationCountMessage(filteredDayAnalytics);
         List<MultiChatMessage> messages = Arrays.asList(
                 new MultiChatMessage("system", """
+                        Day1이 일요일이고, Day2가 월요일, Day3이 화요일, Day4가 수요일, Day5가 목요일, Day6이 금요일, Day7이 토요일이야.
+                        
                         아이가 이번 주에 몇 번의 대화를 나눴는지, 대화 횟수의 이번주 변동 추이가 어떻게 되는지 부모님께 알려주세요. 대화 횟수를 쉽게 이해할 수 있도록 요약해 주세요. 1이 일요일, 2가 월요일..7이 토요일이야. 예를 들어:
                         
                         '아이가 이번 주에 총 20번의 대화를 나누었어요. 하루 평균 대화 횟수는 3번이었어요. 대화 횟수는 월요일부터 금요일까지 점차 증가하는 추세를 보였어요. 가장 많은 대화를 나눈 날은 목요일이었어요.'
@@ -280,7 +292,6 @@ public class ChatService {
     }
 
     private String getConversationCountMessage(List<DayAnalytics> filteredDayAnalytics) {
-
         // 메시지의 총 대화 횟수, 평균 대화횟수, 1주일간의 각각의 대화횟수가 포함
         StringBuilder message = new StringBuilder();
         int totalConversationCount = 0;
