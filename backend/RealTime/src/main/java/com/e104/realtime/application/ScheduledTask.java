@@ -52,7 +52,8 @@ public class ScheduledTask {
                         .toList();
 
                 double vocabularyScore = 0.0;
-                int happyScore = 0, sadScore = 0, angryScore = 0, amazingScore = 0, scaryScore = 0, loveScore = 0, conversationCount = 0;
+                int happyScore = 0, sadScore = 0, angryScore = 0, amazingScore = 0, scaryScore = 0, loveScore = 0;
+                int conversationCount = 0;
                 for (ConversationAnalytics ca : filteredAnalytics) {
                     vocabularyScore += ca.getVocabulary().getVocabularyScore();
                     happyScore += ca.getSentiment().getHappyScore();
@@ -75,14 +76,18 @@ public class ScheduledTask {
                         }
                     }
                 }
-                if (conversationCount > 0) {
-                    happyScore /= conversationCount;
-                    loveScore /= conversationCount;
-                    sadScore /= conversationCount;
-                    angryScore /= conversationCount;
-                    amazingScore /= conversationCount;
-                    scaryScore /= conversationCount;
-                    vocabularyScore /= conversationCount;
+
+                // 점수 합산
+                double totalScore = happyScore + loveScore + sadScore + angryScore + amazingScore + scaryScore + vocabularyScore;
+
+                if (totalScore > 0) {  // 총합이 0이 아닐 경우 비율 계산
+                    happyScore = (int) Math.round((happyScore / totalScore) * 100);
+                    loveScore = (int) Math.round((loveScore / totalScore) * 100);
+                    sadScore = (int) Math.round((sadScore / totalScore) * 100);
+                    angryScore = (int) Math.round((angryScore / totalScore) * 100);
+                    amazingScore = (int) Math.round((amazingScore / totalScore) * 100);
+                    scaryScore = (int) Math.round((scaryScore / totalScore) * 100);
+                    vocabularyScore = (int) Math.round((vocabularyScore / totalScore) * 100);
                 }
 
                 DayAnalytics dayAnalytics = builderUtil.buildDayAnalytics(vocabularyScore, happyScore, loveScore, sadScore, angryScore, amazingScore, scaryScore, conversationCount);
