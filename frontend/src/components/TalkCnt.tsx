@@ -11,7 +11,7 @@ const TalkCnt: React.FC<WeekProps> = ({ data }) => {
 
       // 기본적으로 모든 요일을 포함한 배열을 생성
       const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const formattedData = weekDays.map((day, index) => {
+      const formattedData = weekDays.map((_, index) => {
         const dayData = data.find(
           (entry) => new Date(entry.createdAt).getDay() === index
         );
@@ -33,7 +33,7 @@ const TalkCnt: React.FC<WeekProps> = ({ data }) => {
         },
         yAxis: {
           type: "value",
-          minInterval: 1, 
+          minInterval: 1,
         },
         series: [
           {
