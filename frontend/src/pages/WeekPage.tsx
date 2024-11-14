@@ -81,7 +81,7 @@ const WeekPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen relative">
-      <div className="flex items-center mt-12 px-16 py-4 bg-white rounded-2xl shadow-md text-2xl font-semibold cursor-pointer space-x-2">
+      <div className="flex items-center mt-20 px-16 py-4 bg-white rounded-2xl shadow-md text-2xl font-semibold cursor-pointer space-x-2">
         <FaRegCalendarAlt onClick={toggleCalendar} className="text-[#3F3F3F]" />
         <span onClick={toggleCalendar} className="text-[#3F3F3F]">
           {startMoment.format("M월 D일")} ~ {endMoment.format("M월 D일")} 주간
