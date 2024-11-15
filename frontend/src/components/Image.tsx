@@ -2,7 +2,7 @@ import React from "react";
 
 type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
-const Image: React.FC<ImageProps> = (props) => {
+const Image = (props: ImageProps) => {
   const { src, ...rest } = props;
 
   if (!src) {
@@ -10,20 +10,30 @@ const Image: React.FC<ImageProps> = (props) => {
     return null;
   }
 
-  // 외부 이미지 URL인지 확인하는 함수
-  const isExternalImage =
-    src.startsWith("https") || src.startsWith("http") || src.startsWith("blob");
+  // 외부 이미지 URL 확인
+  let isExternalImage;
+  try {
+    const url = new URL(src);
+    isExternalImage = url.origin !== window.location.origin;
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error("유효하지 않은 URL입니다:", e.message);
+    } else {
+      console.error("유효하지 않은 URL입니다:", e);
+    }
+    isExternalImage = false;
+  }
 
-  // 개발 환경과 프로덕션 환경을 구분하여 이미지 URL 설정
+  // 개발 환경과 프로덕션 환경에 따라 확장자 설정
   const imgUrl =
-    import.meta.env.MODE === "development"
-      ? `${src}.png` // 개발 환경에서는 PNG 확장자를 사용
-      : isExternalImage
-      ? src // 외부 이미지는 변환하지 않음
-      : `${src}.webp`; // 프로덕션에서는 WebP 확장자 사용
+    import.meta.env.MODE === "development" || isExternalImage
+      ? src // 개발 환경 또는 외부 이미지는 확장자 그대로 사용
+      : `${src}.webp`; // 프로덕션 환경에서는 WebP 사용
 
-  // 이미지 경로를 최종적으로 생성
-  const imgSrc = new URL(imgUrl, import.meta.url).href;
+  // 최종 이미지 경로 생성
+  const imgSrc = isExternalImage
+    ? imgUrl
+    : new URL(imgUrl, import.meta.url).href;
 
   return <img src={imgSrc} {...rest} />;
 };
