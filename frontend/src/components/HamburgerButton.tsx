@@ -4,13 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import Calendar from "./Calendar";
 import AlertModal from "./AlertModal";
-import calendarIcon from "/assets/hamburger/calendar.png";
-import modiInfoIcon from "/assets/hamburger/modiInfo.png";
-import logoutIcon from "/assets/hamburger/logout.png";
-import loginIcon from "/assets/hamburger/login.png";
 import { logout } from "../apis/api";
 import useUserStore from "../store/useUserStore";
-import { AnimatePresence } from "framer-motion"; // **AnimatePresence import 추가**
+import { AnimatePresence } from "framer-motion"; 
+import Image from "./Image";
 
 const HamburgerButton: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -100,7 +97,11 @@ const HamburgerButton: React.FC = () => {
               onClick={() => navigate("/login")}
               className="flex flex-col items-center transform transition-transform duration-200 hover:scale-105"
             >
-              <img src={loginIcon} alt="로그인" className="w-11 h-10 mb-2" />
+              <Image
+                src="/assets/hamburger/login"
+                alt="로그인"
+                className="w-11 h-10 mb-2"
+              />
               <span className="text-[13px] font-bold">로그인</span>
             </button>
           ) : (
@@ -109,8 +110,8 @@ const HamburgerButton: React.FC = () => {
                 onClick={openCalendar}
                 className="flex flex-col items-center mb-5 transform transition-transform duration-200 hover:scale-105"
               >
-                <img
-                  src={calendarIcon}
+                <Image
+                  src="/assets/hamburger/calendar"
                   alt="날짜 이동"
                   className="w-11 h-11 mb-2"
                 />
@@ -120,8 +121,8 @@ const HamburgerButton: React.FC = () => {
                 onClick={() => navigate("/info")}
                 className="flex flex-col items-center mb-5 transform transition-transform duration-200 hover:scale-105"
               >
-                <img
-                  src={modiInfoIcon}
+                <Image
+                  src="/assets/hamburger/modiInfo"
                   alt="정보 수정"
                   className="w-11 h-11 mb-2"
                 />
@@ -131,8 +132,8 @@ const HamburgerButton: React.FC = () => {
                 onClick={handleLogout}
                 className="flex flex-col items-center transform transition-transform duration-200 hover:scale-105"
               >
-                <img
-                  src={logoutIcon}
+                <Image
+                  src="/assets/hamburger/logout"
                   alt="로그아웃"
                   className="w-11 h-10 mb-2"
                 />
@@ -152,7 +153,7 @@ const HamburgerButton: React.FC = () => {
       {/* 로그아웃 알림 모달 */}
       {showLogoutAlert && (
         <AlertModal
-          icon={<img src="/assets/alerticon/check.png" alt="로그아웃 확인" />}
+          icon={<Image src="/assets/alerticon/check" alt="로그아웃 확인" />}
           message="로그아웃 되었어요"
           onConfirm={() => setShowLogoutAlert(false)}
         />

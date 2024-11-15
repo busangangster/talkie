@@ -1,7 +1,6 @@
 import React from "react";
 import { ChatProps } from "../type";
-import childIcon from "/assets/talk/child.png";
-import talkieIcon from "/assets/talk/talkie.png";
+import Image from "./Image";
 
 const Chat: React.FC<ChatProps> = ({ messages }) => {
   return (
@@ -17,7 +16,11 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
           } space-x-4`}
         >
           {message.user_Seq === 0 && (
-            <img src={talkieIcon} alt="Talkie" className="w-10 h-10" />
+            <Image
+              src="/assets/talk/talkie"
+              alt="Talkie"
+              className="w-10 h-10"
+            />
           )}
 
           <span
@@ -33,7 +36,11 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
           </span>
 
           {message.user_Seq === 1 && (
-            <img src={childIcon} alt="Child" className="w-10 h-10 mb-2" />
+            <Image
+              src="/assets/talk/child"
+              alt="Child"
+              className="w-10 h-10 mb-2"
+            />
           )}
         </div>
       ))}
