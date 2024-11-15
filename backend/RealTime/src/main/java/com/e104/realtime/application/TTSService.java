@@ -30,11 +30,11 @@ public class TTSService {
 
             // 요청 데이터 설정
             Map<String, Object> requestData = new HashMap<>();
-            requestData.put("model", "tts-1-hd");
+            requestData.put("model", "tts-1");
             requestData.put("voice", "echo");
             requestData.put("input", text);
             requestData.put("response_format", "pcm");
-            requestData.put("speed", 1);
+            requestData.put("speed", 0.75);
 
             // JSON 직렬화
             String requestJson = objectMapper.writeValueAsString(requestData);
