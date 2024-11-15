@@ -47,7 +47,7 @@ public final class Instruction {
             - "응, 왜 불러?"
             - "응, 무슨 일이야?"
             
-            이런식으로 짧은 1문장으로 말해줘''
+            이런식으로 반말을 사용한 짧은 1문장으로 말해줘''
             """;
 
     public static String getInstructions(User user) {
