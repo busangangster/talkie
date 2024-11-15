@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useUserStore from "../store/useUserStore";
 import "../css/Home.css";
-import Image from "../components/Image";
 
 const getToday = () => moment().format("YYYY-MM-DD");
 
@@ -48,8 +47,8 @@ const HomePage: React.FC = () => {
         우리 아이의 친구
       </h1>
 
-      <Image
-        src="/assets/home/logo"
+      <img
+        src="/assets/home/logo.png"
         alt="Home Logo"
         className="w-1/2 mx-auto translate-y-[-20%]"
         style={{
@@ -66,17 +65,17 @@ const HomePage: React.FC = () => {
         {isLoggedIn ? "대화 통계 보러 가기" : "로그인"}
       </button>
 
-      <Image
-        src="/assets/home/snowmanShadow"
+      <img
+        src="/assets/home/snowmanShadow.png"
         alt="Snowman"
         className="snowman"
       />
-      <Image
-        src="/assets/home/teddybearShadow"
+      <img
+        src="/assets/home/teddybearShadow.png"
         alt="Teddy Bear"
         className="teddybear"
       />
-      <Image src="/assets/home/childShadow" alt="Child" className="child" />
+      <img src="/assets/home/childShadow.png" alt="Child" className="child" />
     </div>
   );
 };

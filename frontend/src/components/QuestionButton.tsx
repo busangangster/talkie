@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Image from "./Image";
 
 const QuestionButton: React.FC = () => {
   const navigate = useNavigate();
@@ -10,8 +9,8 @@ const QuestionButton: React.FC = () => {
       className="fixed bottom-10 right-10 bg-white rounded-full shadow-lg cursor-pointer flex items-center justify-center w-20 h-20 z-50 group transition-transform transform hover:-translate-y-0.5"
       onClick={() => navigate("/question")}
     >
-      <Image
-        src="/assets/question"
+      <img
+        src="/assets/question.png"
         alt="question icon"
         className="w-12 h-12"
       />

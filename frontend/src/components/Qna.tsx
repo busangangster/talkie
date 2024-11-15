@@ -4,7 +4,7 @@ import { QnaProps } from "../type";
 import { deleteQuestion } from "../apis/api";
 import AlertModal from "../components/AlertModal";
 import useUserStore from "../store/useUserStore";
-import Image from "./Image";
+import childIcon from "/assets/talk/child.png";
 
 interface QnaPropsExtended extends QnaProps {
   onQuestionDelete: (questionSeq: number) => void;
@@ -125,11 +125,7 @@ const Qna: React.FC<QnaPropsExtended> = ({
               <div className="mt-3 ml-6 mr-28">
                 {item.answer ? (
                   <div className="flex items-center space-x-2">
-                    <Image
-                      src="/assets/talk/child"
-                      alt="Child"
-                      className="w-6 h-6"
-                    />
+                    <img src={childIcon} alt="Child" className="w-6 h-6" />
                     <span>: {item.answer}</span>
                   </div>
                 ) : (
@@ -179,7 +175,7 @@ const Qna: React.FC<QnaPropsExtended> = ({
 
       {isModalOpen && (
         <AlertModal
-          icon={<Image src="/assets/alerticon/check" alt="alert icon" />}
+          icon={<img src="/assets/alerticon/check.png" alt="alert icon" />}
           message="질문이 삭제되었어요."
           onConfirm={() => setIsModalOpen(false)}
         />

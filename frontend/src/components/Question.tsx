@@ -5,7 +5,6 @@ import AlertModal from "../components/AlertModal";
 import { createQuestion } from "../apis/api";
 import useUserStore from "../store/useUserStore";
 import { QuestionData } from "../type";
-import Image from "./Image";
 
 interface QuestionProps {
   isQuestionAvailable: boolean;
@@ -25,7 +24,7 @@ const Question: React.FC<QuestionProps> = ({
   const handleSubmit = async () => {
     if (!question.trim()) {
       setModalMessage("질문을 입력해주세요");
-      setModalIcon("/assets/alerticon/question");
+      setModalIcon("/assets/alerticon/question.png");
       setIsModalOpen(true);
     } else if (userSeq !== null) {
       try {
@@ -47,17 +46,17 @@ const Question: React.FC<QuestionProps> = ({
         setQuestion("");
 
         setModalMessage("질문이 등록되었어요");
-        setModalIcon("/assets/alerticon/check");
+        setModalIcon("/assets/alerticon/check.png");
         setIsModalOpen(true);
       } catch (error) {
         console.error("질문 등록 중 오류 발생:", error);
         setModalMessage("질문 등록에 실패했습니다. 다시 시도해주세요.");
-        setModalIcon("/assets/alerticon/exclamationMark");
+        setModalIcon("/assets/alerticon/exclamationMark.png");
         setIsModalOpen(true);
       }
     } else {
       setModalMessage("로그인이 필요합니다.");
-      setModalIcon("/assets/alerticon/exclamationMark");
+      setModalIcon("/assets/alerticon/exclamationMark.png");
       setIsModalOpen(true);
     }
   };
@@ -99,7 +98,7 @@ const Question: React.FC<QuestionProps> = ({
       </button>
       {isModalOpen && (
         <AlertModal
-          icon={<Image src={modalIcon} alt="alert icon" />}
+          icon={<img src={modalIcon} alt="alert icon" />}
           message={modalMessage}
           onConfirm={() => setIsModalOpen(false)}
         />
