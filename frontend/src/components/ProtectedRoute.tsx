@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import useUserStore from "../store/useUserStore";
-import LoginModal from "../components/LoginModal"; // 새로운 ConfirmModal 사용
-import exclamationMarkIcon from "/assets/alerticon/exclamationMark.png";
+import LoginModal from "../components/LoginModal"; 
+import Image from "./Image";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -31,7 +31,12 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
     <>
       {showConfirm && (
         <LoginModal
-          icon={<img src={exclamationMarkIcon} alt="Exclamation Mark" />}
+          icon={
+            <Image
+              src="/assets/alerticon/exclamationMark"
+              alt="Exclamation Mark"
+            />
+          }
           message="로그인 후 이용가능해요"
           onConfirm={handleConfirm}
         />

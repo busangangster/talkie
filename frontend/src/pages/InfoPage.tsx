@@ -4,7 +4,7 @@ import { updateUserInfo, getUserInfo } from "../apis/api";
 import useUserStore from "../store/useUserStore";
 import { formatBirthDate } from "../utils/formatBirthDate";
 import AlertModal from "../components/AlertModal";
-import checkIcon from "/assets/alerticon/check.png";
+import Image from "../components/Image";
 
 const InfoPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -198,7 +198,7 @@ const InfoPage: React.FC = () => {
       {/* AlertModal */}
       {showModal && (
         <AlertModal
-          icon={<img src={checkIcon} alt="check" />}
+          icon={<Image src="/assets/alerticon/check" alt="check" />}
           message="정보가 입력되었어요"
           onConfirm={handleModalConfirm}
         />
