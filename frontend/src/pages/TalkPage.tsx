@@ -11,7 +11,6 @@ import { getConversationDetail, getConversationSummary } from "../apis/api";
 import { ConversationDetailResponse } from "../type";
 import useUserStore from "../store/useUserStore";
 import "../css/TalkPage.css";
-import Image from "../components/Image";
 
 const TalkPage: React.FC = () => {
   const { date, conversationSeq } = useParams<{
@@ -108,7 +107,7 @@ const TalkPage: React.FC = () => {
         className="flex items-center justify-center relative z-20 animate-float cursor-pointer"
         onClick={goToDayPage}
       >
-        <Image src="/assets/cloud" alt="cloud" className="w-96" />
+        <img src="/assets/cloud.png" alt="cloud" className="w-96" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-700">
           {/* 날짜 아이콘 */}
           <div className="flex items-center text-2xl font-medium text-[#4E4E4E] mb-2">

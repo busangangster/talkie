@@ -7,7 +7,6 @@ import "../index.css";
 import { getConversationListByDate } from "../apis/api";
 import { ConversationItem } from "../type";
 import useUserStore from "../store/useUserStore";
-import Image from "../components/Image";
 
 const DayPage: React.FC = () => {
   const navigate = useNavigate();
@@ -102,7 +101,7 @@ const DayPage: React.FC = () => {
     <div className="relative flex flex-col items-center min-h-screen">
       {/* 구름과 날짜 */}
       <div className="flex items-center justify-center mt-16 relative animate-float">
-        <Image src="/assets/cloud" alt="cloud" className="w-80" />
+        <img src="/assets/cloud.png" alt="cloud" className="w-80" />
         <div
           onClick={toggleCalendar}
           className="absolute inset-0 flex items-center justify-center text-[26px] font-bold text-gray-700 mt-3 cursor-pointer"
@@ -133,10 +132,10 @@ const DayPage: React.FC = () => {
                   }
                 >
                   {/* 동물 이미지 */}
-                  <Image
+                  <img
                     src={`/assets/animals/animal${
                       (story.conversationSeq % 3) + 1
-                    }`}
+                    }.png`}
                     alt="animal"
                     className="w-40 rounded-3xl px-10 py-3 bg-[#dadbe9] mr-4"
                   />

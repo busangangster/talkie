@@ -2,37 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link id="favicon" rel="icon" type="image/png" href="assets/talk/talkie.png" />
+    <link rel="icon" type="image" href="assets/talk/talkie.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>토키, 우리 아이의 친구</title>
+    <link rel="preload" href="assets/animals/animal1.png" as="image">
+    <link rel="preload" href="assets/animals/animal2.png" as="image">
+    <link rel="preload" href="assets/animals/animal3.png" as="image">
+    <link rel="preload" href="assets/background.jpg" as="image">
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <div id="modal-root"></div>
-
-    <!-- 동적으로 이미지 로드 -->
-    <script>
-      const isProduction = location.hostname !== "localhost";
-      const format = isProduction ? "webp" : "png";
-      
-      const images = [
-        "assets/animals/animal1",
-        "assets/animals/animal2",
-        "assets/animals/animal3",
-        "assets/background"
-      ];
-
-      // 동적으로 이미지를 로드하여 캐시에 저장
-      images.forEach((src) => {
-        const img = new Image();
-        img.src = `${src}.${format}`;
-        img.onload = () => console.log(`Loaded: ${img.src}`);
-      });
-
-      // Favicon도 동적으로 설정
-      const favicon = document.getElementById("favicon");
-      favicon.href = `assets/talk/talkie.${format}`;
-    </script>
   </body>
+  <div id="modal-root"></div>
 </html>
