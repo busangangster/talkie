@@ -69,14 +69,14 @@ const Question: React.FC<QuestionProps> = ({
         <div className="relative group flex items-center">
           <IoIosInformationCircleOutline className="text-lg relative -bottom-2 ml-1 cursor-pointer" />
           <span className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-48 p-2 bg-white text-black text-xs rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            질문은 하루에 1개만 가능해요!
+            아이가 답변 후 새로운 질문 등록 가능해요!
           </span>
         </div>
       </div>
       <p className="text-gray-500">아이의 궁금한 속마음에 대해서 물어보세요.</p>
       {!isQuestionAvailable ? (
         <div className="w-full p-6 rounded-lg h-4/5 bg-[#EAEAEA] flex items-center justify-center text-center font-bold text-black text-lg">
-          오늘의 질문을 이미 사용해서, <br />
+          질문을 이미 등록해서, <br />
           더이상 질문할 수 없어요! <br />
           내일 다시 이용해주세요.
         </div>
