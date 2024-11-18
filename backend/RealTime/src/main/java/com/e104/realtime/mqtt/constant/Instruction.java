@@ -56,7 +56,7 @@ public final class Instruction {
             instruction.append("아이의 특이사항은: ").append(user.getRemark()).append(". ");
         }
         if (!instruction.isEmpty()) {
-            return Instruction.INSTRUCTION + instruction + "아이의 인적사항에 알맞게 대화해야해. \n";
+            return Instruction.INSTRUCTION + instruction;
         }
         return Instruction.INSTRUCTION;
     }
