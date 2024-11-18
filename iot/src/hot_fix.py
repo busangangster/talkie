@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from pydub import AudioSegment
 from pydub.playback import play
-# from src.sensors.pir_controll_wpy import detect_child_approach
+from src.sensors.pir_controll_wpy import detect_child_approach
 from src.stt.mqtt_for_stt import speech_to_text 
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
 from wake_word.wake_word_for_stt import detect_wake_word
@@ -188,19 +188,20 @@ def start_conversation():
 
 
 # PIR 센서 감지 함수
-# async def detect_motion():
-#     global conversation_active
-#     while True:
-#         if not conversation_active and detect_child_approach():
-#             print("PIR 센서로 감지됨! 대화를 시작합니다.")
-#             # 사용자 감지 주제로 메시지 전송
-#             enqueue_message("topic/user/detection")
-#             # 대화 시작
-#             conversation_active = True
-#             exit_event.clear()
-#             conversation_thread = threading.Thread(target=start_conversation)
-#             conversation_thread.start()
-#         await asyncio.sleep(1)
+async def detect_motion():
+    global conversation_active
+    while True:
+        if not conversation_active and detect_child_approach():
+            print("PIR 센서로 감지됨! 대화를 시작합니다.")
+            # 사용자 감지 주제로 메시지 전송
+            enqueue_message("topic/user/detection")
+            time.sleep(5)
+            # 대화 시작
+            conversation_active = True
+            exit_event.clear()
+            conversation_thread = threading.Thread(target=start_conversation)
+            conversation_thread.start()
+        await asyncio.sleep(1)
 
 # 웨이크 워드 감지
 async def check_wake_word():
@@ -231,8 +232,8 @@ async def check_wake_word():
 # 메인 함수 (비동기)
 async def main():
     await asyncio.gather(
-        check_wake_word()
-        # detect_motion()
+        check_wake_word(),
+        detect_motion()
     )
 
 # MQTT 클라이언트 설정

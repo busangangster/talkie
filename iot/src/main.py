@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from pydub import AudioSegment
 from pydub.playback import play
-from src.sensors.pir_controll_wpy import detect_child_approach  
+from src.sensors.pir_controll_wpy import detect_child_approach
 from src.stt.mqtt_for_stt import speech_to_text 
 from src.config.settings import BROKER_ADDRESS, TOPIC_SUB, TOPIC_PUB, CLIENT_ID, PROTOCOL
 from wake_word.wake_word_for_stt import detect_wake_word
@@ -23,7 +23,7 @@ voice_event = threading.Event()
 exit_event = threading.Event()
 session_active = True  
 response_received = False
-conversation_active = False  
+conversation_active = False
 user_seq = 1
 playback_in_progress = threading.Event()
 message_queue = Queue()  
@@ -74,7 +74,7 @@ def on_message(client, userdata, message):
                     wav_file.writeframes(pcm_data)
 
                 def play_audio():
-                    global last_response_time, response_received  
+                    global last_response_time, response_received
 
                     audio = AudioSegment.from_wav("response.wav")
                     print("음성 파일 재생 시작")
@@ -124,7 +124,8 @@ def message_publisher():
 
 # 메시지 발행 스레드 시작
 publisher_thread = threading.Thread(target=message_publisher, daemon=True)  
-publisher_thread.start()  
+publisher_thread.start()
+
 
 def start_conversation():
     global last_response_time, response_received, conversation_active
@@ -132,20 +133,32 @@ def start_conversation():
         print("텍스트 받는 중")
 
         text = ""
-        idle_time = 0 
+        idle_time = 0
 
         while not text and not exit_event.is_set():
-            text = speech_to_text()
+            # 오디오 재생 중일 경우 대기
+            while playback_in_progress.is_set():
+                print("오디오 출력 중... 마이크 입력 대기")
+                time.sleep(0.1)  # 재생이 끝날 때까지 짧게 대기
+
+            text = speech_to_text()  # 오디오 재생이 종료되면 마이크 입력 활성화
 
             if text:
                 print(text)
+                # 종료 조건 추가
+                if text.strip() in ["잘가", "잘 가"]:
+                    print("종료 명령을 받았습니다.")
+                    enqueue_message("topic/conversation/end")
+                    exit_event.set()
+                    print("exit_event 설정됨, 내부 루프 종료")
+                    break
                 break
             else:
                 idle_time += 1
                 print(f"음성 입력 대기 중... 경과 시간: {idle_time}초")
                 if idle_time >= 30:
                     print("대화가 종료됩니다.")
-                    enqueue_message("topic/conversation/end")  
+                    enqueue_message("topic/conversation/end")
                     exit_event.set()
                     print("exit_event 설정됨, 내부 루프 종료")
                     break
@@ -155,14 +168,13 @@ def start_conversation():
             break
 
         print("메시지 전송:", text)
-        enqueue_message("topic/message/send", data={"content": text}) 
+        enqueue_message("topic/message/send", data={"content": text})
 
         print("응답 대기 중...")
         voice_event.clear()
-        response_received = False  
+        response_received = False
 
-
-        voice_event.wait(timeout=10) 
+        voice_event.wait(timeout=10)
         if not response_received:
             print("응답이 없습니다. 다시 시도합니다.")
             continue
@@ -170,10 +182,10 @@ def start_conversation():
         if exit_event.is_set():
             print("exit_event 설정됨, 상위 루프 최종 종료")
             break
-        
 
     print("대화가 종료되었습니다.")
-    conversation_active = False  
+    conversation_active = False
+
 
 # PIR 센서 감지 함수
 async def detect_motion():
@@ -182,7 +194,8 @@ async def detect_motion():
         if not conversation_active and detect_child_approach():
             print("PIR 센서로 감지됨! 대화를 시작합니다.")
             # 사용자 감지 주제로 메시지 전송
-            enqueue_message("topic/user/detection") 
+            enqueue_message("topic/user/detection")
+            time.sleep(5)
             # 대화 시작
             conversation_active = True
             exit_event.clear()
@@ -197,9 +210,18 @@ async def check_wake_word():
         while True:
             if not conversation_active and detect_wake_word():
                 print("웨이크 워드 감지됨! 대화를 시작합니다.")
-                enqueue_message("topic/message/send", data={"content": "토키야!!"})  
+
+                # MQTT 메시지 전송
+                enqueue_message("topic/message/send", data={"content": "토키야"})
+                print("MQTT 메시지 전송 완료: 토키야")
+                # TODO : 첫 응답 받기 전에 start_conversation 막기 위한 버퍼 (시간 설정 해보기)
+                time.sleep(5)
+
+                # MQTT 전송이 완료된 후 대화 시작
                 conversation_active = True
                 exit_event.clear()
+
+                # 대화 시작 쓰레드 실행
                 conversation_thread = threading.Thread(target=start_conversation)
                 conversation_thread.start()
             await asyncio.sleep(0.01)
