@@ -1,42 +1,33 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/assets/fonts/SuncheonR.ttf') format('truetype'); /* 확장자와 format 확인 */
+  font-weight: normal;
+  font-style: normal;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  font-family: 'MyCustomFont', SuncheonR;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+/* 스크롤바 너비 및 높이 설정 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 8px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* 스크롤바 배경 제거 */
+::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
-.card {
-  padding: 2em;
+/* 스크롤바 색상 및 둥글기 설정 */
+::-webkit-scrollbar-thumb {
+  background-color: #b0b0b0; /* 회색 */
+  border-radius: 10px;
 }
 
-.read-the-docs {
-  color: #888;
+/* 스크롤바에 마우스를 올렸을 때 색상 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #696969; /* 어두운 회색 */
 }
