@@ -6,3 +6,4 @@ numpy
 aiohttp
 grpcio-tools
 webrtcvad
+pydub
