@@ -190,6 +190,10 @@ def start_conversation():
     print("대화가 종료되었습니다.")
     conversation_active = False
 
+def send_end_message():
+    enqueue_message("topic/conversation/end")
+    exit_event.set()
+    logger.info("exit_event 설정됨, 대화 종료")
 
 # PIR 센서 감지 함수
 async def detect_motion():
