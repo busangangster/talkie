@@ -1,3 +1,6 @@
+# Ignore application.properties
+application.properties
+
 # Help and Gradle directories
 HELP.md
 .gradle

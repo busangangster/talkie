@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.e104'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'  // Spring Data Redis 의존성 추가 (Redis 사용을 위한 설정)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.integration:spring-integration-mqtt:6.3.5'
+    implementation 'org.springframework.boot:spring-boot-starter-integration'  // Spring Integration의 기본 기능 사용
+    // HTTP 요청을 위한 WebClient (OpenAI API 통신용)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // JSON 처리 라이브러리 (필요 시)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'  // Spring Data MongoDB 의존성 추가 (MongoDB 사용을 위한 설정)
+
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  // QueryDSL JPA 모듈 추가 (Jakarta 버전)
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    // QueryDSL APT 설정 (QueryDSL 코드 생성기)
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"  // Jakarta 어노테이션 API 의존성 추가 (Jakarta 어노테이션을 위한 설정)
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    // Jakarta Persistence API 의존성 추가 (JPA를 사용하기 위한 Jakarta API 설정)
+    implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.5'
+
+    testImplementation "org.springframework.integration:spring-integration-test:6.3.2" // spring integration 테스트 도구
+
+    implementation "org.springframework.boot:spring-boot-starter-aop:3.3.0"
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    implementation "org.mapstruct:mapstruct:1.5.5.Final"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+clean {
+    delete file('src/main/generated')  // Gradle clean 시 QueryDSL QClass가 생성되는 디렉터리 삭제
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
