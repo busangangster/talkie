@@ -1,0 +1,9 @@
+paho-mqtt
+pvporcupine
+pyaudio
+requests
+numpy
+aiohttp
+grpcio-tools
+webrtcvad
+pydub
