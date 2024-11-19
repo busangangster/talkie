@@ -7,11 +7,14 @@
 
 ## 🎁 서비스 소개
 
-사회활동의 시작과 언어, 사고가 본격적으로 발달하는 5세부터 본격적으로 개인적인 고민거리가 생김. 이때 부터 아이들은 자신의 마음을 숨기기 시작함. 
-
-이때 고민들이 적절한 해결방법을 찾지 못했을 때, 이는 곧 유아 우울증으로 이어질 가능성이 높음.
-
-이를 해결하기 위해 아이와 대화를 통해 자연스러운 분위기 속 아이의 고민을 들어줄 수 있는 IoT를 제작함
+사회활동의 시작과 언어, 사고가 본격적으로 발달하는 5세부터
+아이들의 마음엔 개인적인 고민거리가 생긴다고 합니다.
+이때부터 자신의 마음을 숨기기 시작하게 되는데, 이 과정에서
+고민들에 대해 적절한 해결방법을 찾지 못했을 때 유아
+우울증으로 이어질 가능성이 높다는 연구 결과를 확인할 수
+있었습니다. <br /> 그렇기에 저희 팀은 이를 해결하고자
+아이와의 대화를 통해 자연스러운 분위기 속에서 그들의 고민을
+들어줄 수 있는 IoT 인형을 제작하게 되었습니다.
 
 ## 🎁	서비스 목표
 
@@ -97,9 +100,9 @@ Talkie는 MQTT(Message Queuing Telemetry Transport) 프로토콜을 활용해 �
 
 |                                     |                                                                                                                                                                   |                                      |                                                                                                                                                                            |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![JaeChan](exec/img/chan.jpg) | **JaeChan Lee**  <br> Data / Infra <br> UX / UI 개발 <br> 데이터 캐싱 및 서버 비동기 통신 <br> [GitHub](https://github.com/jaechanjj) / Email: jaechanjj@gmail.com     | ![JiHwan Gong](exec/img/jihwan.jpg) | **JiHwan Gong**  <br> Backend <br> ERD 설계 및 CRUD 구현 <br> Realtime API Socket Client 초기 구현 <br> FastAPI 연동 <br> [GitHub](https://github.com/izgnok) / Email : rinch12332@gmail.com      |
-| ![hyulKim](exec/img/hyulKim.jpg)      | **HaHyul Kim** <br> Frontend / IoT <br> UX / UI Customize <br> Server-Client간 MQTT 통신 구현 <br> [GitHub](https://github.com/busangangster) / Email : gkgbf1034@gmail.com  | ![Jeongun Seo](exec/img/seo.jpg)           | **Jeongun Seo** <br> Backend <br> MQTT 어댑터 작성 및 디버깅 <br> Realtime API Socket Client 리팩토링 및 디버깅 <br> [GitHub](https://github.com/SlowCloud) / Email : sju9417@gmail.com    |
-| ![HyunJeong Cho](exec/img/jeong.jpg)          | **HyunJeong Cho** <br> Frontend <br> UX / UI 디자인 및 개발 <br> 웹 성능 최적화 <br> API 데이터 연동 <br> [GitHub](https://github.com/hyunjeongg11) / Email : guswjd4585@gmail.com | ![jae](exec/img/jae.jpg)             | **JaeYoung Choi** <br> Infra / IoT <br> 인프라 아키텍처, CI/CD 구축 <br> 센서 및 HW 제어 구현 <br> [GitHub nk](https://github.com/wodyddldl333) / Email : wodyddldl333@naver.com |
+| ![JaeChan](exec/img/chan.jpg) | **JaeChan Lee**  <br> Data / Infra <br> 감정분석 모델 구현 <br> 데이터베이스 재해복구 구현 <br> [GitHub](https://github.com/jaechanjj) / Email: jaechanjj@gmail.com     | ![jae](exec/img/jae.jpg)             | **JaeYoung Choi** <br> Infra / IoT <br> 인프라 아키텍처, CI/CD 구축 <br> 센서 및 HW 제어 구현 <br> [GitHub](https://github.com/wodyddldl333) / Email : wodyddldl333@naver.com      |
+| ![JiHwan Gong](exec/img/jihwan.jpg) | **JiHwan Gong**  <br> Backend <br> ERD 설계 및 CRUD 구현 <br> Realtime API Socket Client 초기 구현 <br> FastAPI 연동 <br> [GitHub](https://github.com/izgnok) / Email : rinch12332@gmail.com  | ![Jeongun Seo](exec/img/seo.jpg)           | **Jeongun Seo** <br> Backend <br> MQTT 어댑터 작성 및 디버깅 <br> Realtime API Socket Client 리팩토링 및 디버깅 <br> [GitHub](https://github.com/SlowCloud) / Email : sju9417@gmail.com    |
+| ![HyunJeong Cho](exec/img/jeong.jpg)          | **HyunJeong Cho** <br> Frontend <br> UX / UI 디자인 및 개발 <br> 웹 성능 최적화 <br> API 데이터 연동 <br> [GitHub](https://github.com/hyunjeongg11) / Email : guswjd4585@gmail.com | ![hyulKim](exec/img/hyulKim.jpg)      | **HaHyul Kim** <br> Frontend / IoT <br> UX / UI Customize <br> Server-Client간 MQTT 통신 구현 <br> [GitHub](https://github.com/busangangster) / Email : gkgbf1034@gmail.com |
 
 ## 🔔 포팅 메뉴얼
 
