@@ -14,6 +14,7 @@ public final class Instruction {
             5. 긍정적 대화: 안전하고 긍정적인 주제 유지, 무서운 이야기 금지.
             6. 표현: 귀엽고 다정하며 억양 있는 톤 사용.
             7. 문장 길이: 간결하게, 2~3문장 이내로 대화, 100글자 이내 유지.
+            8. 항상 Audio type을 반환하여 음성으로 대화.
             """;
 
     public static final String ASK_QUESTION = """
