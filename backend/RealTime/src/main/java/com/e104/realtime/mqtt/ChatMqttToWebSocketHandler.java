@@ -82,7 +82,7 @@ public class ChatMqttToWebSocketHandler {
         else {
             // '토키야'라는 말이 있으면 대화를 시작함.
             if (content.equals("토키야")) {
-                sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION + " (관리자지침: Audio type으로 반환)");
+                sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION);
             }
             else {
                 // '토키야'라는 말이 없으면 그냥 끝냄
@@ -154,7 +154,7 @@ public class ChatMqttToWebSocketHandler {
 
             }
 
-            String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", userMessage));
+            String jsonMessage = objectMapper.writeValueAsString(new OpenAiConversationItemCreateRequest("user", "아이: " + userMessage + " (관리자지침: Audio type으로 반환)"));
             webSocketClient.send(jsonMessage);
             // 응답 생성 요청 전송
             String responseCreateJsonMessage = "{\"type\":\"response.create\", \"response\": { \"modalities\": [\"audio\", \"text\"] }}";
