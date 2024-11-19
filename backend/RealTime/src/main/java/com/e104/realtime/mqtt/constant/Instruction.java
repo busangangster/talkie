@@ -18,16 +18,16 @@ public final class Instruction {
             """;
 
     public static final String ASK_QUESTION = """
-            ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래?''
+            ''안녕! 난 관리자야. 아이의 부모님이 아래와 같은 질문을 요청했어. 아이에게 인사하고, 질문을 해 줄래? (Audio type으로 반환)''
             질문: %s
             """;
 
     public static final String GREETING = """
-            ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래?''
+            ''안녕! 난 관리자야. 지금 아이가 근처에 있어. 지금 시간은 %s이야. 시간에 맞는 인사를 아이에게 해 줄래? (Audio type으로 반환)''
             """;
 
     public static final String START_CONVERSATION = """
-            ''안녕! 난 관리자야. 지금 아이가 대화를 시작하고 싶어해! 아이에게 어떤 일이 있는지 물어봐줄래?\s
+            ''안녕! 난 관리자야. 지금 아이가 대화를 시작하고 싶어해! 아이에게 어떤 일이 있는지 물어봐줄래? (Audio type으로 반환)\s
             
             예를 들어서
             - "응, 왜 불러?"
