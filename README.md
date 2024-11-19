@@ -28,11 +28,6 @@
 
 > **우리는 부서질 수는 있어도, 결코 찌그러지지 않습니다.**
 
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![HaHyul Kim](exec/img/hyulKim.jpg) | **HaHyul Kim** <br> Frontend <br> UX / UI 개발 <br> 데이터 캐싱 및 서버 비동기 통신 <br> [GitHub](https://github.com/busangangster) <br> gkgbf1034@gmail.com      | ![HyunJeong Cho](exec/img/jeong.jpg) | **HyunJeong Cho** <br> Frontend <br> UX / UI 디자인 및 개발 <br> JWT 및 서버 비동기 통신 <br> [GitHub](https://github.com/hyunjeongg11) <br> guswjd4585@gmail.com          |
-| ![jihwan](exec/img/jihwan.jpg)      | **JiHwan Gong** <br> Backend <br> 데이터 수집 <br> 영화 도메인 서버 <br> BFF 서버 설계 및 구현 <br>[GitHub](https://github.com/izgnok) <br> rinch12332@gmail.com  | ![dong](exec/img/dong.png)           | **DongGyu Oh** <br> Backend <br> 유저/리뷰 도메인 개발 <br> 시스템 아키텍처 설계 <br> 부하 테스트 <br> [GitHub](https://github.com/Eastplanet) <br> ehdrb1645@gmail.com    |
-| ![chan](exec/img/chan.jpg)          | **JaeChan Lee** <br> Infra <br> 인프라 아키텍처, CI/CD 구축 <br> 추천 모델 훈련 및 서버 구현 <br> [GitHub](https://github.com/jaechanjj) <br> jaechanjj@gmail.com | ![jae](exec/img/jae.jpg)             | **JaeYoung Choi** <br> Backend <br> 배치 서버 구현 및 ERD 설계 <br> 추천 모델 훈련 및 서버 구현 <br> [GitHub](https://github.com/wodyddldl333) <br> wodyddldl333@naver.com |
-
 
 ## ⭐ 팀 노션
 
