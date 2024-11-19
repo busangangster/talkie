@@ -82,7 +82,7 @@ public class ChatMqttToWebSocketHandler {
         else {
             // '토키야'라는 말이 있으면 대화를 시작함.
             if (content.equals("토키야")) {
-                sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION);
+                sendClientMessageToOpenaiWebsocket(dto.userSeq(), Instruction.START_CONVERSATION + "(관리자지침: 음성으로 대답해주세요.)");
             }
             else {
                 // '토키야'라는 말이 없으면 그냥 끝냄
